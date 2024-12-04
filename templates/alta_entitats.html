@@ -1,24 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="ca">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alta Entitats</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Alta Entitats</h1>
-    <form method="POST">
-        <label for="tipus">Tipus d'entitat:</label>
-        <select name="tipus" required>
-            <option value="Cicle">Cicle</option>
-            <option value="Modul">Modul</option>
-            <!-- Afegeix altres tipus aquí -->
-        </select>
-        <label for="nom">Nom:</label>
-        <input type="text" name="nom" required>
-        <!-- Opcional: Afegeix camps extra segons el tipus -->
-        <button type="submit">Guardar</button>
-    </form>
-    <button onclick="location.href='/'">Tornar</button>
+    <div class="container">
+        <h1>Alta Entitats</h1>
+        <form method="POST">
+            <label for="tipus">Tipus d'entitat:</label>
+            <select name="tipus" id="tipus" onchange="toggleCicleField()" required>
+                <option value="Cicle">Cicle</option>
+                <option value="Modul">Modul</option>
+            </select>
+
+            <label for="nom">Nom:</label>
+            <input type="text" name="nom" required>
+
+            <!-- Camp de cicle_id que només es mostra si el tipus és Modul -->
+            <div id="cicle-field" style="display: none;">
+                <label for="cicle_id">ID del Cicle:</label>
+                <input type="number" name="cicle_id">
+            </div>
+
+            <button type="submit">Guardar</button>
+        </form>
+        <button onclick="location.href='/'">Tornar</button>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                <img src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png" alt="Creative Commons BY-NC-SA 4.0">
+            </a>
+        </p>
+        <p>
+            Aquesta App està publicada baix la llicència 
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons BY-NC-SA 4.0</a>.
+        </p>
+        <p>
+            Autor: <a href="https://juatafe.github.io">Juan Bautista Talens Felis</a> | 
+            © 2024 - Última modificació: <span id="last-modified"></span>
+        </p>
+    </footer>
+
+    <script>
+        // Mostra o amaga el camp cicle_id segons el tipus seleccionat
+        function toggleCicleField() {
+            const tipus = document.getElementById('tipus').value;
+            const cicleField = document.getElementById('cicle-field');
+            cicleField.style.display = tipus === 'Modul' ? 'block' : 'none';
+        }
+
+        // Mostra la data de l'última modificació
+        document.getElementById('last-modified').textContent = document.lastModified;
+    </script>
 </body>
 </html>
-

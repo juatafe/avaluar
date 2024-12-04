@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RAs</title>
+</head>
+<body>
+    <h1>Resultats d'Aprenentatge</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Ponderació</th>
+                <th>Acció</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ra in ras %}
+                <tr>
+                    <td>{{ ra[1] }}</td>
+                    <td>{{ ra[2] }}%</td>
+                    <td><a href="/ra/{{ ra[0] }}">Detalls</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

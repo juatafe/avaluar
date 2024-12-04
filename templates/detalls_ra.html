@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detalls del RA</title>
+</head>
+<body>
+    <h1>Detalls del RA</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Criteri</th>
+                <th>Ponderació</th>
+                <th>Evidència</th>
+                <th>Descriptor</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detall in detalls %}
+                <tr>
+                    <td>{{ detall[0] }}</td>
+                    <td>{{ detall[1] }}%</td>
+                    <td>{{ detall[2] }}</td>
+                    <td>{{ detall[3] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

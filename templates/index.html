@@ -1,14 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Gestió Avaluar</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Gestionar l'Avaluació</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Gestió Avaluar</h1>
-    <button onclick="location.href='/alta-entitats'">Alta Entitats</button>
-    <button onclick="location.href='/alta-alumnes'">Alta Alumnes</button>
-    <button onclick="location.href='/visualitzar'">Visualitzar Dades</button>
+    <div class="container">
+        <h1>App Gestionar l'Avaluació</h1>
+        <div class="button-container">
+            <button onclick="location.href='/alta-entitats'">Alta Entitats</button>
+            <button onclick="location.href='/alta-alumnes'">Alta Alumnes</button>
+            <button onclick="location.href='/visualitzar'">Visualitzar Dades</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                <img src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png" alt="Creative Commons BY-NC-SA 4.0">
+            </a>
+        </p>
+        <p>
+            Aquesta App està publicada baix la llicència 
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons BY-NC-SA 4.0</a>.
+        </p>
+        <p>
+            Autor: <a href="https://juatafe.github.io">Juan Bautista Talens Felis</a> | 
+            © 2024 - Última modificació: <span id="last-modified"></span>
+        </p>
+    </footer>
+
+    <script>
+        // Mostra la data de l'última modificació
+        document.getElementById('last-modified').textContent = document.lastModified;
+    </script>
 </body>
 </html>
-

@@ -1,30 +1,91 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 0;
+/* Escalat de font base responsive */
+:root {
+    font-size: calc(0.9em + 1vw); /* Escalat segons l'ample de la pantalla */
 }
 
+body {
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    background-color: rgb(116, 203, 253);
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Fa que el cos ocupi tota l'alçada del viewport */
+}
+
+/* Contenidor principal */
+.container {
+    flex: 1; /* Ocupa l'espai restant entre el header i el footer */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 1200px;
+    margin: auto;
+    padding: 1em;
+}
+
+/* Botons amb Flexbox */
 button {
-    padding: 10px 20px;
+    padding: 0.8em 1.5em;
     margin: 10px;
     background-color: #007BFF;
     color: white;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
     background-color: #0056b3;
 }
 
-form {
+/* Contenidor de botons en Flexbox */
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
     margin-top: 20px;
 }
 
+/* Formularis estilitzats */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    padding: 1.5em;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+}
+
+form label {
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+form input, form select, form button {
+    padding: 0.5em;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Taules responsives */
 table {
     border-collapse: collapse;
     width: 100%;
     margin-top: 20px;
+    font-size: 0.9rem;
 }
 
 table, th, td {
@@ -32,7 +93,101 @@ table, th, td {
 }
 
 th, td {
-    padding: 8px;
+    padding: 0.8em;
     text-align: left;
 }
 
+th {
+    background-color: #007BFF;
+    color: white;
+}
+
+/* Ajustos responsive per a taules */
+@media (max-width: 768px) {
+    table, th, td {
+        display: block;
+        width: 100%;
+    }
+
+    th, td {
+        text-align: right;
+        padding: 0.5em;
+    }
+
+    th::before, td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+        color: #333;
+    }
+
+    th::before {
+        color: white;
+    }
+}
+
+/* Ajustos per a dispositius petits */
+@media (max-width: 480px) {
+    form {
+        width: 100%; /* Ajusta el formulari a tota l'amplada */
+        padding: 1em;
+    }
+
+    form label, form input, form select, form button {
+        font-size: 0.9rem; /* Redueix la mida en pantalles petites */
+    }
+
+    form input, form select {
+        padding: 0.5em;
+    }
+
+    form button {
+        padding: 0.6em;
+    }
+
+    button {
+        width: 100%;
+        font-size: 0.9rem;
+        padding: 0.6em;
+    }
+}
+
+/* Footer estilitzat i fixat */
+footer {
+    background-color: #f8f9fa;
+    padding: 10px;
+    text-align: center;
+    font-size: 0.8rem; /* Escala amb el root */
+    color: #555;
+    border-top: 1px solid #ddd;
+    width: 100%;
+    position: relative;
+    bottom: 0;
+}
+
+footer a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+footer img {
+    margin: 5px auto;
+    display: block;
+    max-width: 88px;
+    height: auto;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+/* Responsive footer */
+@media (max-width: 768px) {
+    footer {
+        font-size: 0.7rem;
+    }
+}

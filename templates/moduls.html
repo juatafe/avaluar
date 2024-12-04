@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mòduls</title>
+</head>
+<body>
+    <h1>Mòduls de l'Alumne</h1>
+    {% for modul in moduls %}
+        <button onclick="location.href='/modul/{{ modul[0] }}'">{{ modul[1] }}</button>
+    {% endfor %}
+</body>
+</html>
