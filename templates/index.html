@@ -1,22 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Gestió d'Avaluar</title>
+    <title>Gestió Avaluar</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Gestió d'Avaluar</h1>
-    <h2>Llista de Cicles</h2>
-    <ul>
-        {% for cicle in cicles %}
-            <li>{{ cicle[1] }}</li>
-        {% endfor %}
-    </ul>
-    <h2>Afegir un nou cicle</h2>
-    <form action="/add" method="POST">
-        <input type="text" name="nom" placeholder="Nom del cicle" required>
-        <button type="submit">Afegir</button>
-    </form>
+    <h1>Gestió Avaluar</h1>
+    <button onclick="location.href='/alta-entitats'">Alta Entitats</button>
+    <button onclick="location.href='/alta-alumnes'">Alta Alumnes</button>
+    <button onclick="location.href='/visualitzar'">Visualitzar Dades</button>
 </body>
 </html>
 

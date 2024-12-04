@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Alta Entitats</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Alta Entitats</h1>
+    <form method="POST">
+        <label for="tipus">Tipus d'entitat:</label>
+        <select name="tipus" required>
+            <option value="Cicle">Cicle</option>
+            <option value="Modul">Modul</option>
+            <!-- Afegeix altres tipus aquí -->
+        </select>
+        <label for="nom">Nom:</label>
+        <input type="text" name="nom" required>
+        <!-- Opcional: Afegeix camps extra segons el tipus -->
+        <button type="submit">Guardar</button>
+    </form>
+    <button onclick="location.href='/'">Tornar</button>
+</body>
+</html>
+

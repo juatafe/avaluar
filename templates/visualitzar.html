@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualitzar Dades</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Visualitzar Alumnes</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>NIA</th>
+                <th>Nom</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alumne in alumnes %}
+            <tr>
+                <td>{{ alumne[0] }}</td>
+                <td>{{ alumne[1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button onclick="location.href='/'">Tornar</button>
+</body>
+</html>
+

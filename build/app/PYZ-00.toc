@@ -1,4 +1,4 @@
-('/home/teacher/project/build/app/PYZ-00.pyz',
+('/home/teacher/avaluar/build/app/PYZ-00.pyz',
  [('__future__', '/usr/lib/python3.8/__future__.py', 'PYMODULE'),
   ('_compat_pickle', '/usr/lib/python3.8/_compat_pickle.py', 'PYMODULE'),
   ('_compression', '/usr/lib/python3.8/_compression.py', 'PYMODULE'),
