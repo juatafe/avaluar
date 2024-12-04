@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestió d'Avaluar</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Gestió d'Avaluar</h1>
+    <h2>Llista de Cicles</h2>
+    <ul>
+        {% for cicle in cicles %}
+            <li>{{ cicle[1] }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Afegir un nou cicle</h2>
+    <form action="/add" method="POST">
+        <input type="text" name="nom" placeholder="Nom del cicle" required>
+        <button type="submit">Afegir</button>
+    </form>
+</body>
+</html>
+
