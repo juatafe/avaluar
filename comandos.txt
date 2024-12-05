@@ -26,3 +26,7 @@ pyinstaller --clean --onefile --add-data "avaluar.db:." --add-data "templates:te
 
 
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+
+
+
+sqlite3 avaluar.db < database_setup.sql

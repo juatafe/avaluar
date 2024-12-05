@@ -1,12 +1,21 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 import os
+import sys
 
 app = Flask(__name__)
 
-# Connexió a la base de dades
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Determinar el directori base en funció de si s'executa com a executable o codi font
+if getattr(sys, 'frozen', False):
+    # Si l'aplicació està empaquetada amb PyInstaller
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    # Si s'executa com a codi Python
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Ruta de la base de dades
 DB_PATH = os.path.join(BASE_DIR, 'avaluar.db')
+print("Path de la base de dades:", DB_PATH)
 
 # Pàgina inicial
 @app.route('/')
@@ -28,19 +37,15 @@ def alta_entitats():
         if tipus == 'Cicle':
             cursor.execute("INSERT INTO Cicle (nom) VALUES (?)", (nom,))
         elif tipus == 'Modul':
-            # Utilitza `get` per evitar KeyError si `cicle_id` no existeix
             cicle_id = request.form.get('cicle_id')
             if not cicle_id:
                 conn.close()
                 return "Error: Cal seleccionar un cicle per al mòdul.", 400
             cursor.execute("INSERT INTO Modul (nom, id_cicle) VALUES (?, ?)", (nom, cicle_id))
-        # Afegeix altres tipus aquí
-
         conn.commit()
         conn.close()
         return redirect(url_for('index'))
 
-    # Per a GET: mostra el formulari
     return render_template('alta_entitats.html')
 
 # Formulari per donar d'alta alumnes
@@ -59,7 +64,6 @@ def alta_alumnes():
         conn.close()
         return redirect(url_for('index'))
 
-    # Per a GET: mostra el formulari
     return render_template('alta_alumnes.html')
 
 # Visualitzar dades
@@ -113,4 +117,4 @@ def veure_ra(id_ra):
     return render_template('detalls_ra.html', detalls=detalls)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)  # Canvia el port si el 5000 està ocupat
