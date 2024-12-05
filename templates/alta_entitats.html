@@ -9,54 +9,95 @@
 <body>
     <div class="container">
         <h1>Alta Entitats</h1>
-        <form method="POST">
+
+        <!-- Missatge de confirmació -->
+        {% if message %}
+            <div class="message" onclick="hideMessage()">{{ message }}</div>
+        {% endif %}
+
+        <form method="POST" onsubmit="resetForm()">
             <label for="tipus">Tipus d'entitat:</label>
-            <select name="tipus" id="tipus" onchange="toggleCicleField()" required>
+            <select name="tipus" id="tipus" onchange="toggleFields()" required>
                 <option value="Cicle">Cicle</option>
-                <option value="Modul">Modul</option>
+                <option value="Modul">Mòdul</option>
+                <option value="RA">Resultat d'Aprenentatge (RA)</option>
+                <option value="Criteri">Criteri</option>
+                <option value="Evidencia">Evidència</option>
+                <option value="Descriptor">Descriptor</option>
             </select>
 
             <label for="nom">Nom:</label>
             <input type="text" name="nom" required>
 
-            <!-- Camp de cicle_id que només es mostra si el tipus és Modul -->
-            <div id="cicle-field" style="display: none;">
-                <label for="cicle_id">ID del Cicle:</label>
-                <input type="number" name="cicle_id">
+            <!-- Camps dinàmics -->
+            <div id="cicle-field" class="dynamic-field">
+                <label for="id_cicle">Selecciona un Cicle:</label>
+                <select name="id_cicle">
+                    {% for cicle in cicles %}
+                        <option value="{{ cicle[0] }}">{{ cicle[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div id="modul-field" class="dynamic-field">
+                <label for="id_modul">Selecciona un Mòdul:</label>
+                <select name="id_modul">
+                    {% for modul in moduls %}
+                        <option value="{{ modul[0] }}">{{ modul[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div id="ponderacio-field" class="dynamic-field">
+                <label for="ponderacio">Ponderació:</label>
+                <input type="number" step="0.01" name="ponderacio">
+            </div>
+
+            <div id="valor-field" class="dynamic-field">
+                <label for="valor">Valor:</label>
+                <input type="number" step="0.01" name="valor">
             </div>
 
             <button type="submit">Guardar</button>
         </form>
-        <button onclick="location.href='/'">Tornar</button>
+        <button onclick="location.href='/'" class="back-button">Tornar</button>
     </div>
 
-    <!-- Footer -->
     <footer>
-        <p>
-            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
-                <img src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png" alt="Creative Commons BY-NC-SA 4.0">
-            </a>
-        </p>
-        <p>
-            Aquesta App està publicada baix la llicència 
-            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons BY-NC-SA 4.0</a>.
-        </p>
-        <p>
-            Autor: <a href="https://juatafe.github.io">Juan Bautista Talens Felis</a> | 
-            © 2024 - Última modificació: <span id="last-modified"></span>
-        </p>
+        <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens Felis</a></p>
     </footer>
 
     <script>
-        // Mostra o amaga el camp cicle_id segons el tipus seleccionat
-        function toggleCicleField() {
+        function toggleFields() {
             const tipus = document.getElementById('tipus').value;
-            const cicleField = document.getElementById('cicle-field');
-            cicleField.style.display = tipus === 'Modul' ? 'block' : 'none';
+            const fields = document.querySelectorAll('.dynamic-field');
+            fields.forEach(field => field.style.display = 'none');
+
+            if (tipus === 'Modul') {
+                document.getElementById('cicle-field').style.display = 'block';
+            } else if (tipus === 'RA') {
+                document.getElementById('modul-field').style.display = 'block';
+                document.getElementById('ponderacio-field').style.display = 'block';
+            } else if (tipus === 'Descriptor') {
+                document.getElementById('valor-field').style.display = 'block';
+            }
         }
 
-        // Mostra la data de l'última modificació
-        document.getElementById('last-modified').textContent = document.lastModified;
+        function hideMessage() {
+            const messageDiv = document.querySelector('.message');
+            if (messageDiv) {
+                messageDiv.style.display = 'none';
+            }
+        }
+
+        function resetForm() {
+            document.querySelector('form').reset();
+        }
+
+        // Amaga el missatge automàticament després de 5 segons
+        setTimeout(hideMessage, 5000);
+
+        toggleFields();
     </script>
 </body>
 </html>

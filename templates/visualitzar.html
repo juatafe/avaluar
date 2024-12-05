@@ -1,43 +1,24 @@
-<!-- <!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="ca">
 <head>
-    <title>Visualitzar Dades</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualitzar Alumne</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Visualitzar Alumnes</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>NIA</th>
-                <th>Nom</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for alumne in alumnes %}
-            <tr>
-                <td>{{ alumne[0] }}</td>
-                <td>{{ alumne[1] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <button onclick="location.href='/'">Tornar</button>
+    <div class="container">
+        <h1>Visualitzar Alumne</h1>
+        <form method="POST">
+            <label for="nia">Introdueix el NIA:</label>
+            <input type="text" name="nia" id="nia" placeholder="123456" required>
+            <button type="submit">Cercar</button>
+        </form>
+        <button onclick="location.href='/'" class="back-button">Tornar</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens Felis</a></p>
+    </footer>
 </body>
 </html>
- -->
- <!DOCTYPE html>
- <html>
- <head>
-     <title>Visualitzar Alumne</title>
- </head>
- <body>
-     <h1>Visualitzar Alumne</h1>
-     <form method="POST">
-         <label for="nia">Introdueix el NIA:</label>
-         <input type="text" name="nia" id="nia" required>
-         <button type="submit">Cercar</button>
-     </form>
- </body>
- </html>
- 

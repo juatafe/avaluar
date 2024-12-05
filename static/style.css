@@ -1,23 +1,30 @@
-/* Escalat de font base responsive */
+/* Variables globals per colors */
 :root {
-    font-size: calc(0.9em + 1vw); /* Escalat segons l'ample de la pantalla */
+    --primary-color: #007BFF;
+    --primary-hover-color: #0056b3;
+    --secondary-color: #6c757d;
+    --secondary-hover-color: #5a6268;
+    --background-color: rgb(116, 203, 253);
+    --text-color: white;
+    font-size: calc(0.6em + 1vw); /* Escalat segons l'ample de la pantalla */
 }
 
+/* Cos general */
 body {
     font-size: 1rem;
     margin: 0;
     line-height: 1.5;
     letter-spacing: 0.01em;
-    background-color: rgb(116, 203, 253);
+    background-color: var(--background-color);
     font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Fa que el cos ocupi tota l'alçada del viewport */
+    min-height: 100vh;
 }
 
 /* Contenidor principal */
 .container {
-    flex: 1; /* Ocupa l'espai restant entre el header i el footer */
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -27,33 +34,7 @@ body {
     padding: 1em;
 }
 
-/* Botons amb Flexbox */
-button {
-    padding: 0.8em 1.5em;
-    margin: 10px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-/* Contenidor de botons en Flexbox */
-.button-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1em;
-    margin-top: 20px;
-}
-
-/* Formularis estilitzats */
+/* Formularis */
 form {
     display: flex;
     flex-direction: column;
@@ -80,84 +61,125 @@ form input, form select, form button {
     border-radius: 4px;
 }
 
-/* Taules responsives */
-table {
-    border-collapse: collapse;
-    width: 100%;
+input::placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Botons */
+button {
+    padding: 0.8em 1.5em;
+    margin: 10px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--primary-hover-color);
+}
+
+.back-button {
+    background-color: var(--secondary-color);
+}
+
+.back-button:hover {
+    background-color: var(--secondary-hover-color);
+}
+
+/* Contenidor de botons */
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
     margin-top: 20px;
-    font-size: 0.9rem;
 }
 
-table, th, td {
+/* Taules */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+}
+
+table th, table td {
     border: 1px solid #ddd;
-}
-
-th, td {
     padding: 0.8em;
-    text-align: left;
+    text-align: center;
 }
 
-th {
-    background-color: #007BFF;
-    color: white;
+table th {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    font-weight: bold;
 }
 
-/* Ajustos responsive per a taules */
+table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tbody tr:hover {
+    background-color: #f0f0f0;
+}
+
+/* Responsive Taules */
 @media (max-width: 768px) {
     table, th, td {
         display: block;
         width: 100%;
     }
 
-    th, td {
+    table thead {
+        display: none;
+    }
+
+    table tr {
+        margin-bottom: 1em;
+        display: block;
+    }
+
+    table td {
         text-align: right;
         padding: 0.5em;
+        position: relative;
     }
 
-    th::before, td::before {
+    table td::before {
         content: attr(data-label);
-        float: left;
+        position: absolute;
+        left: 0;
         font-weight: bold;
-        color: #333;
-    }
-
-    th::before {
-        color: white;
+        color: #555;
     }
 }
 
-/* Ajustos per a dispositius petits */
+/* Responsive Formularis i Botons */
 @media (max-width: 480px) {
     form {
-        width: 100%; /* Ajusta el formulari a tota l'amplada */
+        width: 100%;
         padding: 1em;
     }
 
-    form label, form input, form select, form button {
-        font-size: 0.9rem; /* Redueix la mida en pantalles petites */
-    }
-
-    form input, form select {
-        padding: 0.5em;
-    }
-
-    form button {
-        padding: 0.6em;
-    }
-
-    button {
+    button, .back-button {
         width: 100%;
-        font-size: 0.9rem;
-        padding: 0.6em;
+        font-size: 1rem;
     }
 }
 
-/* Footer estilitzat i fixat */
+/* Footer */
 footer {
     background-color: #f8f9fa;
     padding: 10px;
     text-align: center;
-    font-size: 0.8rem; /* Escala amb el root */
+    font-size: 0.8rem;
     color: #555;
     border-top: 1px solid #ddd;
     width: 100%;
@@ -166,28 +188,10 @@ footer {
 }
 
 footer a {
-    color: #007BFF;
+    color: var(--primary-color);
     text-decoration: none;
 }
 
 footer a:hover {
     text-decoration: underline;
-}
-
-footer img {
-    margin: 5px auto;
-    display: block;
-    max-width: 88px;
-    height: auto;
-}
-
-footer p {
-    margin: 5px 0;
-}
-
-/* Responsive footer */
-@media (max-width: 768px) {
-    footer {
-        font-size: 0.7rem;
-    }
 }

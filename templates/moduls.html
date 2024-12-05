@@ -1,12 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="ca">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mòduls</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Mòduls de l'Alumne</h1>
-    {% for modul in moduls %}
-        <button onclick="location.href='/modul/{{ modul[0] }}'">{{ modul[1] }}</button>
-    {% endfor %}
+    <div class="container">
+        <h1>Mòduls de l'Alumne</h1>
+        <div class="button-container">
+            {% for modul in moduls %}
+                <button onclick="location.href='/modul/{{ modul[0] }}'">{{ modul[1] }}</button>
+            {% endfor %}
+        </div>
+        <button onclick="location.href='/'" class="back-button">Tornar</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens Felis</a></p>
+    </footer>
 </body>
 </html>

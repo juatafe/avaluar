@@ -1,29 +1,39 @@
 <!DOCTYPE html>
-<html>
+<html lang="ca">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalls del RA</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Detalls del RA</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Criteri</th>
-                <th>Ponderació</th>
-                <th>Evidència</th>
-                <th>Descriptor</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for detall in detalls %}
+    <div class="container">
+        <h1>Detalls del Resultat d'Aprenentatge</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Criteri</th>
+                    <th>Ponderació</th>
+                    <th>Evidència</th>
+                    <th>Descriptor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detall in detalls %}
                 <tr>
                     <td>{{ detall[0] }}</td>
                     <td>{{ detall[1] }}%</td>
                     <td>{{ detall[2] }}</td>
                     <td>{{ detall[3] }}</td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button onclick="location.href='/'" class="back-button">Tornar</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens Felis</a></p>
+    </footer>
 </body>
 </html>

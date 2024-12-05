@@ -1,27 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="ca">
 <head>
-    <title>RAs</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultats d'Aprenentatge</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Resultats d'Aprenentatge</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Ponderació</th>
-                <th>Acció</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ra in ras %}
+    <div class="container">
+        <h1>Resultats d'Aprenentatge</h1>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ ra[1] }}</td>
-                    <td>{{ ra[2] }}%</td>
-                    <td><a href="/ra/{{ ra[0] }}">Detalls</a></td>
+                    <th>Nom</th>
+                    <th>Ponderació</th>
+                    <th>Acció</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for ra in ras %}
+                    <tr>
+                        <td>{{ ra[1] }}</td>
+                        <td>{{ ra[2] }}%</td>
+                        <td><a href="/ra/{{ ra[0] }}" class="action-link">Detalls</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button onclick="location.href='/'" class="back-button">Tornar</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens Felis</a></p>
+    </footer>
 </body>
 </html>

@@ -25,28 +25,69 @@ def index():
 # Formularis per donar d'alta entitats
 @app.route('/alta-entitats', methods=['GET', 'POST'])
 def alta_entitats():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Obtenir opcions de cicles, evidències i altres entitats relacionades
+    cursor.execute("SELECT id_cicle, nom FROM Cicle")
+    cicles = cursor.fetchall()
+
+    cursor.execute("SELECT id_modul, nom FROM Modul")
+    moduls = cursor.fetchall()
+
+    cursor.execute("SELECT id_evidencia, nom FROM Evidencia")
+    evidencies = cursor.fetchall()
+
+    cursor.execute("SELECT id_ra, nom FROM RA")
+    ras = cursor.fetchall()
+
+    cursor.execute("SELECT id_criteri, nom FROM Criteri")
+    criteris = cursor.fetchall()
+
+    message = None
+
     if request.method == 'POST':
-        # Obté les dades del formulari
         tipus = request.form['tipus']
         nom = request.form['nom']
 
-        # Insereix a la base de dades segons el tipus
-        conn = sqlite3.connect(DB_PATH)
-        cursor = conn.cursor()
+        try:
+            if tipus == 'Cicle':
+                cursor.execute("INSERT INTO Cicle (nom) VALUES (?)", (nom,))
+            elif tipus == 'Modul':
+                id_cicle = request.form.get('id_cicle')
+                cursor.execute("INSERT INTO Modul (nom, id_cicle) VALUES (?, ?)", (nom, id_cicle))
+            elif tipus == 'RA':
+                id_modul = request.form.get('id_modul')
+                ponderacio = request.form.get('ponderacio')
+                cursor.execute("INSERT INTO RA (nom, ponderacio, id_modul) VALUES (?, ?, ?)", (nom, ponderacio, id_modul))
+            elif tipus == 'Criteri':
+                id_ra = request.form.get('id_ra')
+                ponderacio = request.form.get('ponderacio')
+                cursor.execute("INSERT INTO Criteri (nom, ponderacio, id_ra) VALUES (?, ?, ?)", (nom, ponderacio, id_ra))
+            elif tipus == 'Evidencia':
+                cursor.execute("INSERT INTO Evidencia (nom) VALUES (?)", (nom,))
+            elif tipus == 'Descriptor':
+                id_evidencia = request.form.get('id_evidencia')
+                valor = request.form.get('valor')
+                cursor.execute("INSERT INTO Descriptor (nom, valor, id_evidencia) VALUES (?, ?, ?)", (nom, valor, id_evidencia))
 
-        if tipus == 'Cicle':
-            cursor.execute("INSERT INTO Cicle (nom) VALUES (?)", (nom,))
-        elif tipus == 'Modul':
-            cicle_id = request.form.get('cicle_id')
-            if not cicle_id:
-                conn.close()
-                return "Error: Cal seleccionar un cicle per al mòdul.", 400
-            cursor.execute("INSERT INTO Modul (nom, id_cicle) VALUES (?, ?)", (nom, cicle_id))
-        conn.commit()
-        conn.close()
-        return redirect(url_for('index'))
+            conn.commit()
+            message = f"L'entitat {tipus} '{nom}' s'ha guardat correctament!"
+        except Exception as e:
+            message = f"Error al guardar l'entitat: {e}"
+        finally:
+            conn.close()
 
-    return render_template('alta_entitats.html')
+    return render_template(
+        'alta_entitats.html',
+        cicles=cicles,
+        moduls=moduls,
+        evidencies=evidencies,
+        ras=ras,
+        criteris=criteris,
+        message=message
+    )
+
 
 # Formulari per donar d'alta alumnes
 @app.route('/alta-alumnes', methods=['GET', 'POST'])
