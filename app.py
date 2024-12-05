@@ -106,11 +106,23 @@ def veure_ra(id_ra):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT Criteri.nom, Criteri.ponderacio, Evidencia.nom AS evidencia, Descriptor.nom AS descriptor
-        FROM Criteri
-        JOIN Evidencia ON Evidencia.id_criteri = Criteri.id_criteri
-        JOIN Descriptor ON Descriptor.id_descriptor = Evidencia.id_descriptor
-        WHERE Criteri.id_ra = ?
+        SELECT 
+            Criteri.nom AS criteri_nom, 
+            Criteri.ponderacio, 
+            Evidencia.nom AS evidencia, 
+            Descriptor.nom AS descriptor
+        FROM 
+            Criteri
+        JOIN 
+            Criteri_Evidencia ON Criteri.id_criteri = Criteri_Evidencia.id_criteri
+        JOIN 
+            Evidencia ON Criteri_Evidencia.id_evidencia = Evidencia.id_evidencia
+        LEFT JOIN 
+            Evidencia_Descriptor ON Evidencia.id_evidencia = Evidencia_Descriptor.id_evidencia
+        LEFT JOIN 
+            Descriptor ON Evidencia_Descriptor.id_descriptor = Descriptor.id_descriptor
+        WHERE 
+            Criteri.id_ra = ?
     """, (id_ra,))
     detalls = cursor.fetchall()
     conn.close()

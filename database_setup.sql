@@ -130,5 +130,11 @@ INSERT INTO Modul_Alumne (id_modul, nia) VALUES (1, 654321);
 INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES (1, 1);
 INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES (2, 2);
 
+-- Inserir dades a la taula Criteri_Evidencia
+INSERT INTO Criteri_Evidencia (id_criteri, id_evidencia) VALUES (1, 1);
+INSERT INTO Criteri_Evidencia (id_criteri, id_evidencia) VALUES (1, 2);
+INSERT INTO Criteri_Evidencia (id_criteri, id_evidencia) VALUES (2, 1);
+
 -- Missatge d'informació
 SELECT 'Base de dades creada i dades inserides correctament!' AS resultat;
+
