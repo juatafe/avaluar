@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import sqlite3
 import os
 import sys
@@ -172,6 +172,21 @@ def veure_ra(id_ra):
 
     conn.close()
     return render_template('detalls_ra.html', detalls=detalls, evidencies=evidencies)
+
+@app.route('/get_descriptors/<evidencia>')
+def get_descriptors(evidencia):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT Descriptor.nom
+        FROM Descriptor
+        JOIN Evidencia_Descriptor ON Descriptor.id_descriptor = Evidencia_Descriptor.id_descriptor
+        JOIN Evidencia ON Evidencia_Descriptor.id_evidencia = Evidencia.id_evidencia
+        WHERE Evidencia.nom = ?
+    """, (evidencia,))
+    descriptors = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    return jsonify(descriptors=descriptors)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)  # Canvia el port si el 5000 està ocupat

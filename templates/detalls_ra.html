@@ -21,6 +21,13 @@
                     <th>Descriptors</th>
                     <th colspan="2"></th>
                 </tr>
+                {% for descriptor in descriptors %}
+                <tr>
+                    <td colspan="2"></td>
+                    <td>{{ descriptor[0] }}</td>
+                    <td colspan="2"></td>
+                </tr>
+                {% endfor %}
                 <tr>
                     <th colspan="2"></th>
                     <th>Evidència</th>
@@ -29,7 +36,9 @@
                 <tr>
                     <th>Criteri</th>
                     <th>Ponderació</th>
-                    <th>Nota</th>
+                    {% for evidencia in evidencies %}
+                    <th>{{ evidencia[0] }}</th>
+                    {% endfor %}
                     <th>Accions</th>
                 </tr>
             </thead>
@@ -38,14 +47,7 @@
                 <tr>
                     <td>{{ detall[0] }}</td>
                     <td>{{ detall[1] }}%</td>
-                    <td>
-                        <span class="descriptor-text">{{ detall[3] }}</span>
-                        <select class="descriptor-select">
-                            {% for descriptor in descriptors %}
-                            <option value="{{ descriptor[0] }}">{{ descriptor[0] }}</option>
-                            {% endfor %}
-                        </select>
-                    </td>
+                    {% for evidencia in evidencies %}
                     <td>
                         <span class="evidencia-text">{{ detall[2] }}</span>
                         <select class="evidencia-select">
@@ -54,6 +56,7 @@
                             {% endfor %}
                         </select>
                     </td>
+                    {% endfor %}
                     <td>
                         <button class="add-evidencia-button">Afegir Evidència</button>
                         <button class="delete-evidencia-button">Eliminar Evidència</button>
@@ -112,6 +115,21 @@
                 evidenciaText.textContent = this.value;
                 this.style.display = 'none';
                 evidenciaText.style.display = 'inline';
+
+                // Actualitzar els descriptors en funció de la evidència seleccionada
+                const descriptorSelect = row.querySelector('.descriptor-select');
+                const evidencia = this.value;
+                fetch(`/get_descriptors/${evidencia}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        descriptorSelect.innerHTML = '';
+                        data.descriptors.forEach(descriptor => {
+                            const option = document.createElement('option');
+                            option.value = descriptor;
+                            option.textContent = descriptor;
+                            descriptorSelect.appendChild(option);
+                        });
+                    });
             };
 
             select.addEventListener('blur', updateText);
