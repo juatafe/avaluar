@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalls del RA</title>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .evidencia-select, .descriptor-select {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -12,10 +17,20 @@
         <table>
             <thead>
                 <tr>
+                    <th colspan="2"></th>
+                    <th>Descriptors</th>
+                    <th colspan="2"></th>
+                </tr>
+                <tr>
+                    <th colspan="2"></th>
+                    <th>Evidència</th>
+                    <th colspan="2"></th>
+                </tr>
+                <tr>
                     <th>Criteri</th>
                     <th>Ponderació</th>
-                    <th>Evidència</th>
-                    <th>Descriptor</th>
+                    <th>Nota</th>
+                    <th>Accions</th>
                 </tr>
             </thead>
             <tbody>
@@ -23,8 +38,26 @@
                 <tr>
                     <td>{{ detall[0] }}</td>
                     <td>{{ detall[1] }}%</td>
-                    <td>{{ detall[2] }}</td>
-                    <td>{{ detall[3] }}</td>
+                    <td>
+                        <span class="descriptor-text">{{ detall[3] }}</span>
+                        <select class="descriptor-select">
+                            {% for descriptor in descriptors %}
+                            <option value="{{ descriptor[0] }}">{{ descriptor[0] }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <span class="evidencia-text">{{ detall[2] }}</span>
+                        <select class="evidencia-select">
+                            {% for evidencia in evidencies %}
+                            <option value="{{ evidencia[0] }}">{{ evidencia[0] }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <button class="add-evidencia-button">Afegir Evidència</button>
+                        <button class="delete-evidencia-button">Eliminar Evidència</button>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -35,5 +68,85 @@
     <footer>
         <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens Felis</a></p>
     </footer>
+
+    <script>
+        document.querySelectorAll('.descriptor-text').forEach(span => {
+            span.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const descriptorText = row.querySelector('.descriptor-text');
+                const descriptorSelect = row.querySelector('.descriptor-select');
+                descriptorText.style.display = 'none';
+                descriptorSelect.style.display = 'inline-block';
+                descriptorSelect.focus();
+            });
+        });
+
+        document.querySelectorAll('.descriptor-select').forEach(select => {
+            const updateText = function() {
+                const row = this.closest('tr');
+                const descriptorText = row.querySelector('.descriptor-text');
+                descriptorText.textContent = this.value;
+                this.style.display = 'none';
+                descriptorText.style.display = 'inline';
+            };
+
+            select.addEventListener('blur', updateText);
+            select.addEventListener('change', updateText);
+        });
+
+        document.querySelectorAll('.evidencia-text').forEach(span => {
+            span.addEventListener('click', function() {
+                const row = this.closest('tr');
+                const evidenciaText = row.querySelector('.evidencia-text');
+                const evidenciaSelect = row.querySelector('.evidencia-select');
+                evidenciaText.style.display = 'none';
+                evidenciaSelect.style.display = 'inline-block';
+                evidenciaSelect.focus();
+            });
+        });
+
+        document.querySelectorAll('.evidencia-select').forEach(select => {
+            const updateText = function() {
+                const row = this.closest('tr');
+                const evidenciaText = row.querySelector('.evidencia-text');
+                evidenciaText.textContent = this.value;
+                this.style.display = 'none';
+                evidenciaText.style.display = 'inline';
+            };
+
+            select.addEventListener('blur', updateText);
+            select.addEventListener('change', updateText);
+        });
+
+        document.querySelectorAll('.add-evidencia-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const table = this.closest('table');
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const newCell = row.insertCell(-1);
+                    newCell.innerHTML = `
+                        <span class="evidencia-text"></span>
+                        <select class="evidencia-select">
+                            {% for evidencia in evidencies %}
+                            <option value="{{ evidencia[0] }}">{{ evidencia[0] }}</option>
+                            {% endfor %}
+                        </select>
+                    `;
+                });
+            });
+        });
+
+        document.querySelectorAll('.delete-evidencia-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const table = this.closest('table');
+                const rows = table.querySelectorAll('tbody tr');
+                if (rows[0].cells.length > 4) {
+                    rows.forEach(row => {
+                        row.deleteCell(-1);
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

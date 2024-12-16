@@ -166,8 +166,12 @@ def veure_ra(id_ra):
             Criteri.id_ra = ?
     """, (id_ra,))
     detalls = cursor.fetchall()
+
+    cursor.execute("SELECT nom FROM Evidencia")
+    evidencies = cursor.fetchall()
+
     conn.close()
-    return render_template('detalls_ra.html', detalls=detalls)
+    return render_template('detalls_ra.html', detalls=detalls, evidencies=evidencies)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)  # Canvia el port si el 5000 està ocupat
