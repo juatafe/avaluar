@@ -3,17 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalls RA</title>
+    <title>RA - {{ ra[1] }}</title>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .table-container {
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .fixed-column {
+            position: sticky;
+            left: 0;
+            background-color: white;
+            z-index: 1;
+        }
+        .fixed-column:nth-child(2) {
+            left: 100px; /* Ajusta según el ancho de la primera columna */
+        }
+        .fixed-column:nth-child(3) {
+            left: 200px; /* Ajusta según el ancho de las dos primeras columnas */
+        }
+        .fixed-column:nth-child(4) {
+            left: 300px; /* Ajusta según el ancho de las tres primeras columnas */
+        }
+    </style>
 </head>
 <body>
-    <h1>RA - 1</h1>
+    <h1>RA - {{ ra[1] }}</h1>
     <button onclick="addEvidence()">Afegir Evidència</button>
 
-    <div id="tableContainer"></div>
+    <div class="table-container" id="tableContainer"></div>
 
     <script>
-        function createTable() {
+        async function fetchEvidences() {
+            const response = await fetch('/api/evidences');
+            const data = await response.json();
+            return data;
+        }
+
+        function createTable(evidences) {
             const tableContainer = document.getElementById('tableContainer');
             const table = document.createElement('table');
             table.id = 'raTable';
@@ -22,46 +49,46 @@
             const tbody = document.createElement('tbody');
             const tfoot = document.createElement('tfoot');
 
-            // Capçalera de la taula
+            // Encabezado de la tabla
             const headerRow1 = document.createElement('tr');
             headerRow1.innerHTML = `
                 <th rowspan="8">Criteris d'avaluació</th>
                 <th rowspan="8">Ponderació</th>
                 <th rowspan="8">Aconseguit</th>
                 <th rowspan="8">Progrés</th>
-                <th>Descriptor</th>
+                ${Object.values(evidences).map(evidence => `<th>Descriptor</th>`).join('')}
             `;
             thead.appendChild(headerRow1);
 
             const headerRow2 = document.createElement('tr');
-            headerRow2.innerHTML = `<th>Excel·lent (4)</th>`;
+            headerRow2.innerHTML = `${Object.values(evidences).map(evidence => `<th>Excel·lent (4)</th>`).join('')}`;
             thead.appendChild(headerRow2);
 
             const headerRow3 = document.createElement('tr');
-            headerRow3.innerHTML = `<th>Assolit (4)</th>`;
+            headerRow3.innerHTML = `${Object.values(evidences).map(evidence => `<th>Assolit (4)</th>`).join('')}`;
             thead.appendChild(headerRow3);
 
             const headerRow4 = document.createElement('tr');
-            headerRow4.innerHTML = `<th>Bé (3)</th>`;
+            headerRow4.innerHTML = `${Object.values(evidences).map(evidence => `<th>Bé (3)</th>`).join('')}`;
             thead.appendChild(headerRow4);
 
             const headerRow5 = document.createElement('tr');
-            headerRow5.innerHTML = `<th>Suficient (2)</th>`;
+            headerRow5.innerHTML = `${Object.values(evidences).map(evidence => `<th>Suficient (2)</th>`).join('')}`;
             thead.appendChild(headerRow5);
 
             const headerRow6 = document.createElement('tr');
-            headerRow6.innerHTML = `<th>Insuficient (1)</th>`;
+            headerRow6.innerHTML = `${Object.values(evidences).map(evidence => `<th>Insuficient (1)</th>`).join('')}`;
             thead.appendChild(headerRow6);
 
             const headerRow7 = document.createElement('tr');
-            headerRow7.innerHTML = `<th>Evidència</th>`;
+            headerRow7.innerHTML = `${Object.values(evidences).map(evidence => `<th>Evidència</th>`).join('')}`;
             thead.appendChild(headerRow7);
 
             const headerRow8 = document.createElement('tr');
-            headerRow8.innerHTML = `<td>Activitat sumar 2+2</td>`;
+            headerRow8.innerHTML = `${Object.values(evidences).map(evidence => `<td>${evidence.nom}</td>`).join('')}`;
             thead.appendChild(headerRow8);
 
-            // Cos de la taula
+            // Cuerpo de la tabla
             const rowsData = [
                 { criteri: 'CE A', valor: 20, aconseguit: '20%', progres: '100%' },
                 { criteri: 'CE B', valor: 10, aconseguit: '5%', progres: '50%' },
@@ -72,23 +99,23 @@
             rowsData.forEach(data => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${data.criteri}</td>
-                    <td><input type="number" value="${data.valor}"></td>
-                    <td>${data.aconseguit}</td>
-                    <td>${data.progres}</td>
-                    <td><input type="number" placeholder="Nota"></td>
+                    <td class="fixed-column">${data.criteri}</td>
+                    <td class="fixed-column"><input type="number" value="${data.valor}"></td>
+                    <td class="fixed-column">${data.aconseguit}</td>
+                    <td class="fixed-column">${data.progres}</td>
+                    ${Object.values(evidences).map(evidence => `<td><input type="number" placeholder="Nota"></td>`).join('')}
                 `;
                 tbody.appendChild(row);
             });
 
-            // Peu de la taula
+            // Pie de la tabla
             const footerRow = document.createElement('tr');
             footerRow.innerHTML = `
-                <td>TOTALS</td>
-                <td><input type="number" value="100" disabled></td>
-                <td>95%</td>
-                <td>88%</td>
-                <td></td>
+                <td class="fixed-column">TOTALS</td>
+                <td class="fixed-column"><input type="number" value="100" disabled></td>
+                <td class="fixed-column">95%</td>
+                <td class="fixed-column">88%</td>
+                ${Object.values(evidences).map(() => `<td></td>`).join('')}
             `;
             tfoot.appendChild(footerRow);
 
@@ -104,27 +131,29 @@
             const bodyRows = table.querySelectorAll('tbody tr');
             const footerRow = table.querySelector('tfoot tr');
 
-            // Afegir nova columna al capçal
+            // Añadir nueva columna al encabezado
             headerRows[0].insertAdjacentHTML('beforeend', `<th>Descriptor</th>`);
             headerRows[1].insertAdjacentHTML('beforeend', `<th>Excel·lent (4)</th>`);
             headerRows[2].insertAdjacentHTML('beforeend', `<th>Assolit (4)</th>`);
             headerRows[3].insertAdjacentHTML('beforeend', `<th>Bé (3)</th>`);
-            headerRows[4].insertAdjacentHTML('beforeend', `<th>Suficient (2)</th>`);
-            headerRows[5].insertAdjacentHTML('beforeend', `<th>Insuficient (1)</th>`);
+            headerRows[4].insertAdjacentHTML('beforeend', `<th>Suficient (2)`);
+            headerRows[5].insertAdjacentHTML('beforeend', `<th>Insuficient (1)`);
             headerRows[6].insertAdjacentHTML('beforeend', `<th>Evidència</th>`);
             headerRows[7].insertAdjacentHTML('beforeend', `<td>Nova Evidència</td>`);
 
-            // Afegir inputs en cada fila del cos
+            // Añadir inputs en cada fila del cuerpo
             bodyRows.forEach(row => {
                 row.insertAdjacentHTML('beforeend', `<td><input type="number" placeholder="Nota"></td>`);
             });
 
-            // Actualitzar la fila total
+            // Actualizar la fila total
             footerRow.insertAdjacentHTML('beforeend', `<td></td>`);
         }
 
-        // Crear la taula inicialment
-        createTable();
+        // Crear la tabla inicialmente con las evidencias de la base de datos
+        fetchEvidences().then(evidences => {
+            createTable(evidences);
+        });
     </script>
 </body>
 </html>

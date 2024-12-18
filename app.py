@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, abort
 import sqlite3
 import os
 import sys
@@ -146,6 +146,15 @@ def veure_modul(id_modul):
 def veure_ra(id_ra):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+    
+    # Obtener detalles del RA
+    cursor.execute("SELECT * FROM RA WHERE id_ra = ?", (id_ra,))
+    ra = cursor.fetchone()
+    
+    if ra is None:
+        abort(404, description=f"RA con id {id_ra} no encontrado.")
+    
+    # Obtener detalles de criterios, evidencias y descriptores
     cursor.execute("""
         SELECT 
             Criteri.nom AS criteri_nom, 
@@ -171,7 +180,7 @@ def veure_ra(id_ra):
     evidencies = cursor.fetchall()
 
     conn.close()
-    return render_template('detalls_ra.html', detalls=detalls, evidencies=evidencies)
+    return render_template('detalls_ra.html', ra=ra, detalls=detalls, evidencies=evidencies)
 
 @app.route('/get_descriptors/<evidencia>')
 def get_descriptors(evidencia):
@@ -187,6 +196,44 @@ def get_descriptors(evidencia):
     descriptors = [row[0] for row in cursor.fetchall()]
     conn.close()
     return jsonify(descriptors=descriptors)
+
+@app.route('/api/evidences', methods=['GET'])
+def get_evidences():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT e.id_evidencia, e.nom, d.nom AS descriptor, d.valor
+        FROM Evidencia e
+        LEFT JOIN Evidencia_Descriptor ed ON e.id_evidencia = ed.id_evidencia
+        LEFT JOIN Descriptor d ON ed.id_descriptor = d.id_descriptor
+    """)
+    evidences = cursor.fetchall()
+
+    result = {}
+    for evidencia in evidences:
+        id_evidencia = evidencia[0]
+        nom_evidencia = evidencia[1]
+        descriptor = evidencia[2]
+        valor = evidencia[3]
+
+        if id_evidencia not in result:
+            result[id_evidencia] = {
+                'nom': nom_evidencia,
+                'descriptors': []
+            }
+        result[id_evidencia]['descriptors'].append({
+            'nom': descriptor,
+            'valor': valor
+        })
+
+    conn.close()
+    return jsonify(result)
+
+# Manejo de errores personalizados
+@app.errorhandler(404)
+def resource_not_found(e):
+    return render_template('404.html', error=e), 404
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)  # Executar l'aplicació en mode debug
