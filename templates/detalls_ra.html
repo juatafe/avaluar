@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RA - {{ ra[1] }}</title>
     <link rel="stylesheet" href="/static/style.css">
-    <style>
+    <!-- <style>
         .table-container {
             overflow-x: auto;
             white-space: nowrap;
@@ -25,7 +25,7 @@
         .fixed-column:nth-child(4) {
             left: 300px; /* Ajusta según el ancho de las tres primeras columnas */
         }
-    </style>
+    </style> -->
 </head>
 <body>
     <h1>RA - {{ ra[1] }}</h1>
@@ -61,27 +61,27 @@
             thead.appendChild(headerRow1);
 
             const headerRow2 = document.createElement('tr');
-            headerRow2.innerHTML = `${Object.values(evidences).map(evidence => `<th>Excel·lent (4)</th>`).join('')}`;
+            headerRow2.innerHTML = `${Object.values(evidences).map(evidence => `<th class="descriptor-header">Excel·lent (4)</th>`).join('')}`;
             thead.appendChild(headerRow2);
 
             const headerRow3 = document.createElement('tr');
-            headerRow3.innerHTML = `${Object.values(evidences).map(evidence => `<th>Assolit (4)</th>`).join('')}`;
+            headerRow3.innerHTML = `${Object.values(evidences).map(evidence => `<th class="descriptor-header">Assolit (4)</th>`).join('')}`;
             thead.appendChild(headerRow3);
 
             const headerRow4 = document.createElement('tr');
-            headerRow4.innerHTML = `${Object.values(evidences).map(evidence => `<th>Bé (3)</th>`).join('')}`;
+            headerRow4.innerHTML = `${Object.values(evidences).map(evidence => `<th class="descriptor-header">Bé (3)</th>`).join('')}`;
             thead.appendChild(headerRow4);
 
             const headerRow5 = document.createElement('tr');
-            headerRow5.innerHTML = `${Object.values(evidences).map(evidence => `<th>Suficient (2)</th>`).join('')}`;
+            headerRow5.innerHTML = `${Object.values(evidences).map(evidence => `<th class="descriptor-header">Suficient (2)</th>`).join('')}`;
             thead.appendChild(headerRow5);
 
             const headerRow6 = document.createElement('tr');
-            headerRow6.innerHTML = `${Object.values(evidences).map(evidence => `<th>Insuficient (1)</th>`).join('')}`;
+            headerRow6.innerHTML = `${Object.values(evidences).map(evidence => `<th class="descriptor-header">Insuficient (1)</th>`).join('')}`;
             thead.appendChild(headerRow6);
 
             const headerRow7 = document.createElement('tr');
-            headerRow7.innerHTML = `${Object.values(evidences).map(evidence => `<th>Evidència</th>`).join('')}`;
+            headerRow7.innerHTML = `${Object.values(evidences).map(evidence => `<th >Evidència</th>`).join('')}`;
             thead.appendChild(headerRow7);
 
             const headerRow8 = document.createElement('tr');
@@ -156,4 +156,7 @@
         });
     </script>
 </body>
+<footer>
+    <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens Felis</a></p>
+</footer>
 </html>

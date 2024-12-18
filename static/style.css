@@ -1,22 +1,24 @@
 /* Variables globals per colors */
 :root {
-    --primary-color: #007BFF;
-    --primary-hover-color: #0056b3;
-    --secondary-color: #6c757d;
-    --secondary-hover-color: #5a6268;
-    --background-color: rgb(116, 203, 253);
-    --text-color: white;
-    font-size: calc(0.2em + 1vw); /* Escalat segons l'ample de la pantalla */
+    --primary-color: #1d3557; /* Blau fosc */
+    --primary-hover-color: #457b9d; /* Blau més clar */
+    --secondary-color: #a8dadc; /* Verd clar */
+    --secondary-hover-color: #76c7c0; /* Verd intens */
+    --background-color: #f1faee; /* Blanc trencat */
+    --text-color: #1d3557; /* Blau fosc per a text */
+    --table-header-bg: #457b9d;
+    --table-header-text: white;
+    font-size: calc(0.2em + 1vw);
 }
 
 /* Cos general */
 body {
     font-size: 1rem;
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.6;
     letter-spacing: 0.01em;
     background-color: var(--background-color);
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -31,7 +33,7 @@ body {
     justify-content: center;
     max-width: 1200px;
     margin: auto;
-    padding: 1em;
+    padding: 1.5em;
 }
 
 /* Formularis */
@@ -42,28 +44,33 @@ form {
     width: 100%;
     max-width: 500px;
     background: white;
-    padding: 1.5em;
+    padding: 2em;
     border: 1px solid #ddd;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 0 auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 form label {
     font-weight: bold;
     margin-bottom: 0.5em;
+    color: var(--primary-color);
 }
 
-form input, form select, form button {
-    padding: 0.5em;
+form input,
+form select,
+form button {
+    padding: 0.8em;
     font-size: 1rem;
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     border-radius: 4px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s;
 }
 
-input::placeholder {
-    color: #aaa;
-    font-style: italic;
+form input:focus,
+form select:focus {
+    border-color: var(--primary-color);
+    outline: none;
 }
 
 /* Botons */
@@ -71,16 +78,18 @@ button {
     padding: 0.8em 1.5em;
     margin: 10px;
     background-color: var(--primary-color);
-    color: var(--text-color);
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.2rem;
-    transition: background-color 0.3s ease;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
 }
 
 button:hover {
     background-color: var(--primary-hover-color);
+    transform: scale(1.05);
 }
 
 .back-button {
@@ -91,16 +100,12 @@ button:hover {
     background-color: var(--secondary-hover-color);
 }
 
-/* Contenidor de botons */
-.button-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1em;
-    margin-top: 20px;
+/* Taules */
+.table-container {
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
-/* Taules */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -110,29 +115,41 @@ table {
     font-size: 1rem;
 }
 
-table th, table td {
+table th,
+table td {
     border: 1px solid #ddd;
     padding: 0.8em;
     text-align: center;
 }
 
 table th {
-    background-color: var(--primary-color);
-    color: var(--text-color);
+    background-color: var(--table-header-bg);
+    color: var(--table-header-text);
     font-weight: bold;
+    text-transform: uppercase;
 }
 
 table tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f9f9f9;
 }
 
 table tbody tr:hover {
-    background-color: #f0f0f0;
+    background-color: #e8f0ff;
+}
+
+/* Columnes fixes */
+.fixed-column {
+    position: sticky;
+    left: 0;
+    background-color: white;
+    z-index: 1;
 }
 
 /* Responsive Taules */
 @media (max-width: 768px) {
-    table, th, td {
+    table,
+    th,
+    td {
         display: block;
         width: 100%;
     }
@@ -157,30 +174,17 @@ table tbody tr:hover {
         position: absolute;
         left: 0;
         font-weight: bold;
-        color: #555;
-    }
-}
-
-/* Responsive Formularis i Botons */
-@media (max-width: 480px) {
-    form {
-        width: 100%;
-        padding: 1em;
-    }
-
-    button, .back-button {
-        width: 100%;
-        font-size: 1rem;
+        color: var(--primary-color);
     }
 }
 
 /* Footer */
 footer {
-    background-color: #f8f9fa;
+    background-color: var(--primary-color);
     padding: 10px;
     text-align: center;
-    font-size: 0.8rem;
-    color: #555;
+    font-size: 0.9rem;
+    color: white;
     border-top: 1px solid #ddd;
     width: 100%;
     position: relative;
@@ -188,7 +192,7 @@ footer {
 }
 
 footer a {
-    color: var(--primary-color);
+    color: var(--secondary-color);
     text-decoration: none;
 }
 
@@ -196,22 +200,8 @@ footer a:hover {
     text-decoration: underline;
 }
 
-/* Estilització de les capçaleres i fons gris per a similitud */
-th, tfoot td {
-    background-color: #4b4b4b; /* Gris fosc */
-    color: white;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-/* Color de les files d'evidència per destacar-les */
-tbody td:nth-child(5), tbody td:nth-child(6) {
-    background-color: #e0f4ff; /* Blau clar */
-    color: #000;
-}
-
-/* Centrat dels inputs i ajust estilístic */
-table input {
+/* Estilització d'inputs */
+input {
     width: 90%;
     text-align: center;
     border: 1px solid #ccc;
@@ -221,80 +211,24 @@ table input {
     border-radius: 4px;
 }
 
-/* Botó "Afegir" estilitzat */
-.button-container button {
-    background-color: #007BFF;
-    color: white;
-    border: 1px solid #0056b3;
-    font-size: 1rem;
-    font-weight: bold;
-    padding: 0.5em 1.5em;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.1s ease-in-out;
-}
-
-.button-container button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-/* Ajust per al text i alinear cel·les correctament */
-th, td {
-    text-align: center;
-    vertical-align: middle;
-}
-
+/* Ajust per a taules */
 tfoot td {
     font-size: 1rem;
     font-weight: bold;
-    background-color: #cccccc;
-    color: #333;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
 }
 
-/* Estils generals */
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-}
-h1 {
-    text-align: center;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-th, td {
-    border: 1px solid #ddd;
-    text-align: center;
-    padding: 8px;
-}
-th {
-    background-color: #4b4b4b;
-    color: white;
-}
-tfoot td {
+/* Estilo para las cabeceras de los descriptores */
+.descriptor-header {
+    background-color: #f0f0f0; /* Cambia este color según tus necesidades */
+    color: #333; /* Cambia este color según tus necesidades */
     font-weight: bold;
-    background-color: #e0e0e0;
 }
-input {
-    width: 90%;
-    text-align: center;
-    border: 1px solid #ccc;
-    padding: 4px;
-    border-radius: 4px;
-}
-button {
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    margin: 10px 0;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-button:hover {
-    background-color: #0056b3;
+
+/* Estilo para las cabeceras de los descriptores y evidencias */
+.descriptor-header, .evidence-header {
+    background-color: #f33232; /* Cambia este color según tus necesidades */
+    color: #333; /* Cambia este color según tus necesidades */
+    font-weight: bold;
 }
