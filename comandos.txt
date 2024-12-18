@@ -29,4 +29,6 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 
 
-sqlite3 avaluar.db < database_setup.sql
+sqlite3 avaluar.db < setup_and_inserts.sql
+
+Get-Content setup_and_inserts.sql | sqlite3 avaluar.db

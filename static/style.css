@@ -195,3 +195,59 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
+
+/* Estilització de les capçaleres i fons gris per a similitud */
+th, tfoot td {
+    background-color: #4b4b4b; /* Gris fosc */
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Color de les files d'evidència per destacar-les */
+tbody td:nth-child(5), tbody td:nth-child(6) {
+    background-color: #e0f4ff; /* Blau clar */
+    color: #000;
+}
+
+/* Centrat dels inputs i ajust estilístic */
+table input {
+    width: 90%;
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 4px;
+    font-size: 0.9rem;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+/* Botó "Afegir" estilitzat */
+.button-container button {
+    background-color: #007BFF;
+    color: white;
+    border: 1px solid #0056b3;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.5em 1.5em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease-in-out;
+}
+
+.button-container button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Ajust per al text i alinear cel·les correctament */
+th, td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+tfoot td {
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: #cccccc;
+    color: #333;
+}

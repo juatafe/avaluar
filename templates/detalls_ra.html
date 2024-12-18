@@ -4,138 +4,135 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalls RA</title>
-    <link rel="stylesheet" href="/static/style.css">
     <style>
-        .evidencia-select, .descriptor-select {
-            display: none;
+        /* Estils generals */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 8px;
+        }
+        th {
+            background-color: #4b4b4b;
+            color: white;
+        }
+        tfoot td {
+            font-weight: bold;
+            background-color: #e0e0e0;
+        }
+        input {
+            width: 90%;
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 4px;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Detalls de l'Evidència</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Evidència</th>
-                    <th>Descriptors</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for evidencia in evidencies %}
-                <tr>
-                    <td>{{ evidencia.nom }}</td>
-                    <td>
-                        <ul>
-                            {% for descriptor in evidencia.descriptors %}
-                            <li>{{ descriptor.nom }} ({{ descriptor.valor }})</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button onclick="location.href='/'" class="back-button">Tornar</button>
-    </div>
+    <h1>RA - 1</h1>
+    <button onclick="addColumn()">Afegir</button>
 
-    <footer>
-        <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens Felis</a></p>
-    </footer>
+    <table id="raTable">
+        <thead>
+            <tr>
+                <th rowspan="7">Criteris d'avaluació</th>
+                <th rowspan="7">Ponderació</th>
+                <th rowspan="7">Aconseguit</th>
+                <th rowspan="7">Progrés</th>
+                <th>Descriptor</th>
+            </tr>
+            <tr><th>Excel·lent (4)</th></tr>
+            <tr><th>Assolit (4)</th></tr>
+            <tr><th>Bé (3)</th></tr>
+            <tr><th>Suficient (2)</th></tr>
+            <tr><th>Insuficient (1)</th></tr>
+            <tr><th>Evidència</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>CE A</td>
+                <td><input type="number" value="20"></td>
+                <td>20%</td>
+                <td>100%</td>
+                <td><input type="number" placeholder="Nota"></td>
+            </tr>
+            <tr>
+                <td>CE B</td>
+                <td><input type="number" value="10"></td>
+                <td>5%</td>
+                <td>50%</td>
+                <td><input type="number" placeholder="Nota"></td>
+            </tr>
+            <tr>
+                <td>CE C</td>
+                <td><input type="number" value="20"></td>
+                <td>20%</td>
+                <td>100%</td>
+                <td><input type="number" placeholder="Nota"></td>
+            </tr>
+            <tr>
+                <td>CE D</td>
+                <td><input type="number" value="50"></td>
+                <td>50%</td>
+                <td>100%</td>
+                <td><input type="number" placeholder="Nota"></td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>TOTALS</td>
+                <td><input type="number" value="100" disabled></td>
+                <td>95%</td>
+                <td>88%</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
 
     <script>
-        document.querySelectorAll('.descriptor-text').forEach(span => {
-            span.addEventListener('click', function() {
-                const row = this.closest('tr');
-                const descriptorText = row.querySelector('.descriptor-text');
-                const descriptorSelect = row.querySelector('.descriptor-select');
-                descriptorText.style.display = 'none';
-                descriptorSelect.style.display = 'inline-block';
-                descriptorSelect.focus();
+        function addColumn() {
+            const table = document.getElementById('raTable');
+            const headerRows = table.querySelectorAll('thead tr');
+            const bodyRows = table.querySelectorAll('tbody tr');
+            const footerRow = table.querySelector('tfoot tr');
+
+            // Afegir una nova capçalera "Nova Evidència"
+            headerRows[0].insertAdjacentHTML('beforeend', `<th colspan="2">Nova Evidència</th>`);
+            headerRows[1].insertAdjacentHTML('beforeend', `<td><input type="number" placeholder="Nota"></td>`);
+
+            // Afegir inputs nous en cada fila del cos
+            bodyRows.forEach(row => {
+                row.insertAdjacentHTML('beforeend', `<td><input type="number" placeholder="Nota"></td>`);
             });
-        });
 
-        document.querySelectorAll('.descriptor-select').forEach(select => {
-            const updateText = function() {
-                const row = this.closest('tr');
-                const descriptorText = row.querySelector('.descriptor-text');
-                descriptorText.textContent = this.value;
-                this.style.display = 'none';
-                descriptorText.style.display = 'inline';
-            };
-
-            select.addEventListener('blur', updateText);
-            select.addEventListener('change', updateText);
-        });
-
-        document.querySelectorAll('.evidencia-text').forEach(span => {
-            span.addEventListener('click', function() {
-                const row = this.closest('tr');
-                const evidenciaText = row.querySelector('.evidencia-text');
-                const evidenciaSelect = row.querySelector('.evidencia-select');
-                evidenciaText.style.display = 'none';
-                evidenciaSelect.style.display = 'inline-block';
-                evidenciaSelect.focus();
-            });
-        });
-
-        document.querySelectorAll('.evidencia-select').forEach(select => {
-            const updateText = function() {
-                const row = this.closest('tr');
-                const evidenciaText = row.querySelector('.evidencia-text');
-                evidenciaText.textContent = this.value;
-                this.style.display = 'none';
-                evidenciaText.style.display = 'inline';
-
-                // Actualitzar els descriptors en funció de la evidència seleccionada
-                const descriptorSelect = row.querySelector('.descriptor-select');
-                const evidencia = this.value;
-                fetch(`/get_descriptors/${evidencia}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        descriptorSelect.innerHTML = '';
-                        data.descriptors.forEach(descriptor => {
-                            const option = document.createElement('option');
-                            option.value = descriptor;
-                            option.textContent = descriptor;
-                            descriptorSelect.appendChild(option);
-                        });
-                    });
-            };
-
-            select.addEventListener('blur', updateText);
-            select.addEventListener('change', updateText);
-        });
-
-        document.querySelectorAll('.add-evidencia-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const table = this.closest('table');
-                const rows = table.querySelectorAll('tbody tr');
-                rows.forEach(row => {
-                    const newCell = row.insertCell(-1);
-                    newCell.innerHTML = `
-                        <span class="evidencia-text"></span>
-                        <select class="evidencia-select">
-                            {% for evidencia in evidencies %}
-                            <option value="{{ evidencia[0] }}">{{ evidencia[0] }}</option>
-                            {% endfor %}
-                        </select>
-                    `;
-                });
-            });
-        });
-
-        document.querySelectorAll('.delete-evidencia-button').forEach(button => {
-            button.addEventListener('click', function() {
-                const table = this.closest('table');
-                const rows = table.querySelectorAll('tbody tr');
-                if (rows[0].cells.length > 4) {
-                    rows.forEach(row => {
-                        row.deleteCell(-1);
-                    });
-                }
-            });
-        });
+            // Afegir una cel·la buida al peu de taula
+            footerRow.insertAdjacentHTML('beforeend', `<td></td>`);
+        }
     </script>
 </body>
 </html>
