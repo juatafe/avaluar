@@ -6,7 +6,7 @@
     --secondary-hover-color: #5a6268;
     --background-color: rgb(116, 203, 253);
     --text-color: white;
-    font-size: calc(0.6em + 1vw); /* Escalat segons l'ample de la pantalla */
+    font-size: calc(0.2em + 1vw); /* Escalat segons l'ample de la pantalla */
 }
 
 /* Cos general */
@@ -250,4 +250,51 @@ tfoot td {
     font-weight: bold;
     background-color: #cccccc;
     color: #333;
+}
+
+/* Estils generals */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+h1 {
+    text-align: center;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 8px;
+}
+th {
+    background-color: #4b4b4b;
+    color: white;
+}
+tfoot td {
+    font-weight: bold;
+    background-color: #e0e0e0;
+}
+input {
+    width: 90%;
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 4px;
+    border-radius: 4px;
+}
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+button:hover {
+    background-color: #0056b3;
 }

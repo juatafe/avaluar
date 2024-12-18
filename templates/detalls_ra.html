@@ -4,135 +4,127 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalls RA</title>
-    <style>
-        /* Estils generals */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            text-align: center;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            text-align: center;
-            padding: 8px;
-        }
-        th {
-            background-color: #4b4b4b;
-            color: white;
-        }
-        tfoot td {
-            font-weight: bold;
-            background-color: #e0e0e0;
-        }
-        input {
-            width: 90%;
-            text-align: center;
-            border: 1px solid #ccc;
-            padding: 4px;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            margin: 10px 0;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <h1>RA - 1</h1>
-    <button onclick="addColumn()">Afegir</button>
+    <button onclick="addEvidence()">Afegir Evidència</button>
 
-    <table id="raTable">
-        <thead>
-            <tr>
-                <th rowspan="7">Criteris d'avaluació</th>
-                <th rowspan="7">Ponderació</th>
-                <th rowspan="7">Aconseguit</th>
-                <th rowspan="7">Progrés</th>
+    <div id="tableContainer"></div>
+
+    <script>
+        function createTable() {
+            const tableContainer = document.getElementById('tableContainer');
+            const table = document.createElement('table');
+            table.id = 'raTable';
+
+            const thead = document.createElement('thead');
+            const tbody = document.createElement('tbody');
+            const tfoot = document.createElement('tfoot');
+
+            // Capçalera de la taula
+            const headerRow1 = document.createElement('tr');
+            headerRow1.innerHTML = `
+                <th rowspan="8">Criteris d'avaluació</th>
+                <th rowspan="8">Ponderació</th>
+                <th rowspan="8">Aconseguit</th>
+                <th rowspan="8">Progrés</th>
                 <th>Descriptor</th>
-            </tr>
-            <tr><th>Excel·lent (4)</th></tr>
-            <tr><th>Assolit (4)</th></tr>
-            <tr><th>Bé (3)</th></tr>
-            <tr><th>Suficient (2)</th></tr>
-            <tr><th>Insuficient (1)</th></tr>
-            <tr><th>Evidència</th></tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>CE A</td>
-                <td><input type="number" value="20"></td>
-                <td>20%</td>
-                <td>100%</td>
-                <td><input type="number" placeholder="Nota"></td>
-            </tr>
-            <tr>
-                <td>CE B</td>
-                <td><input type="number" value="10"></td>
-                <td>5%</td>
-                <td>50%</td>
-                <td><input type="number" placeholder="Nota"></td>
-            </tr>
-            <tr>
-                <td>CE C</td>
-                <td><input type="number" value="20"></td>
-                <td>20%</td>
-                <td>100%</td>
-                <td><input type="number" placeholder="Nota"></td>
-            </tr>
-            <tr>
-                <td>CE D</td>
-                <td><input type="number" value="50"></td>
-                <td>50%</td>
-                <td>100%</td>
-                <td><input type="number" placeholder="Nota"></td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>
+            `;
+            thead.appendChild(headerRow1);
+
+            const headerRow2 = document.createElement('tr');
+            headerRow2.innerHTML = `<th>Excel·lent (4)</th>`;
+            thead.appendChild(headerRow2);
+
+            const headerRow3 = document.createElement('tr');
+            headerRow3.innerHTML = `<th>Assolit (4)</th>`;
+            thead.appendChild(headerRow3);
+
+            const headerRow4 = document.createElement('tr');
+            headerRow4.innerHTML = `<th>Bé (3)</th>`;
+            thead.appendChild(headerRow4);
+
+            const headerRow5 = document.createElement('tr');
+            headerRow5.innerHTML = `<th>Suficient (2)</th>`;
+            thead.appendChild(headerRow5);
+
+            const headerRow6 = document.createElement('tr');
+            headerRow6.innerHTML = `<th>Insuficient (1)</th>`;
+            thead.appendChild(headerRow6);
+
+            const headerRow7 = document.createElement('tr');
+            headerRow7.innerHTML = `<th>Evidència</th>`;
+            thead.appendChild(headerRow7);
+
+            const headerRow8 = document.createElement('tr');
+            headerRow8.innerHTML = `<td>Activitat sumar 2+2</td>`;
+            thead.appendChild(headerRow8);
+
+            // Cos de la taula
+            const rowsData = [
+                { criteri: 'CE A', valor: 20, aconseguit: '20%', progres: '100%' },
+                { criteri: 'CE B', valor: 10, aconseguit: '5%', progres: '50%' },
+                { criteri: 'CE C', valor: 20, aconseguit: '20%', progres: '100%' },
+                { criteri: 'CE D', valor: 50, aconseguit: '50%', progres: '100%' }
+            ];
+
+            rowsData.forEach(data => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${data.criteri}</td>
+                    <td><input type="number" value="${data.valor}"></td>
+                    <td>${data.aconseguit}</td>
+                    <td>${data.progres}</td>
+                    <td><input type="number" placeholder="Nota"></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Peu de la taula
+            const footerRow = document.createElement('tr');
+            footerRow.innerHTML = `
                 <td>TOTALS</td>
                 <td><input type="number" value="100" disabled></td>
                 <td>95%</td>
                 <td>88%</td>
                 <td></td>
-            </tr>
-        </tfoot>
-    </table>
+            `;
+            tfoot.appendChild(footerRow);
 
-    <script>
-        function addColumn() {
+            table.appendChild(thead);
+            table.appendChild(tbody);
+            table.appendChild(tfoot);
+            tableContainer.appendChild(table);
+        }
+
+        function addEvidence() {
             const table = document.getElementById('raTable');
             const headerRows = table.querySelectorAll('thead tr');
             const bodyRows = table.querySelectorAll('tbody tr');
             const footerRow = table.querySelector('tfoot tr');
 
-            // Afegir una nova capçalera "Nova Evidència"
-            headerRows[0].insertAdjacentHTML('beforeend', `<th colspan="2">Nova Evidència</th>`);
-            headerRows[1].insertAdjacentHTML('beforeend', `<td><input type="number" placeholder="Nota"></td>`);
+            // Afegir nova columna al capçal
+            headerRows[0].insertAdjacentHTML('beforeend', `<th>Descriptor</th>`);
+            headerRows[1].insertAdjacentHTML('beforeend', `<th>Excel·lent (4)</th>`);
+            headerRows[2].insertAdjacentHTML('beforeend', `<th>Assolit (4)</th>`);
+            headerRows[3].insertAdjacentHTML('beforeend', `<th>Bé (3)</th>`);
+            headerRows[4].insertAdjacentHTML('beforeend', `<th>Suficient (2)</th>`);
+            headerRows[5].insertAdjacentHTML('beforeend', `<th>Insuficient (1)</th>`);
+            headerRows[6].insertAdjacentHTML('beforeend', `<th>Evidència</th>`);
+            headerRows[7].insertAdjacentHTML('beforeend', `<td>Nova Evidència</td>`);
 
-            // Afegir inputs nous en cada fila del cos
+            // Afegir inputs en cada fila del cos
             bodyRows.forEach(row => {
                 row.insertAdjacentHTML('beforeend', `<td><input type="number" placeholder="Nota"></td>`);
             });
 
-            // Afegir una cel·la buida al peu de taula
+            // Actualitzar la fila total
             footerRow.insertAdjacentHTML('beforeend', `<td></td>`);
         }
+
+        // Crear la taula inicialment
+        createTable();
     </script>
 </body>
 </html>
