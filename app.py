@@ -189,4 +189,4 @@ def get_descriptors(evidencia):
     return jsonify(descriptors=descriptors)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)  # Canvia el port si el 5000 està ocupat
+    app.run(debug=True, port=5001)  # Executar l'aplicació en mode debug

@@ -118,8 +118,10 @@ INSERT INTO Alumne (nia, nom) VALUES (654321, 'Anna García');
 
 -- Inserir dades a la taula Descriptor
 INSERT INTO Descriptor (nom, valor) VALUES ('Excel·lent', 10.0);
+INSERT INTO Descriptor (nom, valor) VALUES ('Notable', 9.0);
 INSERT INTO Descriptor (nom, valor) VALUES ('Bé', 8.0);
 INSERT INTO Descriptor (nom, valor) VALUES ('Suficient', 6.0);
+INSERT INTO Descriptor (nom, valor) VALUES ('Insuficient', 4.0);
 
 -- Inserir dades a la relació molts a molts Modul_Alumne
 INSERT INTO Modul_Alumne (id_modul, nia) VALUES (1, 123456);
@@ -128,7 +130,10 @@ INSERT INTO Modul_Alumne (id_modul, nia) VALUES (1, 654321);
 
 -- Inserir dades a la taula Evidencia_Descriptor
 INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES (1, 1);
-INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES (2, 2);
+INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES (1, 2);
+INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES (1, 3);
+INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES (2, 4);
+INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES (2, 5);
 
 -- Inserir dades a la taula Criteri_Evidencia
 INSERT INTO Criteri_Evidencia (id_criteri, id_evidencia) VALUES (1, 1);

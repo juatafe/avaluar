@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalls del RA</title>
+    <title>Detalls RA</title>
     <link rel="stylesheet" href="/static/style.css">
     <style>
         .evidencia-select, .descriptor-select {
@@ -13,53 +13,24 @@
 </head>
 <body>
     <div class="container">
-        <h1>Detalls del Resultat d'Aprenentatge</h1>
+        <h1>Detalls de l'Evidència</h1>
         <table>
             <thead>
                 <tr>
-                    <th colspan="2"></th>
-                    <th>Descriptors</th>
-                    <th colspan="2"></th>
-                </tr>
-                {% for descriptor in descriptors %}
-                <tr>
-                    <td colspan="2"></td>
-                    <td>{{ descriptor[0] }}</td>
-                    <td colspan="2"></td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <th colspan="2"></th>
                     <th>Evidència</th>
-                    <th colspan="2"></th>
-                </tr>
-                <tr>
-                    <th>Criteri</th>
-                    <th>Ponderació</th>
-                    {% for evidencia in evidencies %}
-                    <th>{{ evidencia[0] }}</th>
-                    {% endfor %}
-                    <th>Accions</th>
+                    <th>Descriptors</th>
                 </tr>
             </thead>
             <tbody>
-                {% for detall in detalls %}
+                {% for evidencia in evidencies %}
                 <tr>
-                    <td>{{ detall[0] }}</td>
-                    <td>{{ detall[1] }}%</td>
-                    {% for evidencia in evidencies %}
+                    <td>{{ evidencia.nom }}</td>
                     <td>
-                        <span class="evidencia-text">{{ detall[2] }}</span>
-                        <select class="evidencia-select">
-                            {% for evidencia in evidencies %}
-                            <option value="{{ evidencia[0] }}">{{ evidencia[0] }}</option>
+                        <ul>
+                            {% for descriptor in evidencia.descriptors %}
+                            <li>{{ descriptor.nom }} ({{ descriptor.valor }})</li>
                             {% endfor %}
-                        </select>
-                    </td>
-                    {% endfor %}
-                    <td>
-                        <button class="add-evidencia-button">Afegir Evidència</button>
-                        <button class="delete-evidencia-button">Eliminar Evidència</button>
+                        </ul>
                     </td>
                 </tr>
                 {% endfor %}
