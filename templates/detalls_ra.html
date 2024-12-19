@@ -31,10 +31,10 @@
             // Encabezado de la tabla
             const headerRow1 = document.createElement('tr');
             headerRow1.innerHTML = `
-                <th class="fixed-column" rowspan="8">Criteris d'avaluació</th>
-                <th class="fixed-column" rowspan="8">Ponderació</th>
-                <th class="fixed-column" rowspan="8">Aconseguit</th>
-                <th class="fixed-column" rowspan="8">Progrés</th>
+                <th class="fixed-column fixed-column-1" rowspan="8">Criteris d'avaluació</th>
+                <th class="fixed-column fixed-column-2" rowspan="8">Ponderació</th>
+                <th class="fixed-column fixed-column-3" rowspan="8">Aconseguit</th>
+                <th class="fixed-column fixed-column-4" rowspan="8">Progrés</th>
                 ${Object.values(evidences).map(evidence => `<th>Descriptor</th>`).join('')}
             `;
             thead.appendChild(headerRow1);
@@ -78,10 +78,10 @@
             rowsData.forEach(data => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="fixed-column">${data.criteri}</td>
-                    <td class="fixed-column"><input type="number" value="${data.valor}"></td>
-                    <td class="fixed-column">${data.aconseguit}</td>
-                    <td class="fixed-column">${data.progres}</td>
+                    <td class="fixed-column fixed-column-1">${data.criteri}</td>
+                    <td class="fixed-column fixed-column-2"><input type="number" value="${data.valor}"></td>
+                    <td class="fixed-column fixed-column-3">${data.aconseguit}</td>
+                    <td class="fixed-column fixed-column-4">${data.progres}</td>
                     ${Object.values(evidences).map(evidence => `<td><input type="number" placeholder="Nota"></td>`).join('')}
                 `;
                 tbody.appendChild(row);

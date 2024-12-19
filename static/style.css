@@ -137,11 +137,31 @@ table tbody tr:hover {
     background-color: #e8f0ff;
 }
 
-/* Columnes fixes */
 .fixed-column {
     position: sticky;
-    left: 100%;
-    z-index: 1;
+    z-index: 2; /* Asegura que les columnes fixes estiguin per sobre de les altres */
+    box-shadow: 1px 0 2px rgba(0,0,0,0.1); /* Opcional: afegeix una ombra per a les columnes fixes */
+}
+
+.fixed-column-1 {
+    left: calc(0 * (10em + 1vw));
+}
+
+.fixed-column-2 {
+    left: calc(1 * (10em + 1vw)); /* Ajusta aquest valor segons l'amplada de la columna anterior */
+}
+
+.fixed-column-3 {
+    left: calc(2 * (10em + 1vw)); /* Ajusta aquest valor segons l'amplada de la columna anterior */
+}
+
+.fixed-column-4 {
+    left: calc(3 * (10em + 1vw)); /* Ajusta aquest valor segons l'amplada de la columna anterior */
+}
+/* Estil per a les altres columnes */
+table th,
+table td {
+    z-index: 1; /* Assegura que les altres columnes estiguin per sota de les columnes fixes */
 }
 
 /* Responsive Taules */

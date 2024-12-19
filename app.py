@@ -237,4 +237,4 @@ def resource_not_found(e):
     return render_template('404.html', error=e), 404
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5002)  # Executar l'aplicació en mode debug
+    app.run(debug=True, port=5004)  # Executar l'aplicació en mode debug
