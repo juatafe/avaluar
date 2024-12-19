@@ -5,27 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RA - {{ ra[1] }}</title>
     <link rel="stylesheet" href="/static/style.css">
-    <!-- <style>
-        .table-container {
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-        .fixed-column {
-            position: sticky;
-            left: 0;
-            background-color: white;
-            z-index: 1;
-        }
-        .fixed-column:nth-child(2) {
-            left: 100px; /* Ajusta según el ancho de la primera columna */
-        }
-        .fixed-column:nth-child(3) {
-            left: 200px; /* Ajusta según el ancho de las dos primeras columnas */
-        }
-        .fixed-column:nth-child(4) {
-            left: 300px; /* Ajusta según el ancho de las tres primeras columnas */
-        }
-    </style> -->
 </head>
 <body>
     <h1>RA - {{ ra[1] }}</h1>
@@ -52,10 +31,10 @@
             // Encabezado de la tabla
             const headerRow1 = document.createElement('tr');
             headerRow1.innerHTML = `
-                <th rowspan="8">Criteris d'avaluació</th>
-                <th rowspan="8">Ponderació</th>
-                <th rowspan="8">Aconseguit</th>
-                <th rowspan="8">Progrés</th>
+                <th class="fixed-column" rowspan="8">Criteris d'avaluació</th>
+                <th class="fixed-column" rowspan="8">Ponderació</th>
+                <th class="fixed-column" rowspan="8">Aconseguit</th>
+                <th class="fixed-column" rowspan="8">Progrés</th>
                 ${Object.values(evidences).map(evidence => `<th>Descriptor</th>`).join('')}
             `;
             thead.appendChild(headerRow1);

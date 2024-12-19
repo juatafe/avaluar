@@ -140,8 +140,7 @@ table tbody tr:hover {
 /* Columnes fixes */
 .fixed-column {
     position: sticky;
-    left: 0;
-    background-color: white;
+    left: 100%;
     z-index: 1;
 }
 
@@ -228,7 +227,7 @@ tfoot td {
 
 /* Estilo para las cabeceras de los descriptores y evidencias */
 .descriptor-header, .evidence-header {
-    background-color: #f33232; /* Cambia este color según tus necesidades */
+    background-color: #7abdf3; /* Cambia este color según tus necesidades */
     color: #333; /* Cambia este color según tus necesidades */
     font-weight: bold;
 }
