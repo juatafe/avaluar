@@ -28,7 +28,7 @@ function createTable(evidences) {
     table.innerHTML = `
         <thead>
             <tr>
-                <th>Items</th>
+                <th>Criteris</th>
                 <th>Ponderació</th>
                 <th>Aconseguit</th>
                 <th>Progrés</th>
@@ -39,12 +39,12 @@ function createTable(evidences) {
             ${criterios.map(row => `
                 <tr>
                     <td>${row.criteri}</td>
-                    <td>${row.valor}</td>
-                    <td>${row.aconseguit}</td>
-                    <td>${row.progres}</td>
+                    <td class="ponderacio">${row.valor}</td>
+                    <td class="aconseguit">${row.aconseguit}</td>
+                    <td class="progress">${row.progres}</td>
                     ${Object.values(evidences).map(evidence => `
                         <td>
-                            <select onchange="updateNote(this, ${evidence.id})">
+                            <select onchange="updateNota(this)">
                                 <option value="">Seleccionar descriptor</option>
                                 ${evidence.descriptors.map(desc => `
                                     <option value="${desc.id}" data-nota="${desc.nota}">${desc.nom}</option>
@@ -58,7 +58,10 @@ function createTable(evidences) {
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4">TOTALS</td>
+                <td>TOTALS</td>
+                <td class="total-ponderacio">0</td>
+                <td class="total-aconseguit">0</td>
+                <td class="total-progres">0</td>
                 ${Object.values(evidences).map(() => `<td><span class="evidence-total">0</span></td>`).join('')}
             </tr>
         </tfoot>
@@ -68,15 +71,17 @@ function createTable(evidences) {
     calculateTotals();
 }
 
-function updateNote(select, evidenceId) {
+function updateNota(select) {
     const selectedOption = select.options[select.selectedIndex];
     const nota = selectedOption.dataset.nota || "";
     const input = select.parentElement.querySelector('input');
     input.value = nota;
+    calculateTotals(); // Recalcular los totales cuando se actualiza una nota
 }
 
 function manualUpdate(input) {
     input.value = parseFloat(input.value) || "";
+    calculateTotals(); // Recalcular los totales cuando se actualiza manualmente una nota
 }
 
 function calculateTotals() {
@@ -84,17 +89,52 @@ function calculateTotals() {
     const rows = table.querySelectorAll('tbody tr');
     const totalsRow = table.querySelector('tfoot tr');
 
+    // Calcular els totals per cada columna d'evidències
     const totals = Array.from(totalsRow.querySelectorAll('.evidence-total'));
 
     totals.forEach((totalCell, colIndex) => {
         let sum = 0;
+        let count = 0;
         rows.forEach(row => {
             const input = row.querySelectorAll('td input')[colIndex];
-            const value = input ? parseFloat(input.value) || 0 : 0;
-            sum += value;
+            const value = input ? parseFloat(input.value) : NaN;
+            if (!isNaN(value)) {
+                sum += value;
+                count++;
+            }
         });
-        totalCell.textContent = sum.toFixed(2);
+        const average = count > 0 ? (sum / count).toFixed(2) : 0;
+        totalCell.textContent = average;
     });
+
+    // Actualitzar la columna de "Progrés" per cada criteri
+    rows.forEach(row => {
+        const inputs = row.querySelectorAll('td input');
+        let sum = 0;
+        let count = 0;
+
+        inputs.forEach(input => {
+            const select = input.previousElementSibling;
+            const value = parseFloat(input.value);
+            if (select && select.value && !isNaN(value)) {
+                sum += value;
+                count++;
+            }
+        });
+
+        const progressCell = row.querySelector('.progress');
+        const progressValue = count > 0 ? (sum / count).toFixed(2) : 0; // Mitjana de les notes
+        progressCell.textContent = progressValue; // Actualitzar la cel·la de Progrés
+    });
+
+    // Calcular els totals globals de Ponderació, Aconseguit i Progrés
+    const totalPonderacio = Array.from(rows).reduce((acc, row) => acc + (parseFloat(row.querySelector('.ponderacio').textContent) || 0), 0);
+    const totalAconseguit = Array.from(rows).reduce((acc, row) => acc + (parseFloat(row.querySelector('.aconseguit').textContent) || 0), 0);
+    const totalProgres = Array.from(rows).reduce((acc, row) => acc + (parseFloat(row.querySelector('.progress').textContent) || 0), 0);
+
+    totalsRow.querySelector('.total-ponderacio').textContent = totalPonderacio.toFixed(2);
+    totalsRow.querySelector('.total-aconseguit').textContent = totalAconseguit.toFixed(2);
+    totalsRow.querySelector('.total-progres').textContent = totalProgres.toFixed(2);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -27,6 +27,7 @@ def index():
 @app.route('/alta-entitats', methods=['GET', 'POST'])
 def alta_entitats():
     conn = sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
     cursor = conn.cursor()
     
     # Obtenir opcions de cicles, evidències i altres entitats relacionades
@@ -100,6 +101,7 @@ def alta_alumnes():
 
         # Insereix a la base de dades
         conn = sqlite3.connect(DB_PATH)
+        conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
         cursor = conn.cursor()
         cursor.execute("INSERT INTO Alumne (nia, nom) VALUES (?, ?)", (nia, nom))
         conn.commit()
@@ -115,6 +117,7 @@ def visualitzar():
         nia = request.form['nia']
         # Recuperar els mòduls associats al NIA
         conn = sqlite3.connect(DB_PATH)
+        conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
         cursor = conn.cursor()
         cursor.execute("""
             SELECT Modul.id_modul, Modul.nom
@@ -132,6 +135,7 @@ def visualitzar():
 @app.route('/modul/<int:id_modul>')
 def veure_modul(id_modul):
     conn = sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
     cursor = conn.cursor()
     cursor.execute("""
         SELECT RA.id_ra, RA.nom, RA.ponderacio
@@ -146,6 +150,7 @@ def veure_modul(id_modul):
 @app.route('/ra/<int:id_ra>')
 def veure_ra(id_ra):
     conn = sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
     cursor = conn.cursor()
     
     # Obtener detalles del RA
@@ -186,6 +191,7 @@ def veure_ra(id_ra):
 @app.route('/get_descriptors/<evidencia>')
 def get_descriptors(evidencia):
     conn = sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
     cursor = conn.cursor()
     cursor.execute("""
         SELECT Descriptor.nom
@@ -201,10 +207,11 @@ def get_descriptors(evidencia):
 @app.route('/api/evidences', methods=['GET'])
 def get_evidences():
     conn = sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT e.id_evidencia, e.nom, d.nom AS descriptor, d.valor
+        SELECT e.id_evidencia, e.nom, d.nom AS descriptor, d.nota
         FROM Evidencia e
         LEFT JOIN Evidencia_Descriptor ed ON e.id_evidencia = ed.id_evidencia
         LEFT JOIN Descriptor d ON ed.id_descriptor = d.id_descriptor
@@ -216,7 +223,7 @@ def get_evidences():
         id_evidencia = evidencia[0]
         nom_evidencia = evidencia[1]
         descriptor = evidencia[2]
-        valor = evidencia[3]
+        nota = evidencia[3]
 
         if id_evidencia not in result:
             result[id_evidencia] = {
@@ -225,7 +232,7 @@ def get_evidences():
             }
         result[id_evidencia]['descriptors'].append({
             'nom': descriptor,
-            'valor': valor
+            'nota': nota
         })
 
     conn.close()
