@@ -101,67 +101,46 @@ button:hover {
 }
 
 /* Taules */
-.table-container {
+.table-wrapper {
+    display: grid;
+    grid-template-columns: auto 1fr; /* Columna fixa + zona desplaçable */
     overflow-x: auto;
-    white-space: nowrap;
+    background-color: var(--background-color);
+    margin: 1rem 0;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-size: 1rem;
+    text-align: center;
 }
 
 table th,
 table td {
     border: 1px solid #ddd;
-    padding: 0.8em;
-    text-align: center;
+    padding: 10px;
 }
 
-table th {
+thead th {
     background-color: var(--table-header-bg);
     color: var(--table-header-text);
     font-weight: bold;
-    text-transform: uppercase;
 }
 
-table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
+tfoot td {
+    font-weight: bold;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
 }
 
-table tbody tr:hover {
-    background-color: #e8f0ff;
-}
-
-.fixed-column {
-    position: sticky;
-    z-index: 2; /* Asegura que les columnes fixes estiguin per sobre de les altres */
-    box-shadow: 1px 0 2px rgba(0,0,0,0.1); /* Opcional: afegeix una ombra per a les columnes fixes */
-}
-
-.fixed-column-1 {
-    left: calc(0 * (10em + 1vw));
-}
-
-.fixed-column-2 {
-    left: calc(1 * (10em + 1vw)); /* Ajusta aquest valor segons l'amplada de la columna anterior */
-}
-
-.fixed-column-3 {
-    left: calc(2 * (10em + 1vw)); /* Ajusta aquest valor segons l'amplada de la columna anterior */
-}
-
-.fixed-column-4 {
-    left: calc(3 * (10em + 1vw)); /* Ajusta aquest valor segons l'amplada de la columna anterior */
-}
-/* Estil per a les altres columnes */
-table th,
-table td {
-    z-index: 1; /* Assegura que les altres columnes estiguin per sota de les columnes fixes */
+/* Dropdown and input styling */
+td select,
+td input {
+    width: 90%;
+    margin: 5px auto;
+    padding: 5px;
+    font-size: 0.9em;
+    text-align: center;
 }
 
 /* Responsive Taules */
@@ -206,48 +185,4 @@ footer {
     color: white;
     border-top: 1px solid #ddd;
     width: 100%;
-    position: relative;
-    bottom: 0;
-}
-
-footer a {
-    color: var(--secondary-color);
-    text-decoration: none;
-}
-
-footer a:hover {
-    text-decoration: underline;
-}
-
-/* Estilització d'inputs */
-input {
-    width: 90%;
-    text-align: center;
-    border: 1px solid #ccc;
-    padding: 4px;
-    font-size: 0.9rem;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-}
-
-/* Ajust per a taules */
-tfoot td {
-    font-size: 1rem;
-    font-weight: bold;
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-}
-
-/* Estilo para las cabeceras de los descriptores */
-.descriptor-header {
-    background-color: #f0f0f0; /* Cambia este color según tus necesidades */
-    color: #333; /* Cambia este color según tus necesidades */
-    font-weight: bold;
-}
-
-/* Estilo para las cabeceras de los descriptores y evidencias */
-.descriptor-header, .evidence-header {
-    background-color: #7abdf3; /* Cambia este color según tus necesidades */
-    color: #333; /* Cambia este color según tus necesidades */
-    font-weight: bold;
 }
