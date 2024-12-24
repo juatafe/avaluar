@@ -6,17 +6,26 @@ import sys
 
 app = Flask(__name__)
 
-# Determinar el directori base en funció de si s'executa com a executable o codi font
-if getattr(sys, 'frozen', False):
-    # Si l'aplicació està empaquetada amb PyInstaller
-    BASE_DIR = os.path.dirname(sys.executable)
-else:
-    # Si s'executa com a codi Python
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Ruta de la base de dades
+# Determinar el directori base
+BASE_DIR = getattr(sys, 'frozen', False) and os.path.dirname(sys.executable) or os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'avaluar.db')
-print("Path de la base de dades:", DB_PATH)
+
+# Funció per establir connexió amb la base de dades
+def db_query(query, params=(), fetchone=False, fetchall=False, commit=False):
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+            cursor.execute(query, params)
+            if commit:
+                conn.commit()
+            if fetchone:
+                return cursor.fetchone()
+            if fetchall:
+                return cursor.fetchall()
+    except sqlite3.Error as e:
+        print(f"Error amb la base de dades: {e}")
+        return None
 
 # Pàgina inicial
 @app.route('/')
@@ -26,59 +35,44 @@ def index():
 # Formularis per donar d'alta entitats
 @app.route('/alta-entitats', methods=['GET', 'POST'])
 def alta_entitats():
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
-    cursor = conn.cursor()
-    
-    # Obtenir opcions de cicles, evidències i altres entitats relacionades
-    cursor.execute("SELECT id_cicle, nom FROM Cicle")
-    cicles = cursor.fetchall()
-
-    cursor.execute("SELECT id_modul, nom FROM Modul")
-    moduls = cursor.fetchall()
-
-    cursor.execute("SELECT id_evidencia, nom FROM Evidencia")
-    evidencies = cursor.fetchall()
-
-    cursor.execute("SELECT id_ra, nom FROM RA")
-    ras = cursor.fetchall()
-
-    cursor.execute("SELECT id_criteri, nom FROM Criteri")
-    criteris = cursor.fetchall()
+    cicles = db_query("SELECT id_cicle, nom FROM Cicle", fetchall=True)
+    moduls = db_query("SELECT id_modul, nom FROM Modul", fetchall=True)
+    evidencies = db_query("SELECT id, descripcio FROM Evidencia", fetchall=True)
+    ras = db_query("SELECT id_ra, nom FROM RA", fetchall=True)
+    criteris = db_query("SELECT id_criteri, descripcio FROM Criteri", fetchall=True)
 
     message = None
-
     if request.method == 'POST':
-        tipus = request.form['tipus']
-        nom = request.form['nom']
+        tipus = request.form.get('tipus')
+        nom = request.form.get('nom')
+        params = ()
+        query = ""
 
         try:
             if tipus == 'Cicle':
-                cursor.execute("INSERT INTO Cicle (nom) VALUES (?)", (nom,))
+                query, params = "INSERT INTO Cicle (nom) VALUES (?)", (nom,)
             elif tipus == 'Modul':
                 id_cicle = request.form.get('id_cicle')
-                cursor.execute("INSERT INTO Modul (nom, id_cicle) VALUES (?, ?)", (nom, id_cicle))
+                query, params = "INSERT INTO Modul (nom, id_cicle) VALUES (?, ?)", (nom, id_cicle)
             elif tipus == 'RA':
                 id_modul = request.form.get('id_modul')
-                ponderacio = request.form.get('ponderacio')
-                cursor.execute("INSERT INTO RA (nom, ponderacio, id_modul) VALUES (?, ?, ?)", (nom, ponderacio, id_modul))
+                ponderacio = request.form.get('ponderacio', 0)
+                query, params = "INSERT INTO RA (nom, ponderacio, id_modul) VALUES (?, ?, ?)", (nom, ponderacio, id_modul)
             elif tipus == 'Criteri':
                 id_ra = request.form.get('id_ra')
-                ponderacio = request.form.get('ponderacio')
-                cursor.execute("INSERT INTO Criteri (nom, ponderacio, id_ra) VALUES (?, ?, ?)", (nom, ponderacio, id_ra))
+                ponderacio = request.form.get('ponderacio', 0)
+                query, params = "INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES (?, ?, ?)", (nom, ponderacio, id_ra)
             elif tipus == 'Evidencia':
-                cursor.execute("INSERT INTO Evidencia (nom) VALUES (?)", (nom,))
-            elif tipus == 'Descriptor':
-                id_evidencia = request.form.get('id_evidencia')
-                valor = request.form.get('valor')
-                cursor.execute("INSERT INTO Descriptor (nom, valor, id_evidencia) VALUES (?, ?, ?)", (nom, valor, id_evidencia))
+                query, params = "INSERT INTO Evidencia (descripcio) VALUES (?)", (nom,)
+            
+            if query:
+                db_query(query, params, commit=True)
+                message = f"L'entitat {tipus} '{nom}' s'ha guardat correctament!"
+            else:
+                message = "Error: Tipus d'entitat desconegut."
 
-            conn.commit()
-            message = f"L'entitat {tipus} '{nom}' s'ha guardat correctament!"
         except Exception as e:
             message = f"Error al guardar l'entitat: {e}"
-        finally:
-            conn.close()
 
     return render_template(
         'alta_entitats.html',
@@ -90,158 +84,130 @@ def alta_entitats():
         message=message
     )
 
-
 # Formulari per donar d'alta alumnes
 @app.route('/alta-alumnes', methods=['GET', 'POST'])
 def alta_alumnes():
     if request.method == 'POST':
-        # Obté les dades del formulari
         nia = request.form['nia']
         nom = request.form['nom']
+        cognoms = request.form['cognoms']
 
-        # Insereix a la base de dades
-        conn = sqlite3.connect(DB_PATH)
-        conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO Alumne (nia, nom) VALUES (?, ?)", (nia, nom))
-        conn.commit()
-        conn.close()
-        return redirect(url_for('index'))
+        try:
+            db_query("INSERT INTO Alumne (nia, nom, cognoms) VALUES (?, ?, ?)", (nia, nom, cognoms), commit=True)
+            return redirect(url_for('index'))
+        except sqlite3.Error as e:
+            return render_template('alta_alumnes.html', message=f"Error: {e}")
 
     return render_template('alta_alumnes.html')
 
-# Visualitzar dades
+# Visualitzar dades d'alumnes i mòduls associats
 @app.route('/visualitzar', methods=['GET', 'POST'])
 def visualitzar():
     if request.method == 'POST':
         nia = request.form['nia']
-        # Recuperar els mòduls associats al NIA
-        conn = sqlite3.connect(DB_PATH)
-        conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT Modul.id_modul, Modul.nom
-            FROM Alumne
-            JOIN Modul_Alumne ON Alumne.nia = Modul_Alumne.nia
-            JOIN Modul ON Modul_Alumne.id_modul = Modul.id_modul
-            WHERE Alumne.nia = ?
-        """, (nia,))
-        moduls = cursor.fetchall()
-        conn.close()
-        return render_template('moduls.html', moduls=moduls, nia=nia)
+        try:
+            moduls = db_query("""
+                SELECT Modul.id_modul, Modul.nom
+                FROM Alumne
+                JOIN Modul_Alumne ON Alumne.nia = Modul_Alumne.nia
+                JOIN Modul ON Modul_Alumne.id_modul = Modul.id_modul
+                WHERE Alumne.nia = ?
+            """, (nia,), fetchall=True)
+            return render_template('moduls.html', moduls=moduls, nia=nia)
+        except sqlite3.Error as e:
+            return render_template('visualitzar.html', message=f"Error: {e}")
+
     return render_template('visualitzar.html')
 
 # Mostrar els RAs d'un mòdul
 @app.route('/modul/<int:id_modul>')
 def veure_modul(id_modul):
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
-    cursor = conn.cursor()
-    cursor.execute("""
-        SELECT RA.id_ra, RA.nom, RA.ponderacio
-        FROM RA
-        WHERE RA.id_modul = ?
-    """, (id_modul,))
-    ras = cursor.fetchall()
-    conn.close()
-    return render_template('ras.html', ras=ras, id_modul=id_modul)
+    try:
+        ras = db_query("""
+            SELECT RA.id_ra, RA.nom, RA.ponderacio
+            FROM RA
+            WHERE RA.id_modul = ?
+        """, (id_modul,), fetchall=True)
+        return render_template('ras.html', ras=ras, id_modul=id_modul)
+    except sqlite3.Error as e:
+        abort(500, description=f"Error: {e}")
 
 # Mostrar detalls d'un RA
 @app.route('/ra/<int:id_ra>')
 def veure_ra(id_ra):
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
-    cursor = conn.cursor()
-    
-    # Obtener detalles del RA
-    cursor.execute("SELECT * FROM RA WHERE id_ra = ?", (id_ra,))
-    ra = cursor.fetchone()
-    
-    if ra is None:
-        abort(404, description=f"RA con id {id_ra} no encontrado.")
-    
-    # Obtener detalles de criterios, evidencias y descriptores
-    cursor.execute("""
-        SELECT 
-            Criteri.nom AS criteri_nom, 
-            Criteri.ponderacio, 
-            Evidencia.nom AS evidencia, 
-            Descriptor.nom AS descriptor
-        FROM 
-            Criteri
-        JOIN 
-            Criteri_Evidencia ON Criteri.id_criteri = Criteri_Evidencia.id_criteri
-        JOIN 
-            Evidencia ON Criteri_Evidencia.id_evidencia = Evidencia.id_evidencia
-        LEFT JOIN 
-            Evidencia_Descriptor ON Evidencia.id_evidencia = Evidencia_Descriptor.id_evidencia
-        LEFT JOIN 
-            Descriptor ON Evidencia_Descriptor.id_descriptor = Descriptor.id_descriptor
-        WHERE 
-            Criteri.id_ra = ?
-    """, (id_ra,))
-    detalls = cursor.fetchall()
+    try:
+        ra = db_query("SELECT * FROM RA WHERE id_ra = ?", (id_ra,), fetchone=True)
+        if ra is None:
+            abort(404, description=f"RA amb id {id_ra} no trobat.")
 
-    cursor.execute("SELECT nom FROM Evidencia")
-    evidencies = cursor.fetchall()
+        detalls = db_query("""
+            SELECT 
+                Criteri.descripcio AS criteri_descripcio, 
+                Evidencia.descripcio AS evidencia_descripcio, 
+                Alumne.nom AS alumne_nom, 
+                Alumne.cognoms AS alumne_cognoms, 
+                Descriptor.nom AS descriptor_nom, 
+                Descriptor.valor AS descriptor_valor
+            FROM 
+                Criteri_Alumne_Evidencia
+            JOIN Criteri ON Criteri_Alumne_Evidencia.id_criteri = Criteri.id_criteri
+            JOIN Evidencia ON Criteri_Alumne_Evidencia.id_evidencia = Evidencia.id
+            JOIN Alumne ON Criteri_Alumne_Evidencia.nia = Alumne.nia
+            JOIN Evidencia_Descriptor ON Evidencia.id = Evidencia_Descriptor.id_evidencia
+            JOIN Descriptor ON Evidencia_Descriptor.id_descriptor = Descriptor.id
+            WHERE 
+                Criteri.id_ra = ?
+        """, (id_ra,), fetchall=True)
+        return render_template('detalls_ra.html', ra=ra, detalls=detalls)
+    except sqlite3.Error as e:
+        abort(500, description=f"Error: {e}")
 
-    conn.close()
-    return render_template('detalls_ra.html', ra=ra, detalls=detalls, evidencies=evidencies)
-
+# Obtenir descriptors per evidència (API)
 @app.route('/get_descriptors/<evidencia>')
 def get_descriptors(evidencia):
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
-    cursor = conn.cursor()
-    cursor.execute("""
+    descriptors = db_query("""
         SELECT Descriptor.nom
         FROM Descriptor
-        JOIN Evidencia_Descriptor ON Descriptor.id_descriptor = Evidencia_Descriptor.id_descriptor
-        JOIN Evidencia ON Evidencia_Descriptor.id_evidencia = Evidencia.id_evidencia
-        WHERE Evidencia.nom = ?
-    """, (evidencia,))
-    descriptors = [row[0] for row in cursor.fetchall()]
-    conn.close()
-    return jsonify(descriptors=descriptors)
+        JOIN Evidencia_Descriptor ON Descriptor.id = Evidencia_Descriptor.id_descriptor
+        JOIN Evidencia ON Evidencia_Descriptor.id_evidencia = Evidencia.id
+        WHERE Evidencia.descripcio = ?
+    """, (evidencia,), fetchall=True)
+    return jsonify(descriptors=[row['nom'] for row in descriptors])
 
+# API: Obtenir evidències
 @app.route('/api/evidences', methods=['GET'])
 def get_evidences():
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("PRAGMA encoding = 'UTF-8';")  # Estableix UTF-8
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT e.id_evidencia, e.nom, d.nom AS descriptor, d.nota
+    evidences = db_query("""
+        SELECT e.id, e.descripcio, d.nom AS descriptor, d.valor
         FROM Evidencia e
-        LEFT JOIN Evidencia_Descriptor ed ON e.id_evidencia = ed.id_evidencia
-        LEFT JOIN Descriptor d ON ed.id_descriptor = d.id_descriptor
-    """)
-    evidences = cursor.fetchall()
+        LEFT JOIN Evidencia_Descriptor ed ON e.id = ed.id_evidencia
+        LEFT JOIN Descriptor d ON ed.id_descriptor = d.id
+    """, fetchall=True)
 
     result = {}
     for evidencia in evidences:
-        id_evidencia = evidencia[0]
-        nom_evidencia = evidencia[1]
-        descriptor = evidencia[2]
-        nota = evidencia[3]
+        id_evidencia = evidencia['id']
+        nom_evidencia = evidencia['descripcio']
+        descriptor = evidencia['descriptor']
+        valor = evidencia['valor']
 
         if id_evidencia not in result:
             result[id_evidencia] = {
                 'nom': nom_evidencia,
                 'descriptors': []
             }
-        result[id_evidencia]['descriptors'].append({
-            'nom': descriptor,
-            'nota': nota
-        })
+        if descriptor and valor is not None:
+            result[id_evidencia]['descriptors'].append({
+                'nom': descriptor,
+                'valor': valor
+            })
 
-    conn.close()
     return jsonify(result)
 
-# Manejo de errores personalizados
+# Manejo d'errors personalitzats
 @app.errorhandler(404)
 def resource_not_found(e):
     return render_template('404.html', error=e), 404
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5004)  # Executar l'aplicació en mode debug
+    app.run(debug=True, port=5004)

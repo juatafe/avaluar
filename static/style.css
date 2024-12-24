@@ -186,3 +186,8 @@ footer {
     border-top: 1px solid #ddd;
     width: 100%;
 }
+
+.no-descriptor {
+    color: #888; /* Gris claro */
+    font-style: italic;
+}

@@ -27,26 +27,26 @@ CREATE TABLE Cicle (
 CREATE TABLE Modul (
     id_modul INTEGER PRIMARY KEY AUTOINCREMENT,
     nom VARCHAR(255) NOT NULL,
-    id_cicle INT NOT NULL,
-    FOREIGN KEY (id_cicle) REFERENCES Cicle(id_cicle) ON DELETE CASCADE
+    id_cicle INTEGER,
+    FOREIGN KEY (id_cicle) REFERENCES Cicle(id_cicle)
 );
 
 -- Crear taula RA
 CREATE TABLE RA (
     id_ra INTEGER PRIMARY KEY AUTOINCREMENT,
     nom VARCHAR(255) NOT NULL,
-    ponderacio DECIMAL(5, 2) NOT NULL CHECK (ponderacio >= 0 AND ponderacio <= 100),
-    id_modul INT NOT NULL,
-    FOREIGN KEY (id_modul) REFERENCES Modul(id_modul) ON DELETE CASCADE
+    ponderacio REAL NOT NULL,
+    id_modul INTEGER,
+    FOREIGN KEY (id_modul) REFERENCES Modul(id_modul)
 );
 
 -- Crear taula Criteri
 CREATE TABLE Criteri (
     id_criteri INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom VARCHAR(255) NOT NULL,
-    ponderacio DECIMAL(5, 2) NOT NULL CHECK (ponderacio >= 0 AND ponderacio <= 100),
-    id_ra INT NOT NULL,
-    FOREIGN KEY (id_ra) REFERENCES RA(id_ra) ON DELETE CASCADE
+    descripcio TEXT NOT NULL,
+    ponderacio REAL NOT NULL,
+    id_ra INTEGER,
+    FOREIGN KEY (id_ra) REFERENCES RA(id_ra)
 );
 
 -- Crear taula Alumne
@@ -56,73 +56,63 @@ CREATE TABLE Alumne (
     cognoms TEXT NOT NULL
 );
 
--- Crear taula Mòdul_Alumne per associar alumnes amb mòduls
+-- Crear taula Modul_Alumne
 CREATE TABLE Modul_Alumne (
-    id_modul INT NOT NULL,
-    nia INTEGER NOT NULL,
+    id_modul INTEGER,
+    nia INTEGER,
     PRIMARY KEY (id_modul, nia),
-    FOREIGN KEY (id_modul) REFERENCES Modul(id_modul) ON DELETE CASCADE,
-    FOREIGN KEY (nia) REFERENCES Alumne(nia) ON DELETE CASCADE
+    FOREIGN KEY (id_modul) REFERENCES Modul(id_modul),
+    FOREIGN KEY (nia) REFERENCES Alumne(nia)
 );
 
 -- Crear taula Evidencia
 CREATE TABLE Evidencia (
-    id_evidencia INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     descripcio TEXT NOT NULL
 );
 
--- Crear taula Descriptor (ara amb la columna 'nota')
+-- Crear taula Descriptor
 CREATE TABLE Descriptor (
-    id_descriptor INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     nom TEXT NOT NULL,
     valor REAL NOT NULL
 );
 
--- Crear taula Evidencia_Descriptor (noms per relacionar Evidencia amb Descriptor)
+-- Crear taula Evidencia_Descriptor
 CREATE TABLE Evidencia_Descriptor (
-    id_evidencia INT NOT NULL,
-    id_descriptor INT NOT NULL,
+    id_evidencia INTEGER,
+    id_descriptor INTEGER,
     PRIMARY KEY (id_evidencia, id_descriptor),
-    FOREIGN KEY (id_evidencia) REFERENCES Evidencia(id_evidencia) ON DELETE CASCADE,
-    FOREIGN KEY (id_descriptor) REFERENCES Descriptor(id_descriptor) ON DELETE CASCADE
+    FOREIGN KEY (id_evidencia) REFERENCES Evidencia(id),
+    FOREIGN KEY (id_descriptor) REFERENCES Descriptor(id)
 );
 
 -- Crear taula Criteri_Alumne_Evidencia
 CREATE TABLE Criteri_Alumne_Evidencia (
-    id_criteri INT NOT NULL,
-    id_alumne INT NOT NULL,
-    id_evidencia INT NOT NULL,
-    id_descriptor INT NOT NULL,
-    PRIMARY KEY (id_criteri, id_alumne, id_evidencia, id_descriptor),
-    FOREIGN KEY (id_criteri) REFERENCES Criteri(id_criteri) ON DELETE CASCADE,
-    FOREIGN KEY (id_alumne) REFERENCES Alumne(nia) ON DELETE CASCADE,
-    FOREIGN KEY (id_evidencia) REFERENCES Evidencia(id_evidencia) ON DELETE CASCADE,
-    FOREIGN KEY (id_descriptor) REFERENCES Descriptor(id_descriptor) ON DELETE CASCADE
+    id_criteri INTEGER,
+    id_evidencia INTEGER,
+    nia INTEGER,
+    PRIMARY KEY (id_criteri, id_evidencia, nia),
+    FOREIGN KEY (id_criteri) REFERENCES Criteri(id_criteri),
+    FOREIGN KEY (id_evidencia) REFERENCES Evidencia(id),
+    FOREIGN KEY (nia) REFERENCES Alumne(nia)
 );
 
 -- Inserir dades a la taula Cicle
-INSERT INTO Cicle (nom) VALUES 
-    ('ASIX'), 
-    ('DAW'), 
-    ('DAM');
+INSERT INTO Cicle (nom) VALUES ('ASIX');
+INSERT INTO Cicle (nom) VALUES ('Cicle 2');
 
 -- Inserir dades a la taula Modul
-INSERT INTO Modul (nom, id_cicle) VALUES 
-    ('M01', 1), ('M02', 1), ('M03', 1),
-    ('M01', 2), ('M02', 2), ('M03', 2),
-    ('M01', 3), ('M02', 3), ('M03', 3);
+INSERT INTO Modul (nom, id_cicle) VALUES ('Fonaments Hardware', 1);
+INSERT INTO Modul (nom, id_cicle) VALUES ('XAL', 2);
 
 -- Inserir dades a la taula RA
-INSERT INTO RA (nom, ponderacio, id_modul) VALUES 
-    ('RA1', 20.00, 1), ('RA2', 30.00, 1), ('RA3', 50.00, 1),
-    ('RA1', 25.00, 2), ('RA2', 35.00, 2), ('RA3', 40.00, 2),
-    ('RA1', 15.00, 3), ('RA2', 45.00, 3), ('RA3', 40.00, 3);
+INSERT INTO RA (nom, ponderacio, id_modul) VALUES ('RA 1', 0.5, 1);
+INSERT INTO RA (nom, ponderacio, id_modul) VALUES ('RA 2', 0.5, 2);
 
 -- Inserir dades a la taula Criteri
-INSERT INTO Criteri (nom, ponderacio, id_ra) VALUES 
-    ('CE A', 10.00, 1), ('CE B', 20.00, 1), ('CE C', 30.00, 1),
-    ('CE A', 15.00, 2), ('CE B', 25.00, 2), ('CE C', 35.00, 2),
-    ('CE A', 20.00, 3), ('CE B', 30.00, 3), ('CE C', 40.00, 3);
+INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 1', 0.3, 1);
+INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 2', 0.7, 2);
 
 -- Inserir dades a la taula Alumne
 INSERT INTO Alumne (nia, nom, cognoms) VALUES (123456, 'Joan', 'Garcia');
@@ -139,13 +129,26 @@ INSERT INTO Modul_Alumne (id_modul, nia) VALUES (1, 654321);
 -- Inserir dades a la taula Evidencia
 INSERT INTO Evidencia (descripcio) VALUES ('Examen 1');
 INSERT INTO Evidencia (descripcio) VALUES ('Projecte 1');
+INSERT INTO Evidencia (descripcio) VALUES ('Observació 1');
+INSERT INTO Evidencia (descripcio) VALUES ('Treball 1');
+INSERT INTO Evidencia (descripcio) VALUES ('Pregunta 3');
+INSERT INTO Evidencia (descripcio) VALUES ('Mapa Conceptual 1');
 
--- Inserir dades a la taula Descriptor (ara incloent 'nota')
+-- Inserir dades a la taula Descriptor
 INSERT INTO Descriptor (nom, valor) VALUES ('Excel·lent', 10.0);
 INSERT INTO Descriptor (nom, valor) VALUES ('Notable', 9.0);
 INSERT INTO Descriptor (nom, valor) VALUES ('Bé', 8.0);
 INSERT INTO Descriptor (nom, valor) VALUES ('Suficient', 6.0);
 INSERT INTO Descriptor (nom, valor) VALUES ('Insuficient', 4.0);
+INSERT INTO Descriptor (nom, valor) VALUES ('Assolit', 10);
+INSERT INTO Descriptor (nom, valor) VALUES ('No assolit', 0);
+INSERT INTO Descriptor (nom, valor) VALUES ('Superat', 10);
+INSERT INTO Descriptor (nom, valor) VALUES ('No superat', 0);
+INSERT INTO Descriptor (nom, valor) VALUES ('Aprovat', 5);
+INSERT INTO Descriptor (nom, valor) VALUES ('No aprovat', 0);
+INSERT INTO Descriptor (nom, valor) VALUES ('Aprovat amb nota', 7);
+INSERT INTO Descriptor (nom, valor) VALUES ('No aprovat amb nota', 4);
+INSERT INTO Descriptor (nom, valor) VALUES ('Aprovat amb excel·lència', 9);
 
 -- Inserir dades a la taula Evidencia_Descriptor
 INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES 
@@ -154,7 +157,7 @@ INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES
     (3, 8), (3, 9),
     (4, 10), (4, 11);
 
--- Inserir dades a la taula Criteri_Evidencia
-INSERT INTO Criteri_Evidencia (id_criteri, id_evidencia) VALUES (1, 1);
-INSERT INTO Criteri_Evidencia (id_criteri, id_evidencia) VALUES (1, 2);
-INSERT INTO Criteri_Evidencia (id_criteri, id_evidencia) VALUES (2, 1);
+-- Inserir dades a la taula Criteri_Alumne_Evidencia
+INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia) VALUES (1, 1, 123456);
+INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia) VALUES (1, 2, 123456);
+INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia) VALUES (2, 1, 654321);
