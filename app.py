@@ -239,18 +239,24 @@ def veure_modul(id_modul):
                 RA.id_ra,
                 RA.nom,
                 RA.ponderacio,
-                COALESCE(SUM(CASE 
-                             WHEN CAE.valor IS NOT NULL AND CAE.valor > 0 THEN CAE.valor
-                             ELSE 0
-                         END) / COUNT(CASE 
-                                          WHEN CAE.valor IS NOT NULL THEN 1 
-                                          ELSE NULL 
-                                      END), 0) AS progress,
-                COALESCE(SUM(CASE 
-                             WHEN CAE.valor IS NOT NULL AND CAE.valor > 0 THEN 
-                                 (CAE.valor * RA.ponderacio / 100) 
-                             ELSE 0
-                         END), 0) AS aconseguit,
+                COALESCE(
+                    SUM(
+                        CASE 
+                            WHEN CAE.valor IS NOT NULL THEN (CAE.valor * Criteri.ponderacio / 100)
+                            ELSE 0 
+                        END
+                    ) / NULLIF(SUM(Criteri.ponderacio), 0),
+                    0
+                ) AS progress, -- Valor ponderat basat en la ponderació dels criteris
+                COALESCE(
+                    SUM(
+                        CASE 
+                            WHEN CAE.valor IS NOT NULL THEN (CAE.valor * RA.ponderacio / 100)
+                            ELSE 0 
+                        END
+                    ),
+                    0
+                ) AS aconseguit, -- Valor ponderat amb la ponderació del RA
                 DATE(MAX(CAE.data)) AS ultima_data
             FROM RA
             LEFT JOIN Criteri ON RA.id_ra = Criteri.id_ra
@@ -260,15 +266,12 @@ def veure_modul(id_modul):
         """, (id_modul,), fetchall=True)
 
         print("Resultats retornats pel backend:", ras)  # Depuració
-        # Converteix les dades retornades a un format llegible
         ras_llegible = [dict(row) for row in ras]
         print("Resultats llegibles retornats pel backend:", ras_llegible)  # Depuració detallada
-
 
         return render_template('ras.html', ras=ras, id_modul=id_modul)
     except sqlite3.Error as e:
         abort(500, description=f"Error: {e}")
-
 
 @app.route('/update-detalls-ra', methods=['POST'])
 def update_detalls_ra():

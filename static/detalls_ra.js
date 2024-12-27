@@ -82,158 +82,158 @@ function updateNota(select) {
     }
 } */
 
-    async function guardarDetalls() {
-        const rows = document.querySelectorAll('.table-wrapper table tbody tr');
-        const detalls = Array.from(rows).flatMap(processRow);
-    
-        if (detalls.length === 0) {
-            alert('No hi ha dades vàlides per desar.');
-            return;
-        }
-    
-        console.log('Dades a enviar al servidor:', detalls); // Afegir per depuració
-    
-        try {
-            const response = await fetch('/update-detalls-ra', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ detalls }), // Converteix a JSON
-            });
-    
-            console.log('Resposta del servidor:', response);
-    
-            if (!response.ok) {
-                throw new Error(`Error del servidor: ${response.status}`);
-            }
-    
-            const result = await response.json();
-            console.log('Resultat del servidor:', result);
-    
-            if (!result.success) throw new Error(result.error);
-            alert('Dades desades correctament!');
-        } catch (error) {
-            console.error('Error desant els detalls:', error);
-            alert('Error desant els detalls.');
-        }
+async function guardarDetalls() {
+    const rows = document.querySelectorAll('.table-wrapper table tbody tr');
+    const detalls = Array.from(rows).flatMap(processRow);
+
+    if (detalls.length === 0) {
+        alert('No hi ha dades vàlides per desar.');
+        return;
     }
-    
-    
-    function calculateTotals() {
-        const table = document.querySelector('.table-wrapper table');
-        if (!table) {
-            console.error("Error: No s'ha trobat la taula.");
-            return;
-        }
-    
-        const rows = table.querySelectorAll('tbody tr');
-        if (rows.length === 0) {
-            console.error("Error: No hi ha files al cos de la taula.");
-            return;
-        }
-    
-        const totalsRow = table.querySelector('tfoot tr');
-        if (!totalsRow) {
-            console.error("Error: No s'ha trobat la fila de totals.");
-            return;
-        }
-    
-        // Calcular els totals per cada columna d'evidències
-        const totals = Array.from(totalsRow.querySelectorAll('.evidence-total'));
-        totals.forEach((totalCell, colIndex) => {
-            let sum = 0;
-            let count = 0;
-    
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                const cell = cells[colIndex + 4]; // Ajust per saltar les primeres 4 columnes (Criteri, Ponderació, etc.)
-    
-                if (cell) {
-                    const input = cell.querySelector('input');
-                    const select = cell.querySelector('select');
-                    const value = input ? parseFloat(input.value) || 0 : 0;
-    
-                    if (select && select.value && !isNaN(value)) {
-                        sum += value;
-                        count++;
-                    }
-                }
-            });
-    
-            const average = count > 0 ? (sum / count).toFixed(2) : 0;
-            totalCell.textContent = average;
+
+    console.log('Dades a enviar al servidor:', detalls); // Afegir per depuració
+
+    try {
+        const response = await fetch('/update-detalls-ra', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ detalls }), // Converteix a JSON
         });
-    
-        // Actualitzar la columna de "Progrés" i "Aconseguit" per cada criteri
+
+        console.log('Resposta del servidor:', response);
+
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('Resultat del servidor:', result);
+
+        if (!result.success) throw new Error(result.error);
+        alert('Dades desades correctament!');
+    } catch (error) {
+        console.error('Error desant els detalls:', error);
+        alert('Error desant els detalls.');
+    }
+}
+
+
+function calculateTotals() {
+    const table = document.querySelector('.table-wrapper table');
+    if (!table) {
+        console.error("Error: No s'ha trobat la taula.");
+        return;
+    }
+
+    const rows = table.querySelectorAll('tbody tr');
+    if (rows.length === 0) {
+        console.error("Error: No hi ha files al cos de la taula.");
+        return;
+    }
+
+    const totalsRow = table.querySelector('tfoot tr');
+    if (!totalsRow) {
+        console.error("Error: No s'ha trobat la fila de totals.");
+        return;
+    }
+
+    // Calcular els totals per cada columna d'evidències
+    const totals = Array.from(totalsRow.querySelectorAll('.evidence-total'));
+    totals.forEach((totalCell, colIndex) => {
+        let sum = 0;
+        let count = 0;
+
         rows.forEach(row => {
-            const ponderacio = parseFloat(row.querySelector('.ponderacio').value) || 0;
-            const inputs = row.querySelectorAll('td input');
-            let sum = 0;
-            let count = 0;
-    
-            inputs.forEach(input => {
-                const value = parseFloat(input.value);
-                const select = input.parentElement.querySelector('select');
-                if (!isNaN(value) && select && select.value) {
+            const cells = row.querySelectorAll('td');
+            const cell = cells[colIndex + 4]; // Ajust per saltar les primeres 4 columnes (Criteri, Ponderació, etc.)
+
+            if (cell) {
+                const input = cell.querySelector('input');
+                const select = cell.querySelector('select');
+                const value = input ? parseFloat(input.value) || 0 : 0;
+
+                if (select && select.value && !isNaN(value)) {
                     sum += value;
                     count++;
                 }
-            });
-    
-            const progressCell = row.querySelector('.progress');
-            const aconseguitCell = row.querySelector('.aconseguit');
-            const progressValue = count > 0 ? (sum / count).toFixed(2) : 0;
-            const aconseguitValue = (ponderacio * (progressValue / 100)).toFixed(2);
-    
-            progressCell.textContent = progressValue;
-            aconseguitCell.textContent = aconseguitValue;
+            }
         });
-    
-        // Calcular els totals globals de Ponderació, Aconseguit i Progrés
-        const totalPonderacio = Array.from(rows).reduce((acc, row) => acc + (parseFloat(row.querySelector('.ponderacio').value) || 0), 0);
-        const totalAconseguit = Array.from(rows).reduce((acc, row) => acc + (parseFloat(row.querySelector('.aconseguit').textContent) || 0), 0);
-    
-        const totalProgres = Array.from(rows).reduce(
-            (acc, row) => {
-                const progressCell = row.querySelector('.progress');
-                const progressValue = progressCell ? parseFloat(progressCell.textContent) || 0 : 0;
-    
-                const hasValidEvidence = Array.from(row.querySelectorAll('td')).some(cell => {
-                    const input = cell.querySelector('input');
-                    const select = cell.querySelector('select');
-                    const value = input ? parseFloat(input.value) || 0 : 0;
-                    return select && select.value && value > 0;
-                });
-    
-                if (hasValidEvidence) {
-                    acc.sum += progressValue;
-                    acc.count++;
-                }
-                return acc;
-            },
-            { sum: 0, count: 0 }
-        );
-    
-        const totalProgresAverage = totalProgres.count > 0
-            ? (totalProgres.sum / totalProgres.count).toFixed(2)
-            : 0;
-    
-        totalsRow.querySelector('.total-ponderacio').textContent = totalPonderacio.toFixed(2);
-        totalsRow.querySelector('.total-aconseguit').textContent = totalAconseguit.toFixed(2);
-        totalsRow.querySelector('.total-progres').textContent = totalProgresAverage;
-    }
-    
+
+        const average = count > 0 ? (sum / count).toFixed(2) : 0;
+        totalCell.textContent = average;
+    });
+
+    // Actualitzar la columna de "Progrés" i "Aconseguit" per cada criteri
+    rows.forEach(row => {
+        const ponderacio = parseFloat(row.querySelector('.ponderacio').value) || 0;
+        const inputs = row.querySelectorAll('td input');
+        let sum = 0;
+        let count = 0;
+
+        inputs.forEach(input => {
+            const value = parseFloat(input.value);
+            const select = input.parentElement.querySelector('select');
+            if (!isNaN(value) && select && select.value) {
+                sum += value;
+                count++;
+            }
+        });
+
+        const progressCell = row.querySelector('.progress');
+        const aconseguitCell = row.querySelector('.aconseguit');
+        const progressValue = count > 0 ? (sum / count).toFixed(2) : 0;
+        const aconseguitValue = (ponderacio * (progressValue / 100)).toFixed(2);
+
+        progressCell.textContent = progressValue;
+        aconseguitCell.textContent = aconseguitValue;
+    });
+
+    // Calcular els totals globals de Ponderació, Aconseguit i Progrés
+    const totalPonderacio = Array.from(rows).reduce((acc, row) => acc + (parseFloat(row.querySelector('.ponderacio').value) || 0), 0);
+    const totalAconseguit = Array.from(rows).reduce((acc, row) => acc + (parseFloat(row.querySelector('.aconseguit').textContent) || 0), 0);
+
+    const totalProgres = Array.from(rows).reduce(
+        (acc, row) => {
+            const progressCell = row.querySelector('.progress');
+            const progressValue = progressCell ? parseFloat(progressCell.textContent) || 0 : 0;
+
+            const hasValidEvidence = Array.from(row.querySelectorAll('td')).some(cell => {
+                const input = cell.querySelector('input');
+                const select = cell.querySelector('select');
+                const value = input ? parseFloat(input.value) || 0 : 0;
+                return select && select.value && value > 0;
+            });
+
+            if (hasValidEvidence) {
+                acc.sum += progressValue;
+                acc.count++;
+            }
+            return acc;
+        },
+        { sum: 0, count: 0 }
+    );
+
+    const totalProgresAverage = totalProgres.count > 0
+        ? (totalProgres.sum / totalProgres.count).toFixed(2)
+        : 0;
+
+    totalsRow.querySelector('.total-ponderacio').textContent = totalPonderacio.toFixed(2);
+    totalsRow.querySelector('.total-aconseguit').textContent = totalAconseguit.toFixed(2);
+    totalsRow.querySelector('.total-progres').textContent = totalProgresAverage;
+}
 
 
-    function createTable(evidences, savedData = []) {
-        const tableWrapper = document.querySelector('.table-wrapper');
-        tableWrapper.innerHTML = '';
-    
-        const criterios = [
-            { criteri: 'Criteri 1', valor: 20, aconseguit: 0, progres: 0, id_criteri: 1, nia: 123456 }
-        ];
-    
-        const table = document.createElement('table');
-        table.innerHTML = `
+
+function createTable(evidences, savedData = []) {
+    const tableWrapper = document.querySelector('.table-wrapper');
+    tableWrapper.innerHTML = '';
+
+    const criterios = [
+        { criteri: 'Criteri 1', valor: 20, aconseguit: 0, progres: 0, id_criteri: 1, nia: 123456 }
+    ];
+
+    const table = document.createElement('table');
+    table.innerHTML = `
             <thead>
                 <tr>
                     <th>Criteris</th>
@@ -251,22 +251,23 @@ function updateNota(select) {
                         <td class="aconseguit">${row.aconseguit.toFixed(2)}</td>
                         <td class="progress">${row.progres}</td>
                         ${evidences.map(evidence => {
-                            const savedValue = savedData.find(
-                                d => d.id_criteri == row.id_criteri && d.id_evidencia == evidence.id
-                            )?.valor || 0;
-    
-                            return `
+        const savedValue = savedData.find(
+            d => d.id_criteri == row.id_criteri && d.id_evidencia == evidence.id
+        )?.valor || 0;
+
+        return `
                                 <td data-id-evidencia="${evidence.id}">
                                     ${evidence.descriptors && evidence.descriptors.length > 0 ? `
-                                        <select onchange="updateNota(this)">
-                                            <option value="">Seleccionar descriptor</option>
-                                            ${evidence.descriptors.map(desc => `
-                                                <option value="${desc.nom}" data-nota="${desc.valor}" ${desc.valor == savedValue ? 'selected' : ''}>
-                                                    ${desc.nom}
-                                                </option>
-                                            `).join('')}
-                                        </select>
-                                    ` : `<span class="no-descriptor">Sense descripció</span>`}
+    <select onchange="updateNota(this)">
+        <option value="" ${!savedValue ? 'selected' : ''}>Seleccionar descriptor</option>
+        ${evidence.descriptors.map(desc => `
+            <option value="${desc.nom}" data-nota="${desc.valor}" ${savedValue && desc.valor == savedValue ? 'selected' : ''}>
+                ${desc.nom}
+            </option>
+        `).join('')}
+    </select>
+` : `<span class="no-descriptor">Sense descripció</span>`}
+
                                     <input 
                                         type="number" 
                                         min="0" 
@@ -277,7 +278,7 @@ function updateNota(select) {
                                     >
                                 </td>
                             `;
-                        }).join('')}
+    }).join('')}
                     </tr>
                 `).join('')}
             </tbody>
@@ -291,13 +292,13 @@ function updateNota(select) {
                 </tr>
             </tfoot>
         `;
-    
-        tableWrapper.appendChild(table);
-    
-        // Recalcular els totals després de generar la taula
-        calculateTotals();
-    }
-    
+
+    tableWrapper.appendChild(table);
+
+    // Recalcular els totals després de generar la taula
+    calculateTotals();
+}
+
 
 
 // Funció per inicialitzar la pàgina
@@ -320,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(([evidences, savedData]) => {
             console.log('Evidències carregades:', evidences);
             console.log('Dades desades carregades:', savedData);
-            
+
             createTable(evidences, savedData.detalls || []);
         })
         .catch(error => {
