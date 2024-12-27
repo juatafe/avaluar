@@ -32,3 +32,8 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 sqlite3 avaluar.db < setup_and_inserts.sql
 
 Get-Content setup_and_inserts.sql | sqlite3 avaluar.db
+
+
+
+sudo lsof -i :5002
+sudo kill -9 PID

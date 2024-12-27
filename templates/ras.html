@@ -3,35 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resultats d'Aprenentatge</title>
+    <title>RAs</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Resultats d'Aprenentatge</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nom</th>
-                    <th>Ponderació</th>
-                    <th>Acció</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ra in ras %}
+        <h1>RAs</h1>
+        <div class="table-wrapper">
+            <table>
+                <thead>
                     <tr>
-                        <td>{{ ra[1] }}</td>
-                        <td>{{ ra[2] }}%</td>
-                        <td><a href="/ra/{{ ra[0] }}" class="action-link">Detalls</a></td>
+                        <th>Nom</th>
+                        <th>Ponderació</th>
+                        <th>Progres</th>
+                        <th>Aconseguit</th>
+                        <th>Data de Registre</th>
+                        <th>Acció</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for ra in ras %}
+                        <tr>
+                            <td>{{ ra[1] }}</td>
+                            <td><input type="number" value="{{ ra[2] }}" class="ponderacio-input" data-id="{{ ra[0] }}"></td>
+                            <td>{{ ra[3] }}</td>
+                            <td>{{ ra[4] }}</td>
+                            <td>{{ ra[5] }}</td>
+                            <td><a href="/ra/{{ ra[0] }}" class="action-link">Detalls</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <button class="save-button">Desar Ponderacions</button>
         <button onclick="location.href='/'" class="back-button">Tornar</button>
     </div>
 
     <footer>
         <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens Felis</a></p>
     </footer>
+
+    <script src="/static/ras.js"></script>
 </body>
 </html>

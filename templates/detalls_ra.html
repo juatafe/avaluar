@@ -8,13 +8,14 @@
 </head>
 <body>
     <h1>RA - {{ ra[1] }}</h1>
-    <button onclick="addEvidence()">Afegir Evidència</button>
+    <button onclick="guardarDetalls()" class="save-button">Desar Dades</button>
+    <button onclick="location.href='/'" class="back-button">Tornar</button>
 
     <div class="table-wrapper">
         <!-- El contenido de las tablas será generado dinámicamente -->
     </div>
 
-    <script src="/static/script.js"></script>
+    <script src="/static/detalls_ra.js"></script>
 </body>
 <footer>
     <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens Felis</a></p>

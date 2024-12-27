@@ -32,7 +32,153 @@ def db_query(query, params=(), fetchone=False, fetchall=False, commit=False):
 def index():
     return render_template('index.html')
 
-# Formularis per donar d'alta entitats
+# Formulari per donar d'alta alumnes
+@app.route('/alta-alumnes', methods=['GET', 'POST'])
+def alta_alumnes():
+    if request.method == 'POST':
+        nia = request.form.get('nia')
+        nom = request.form.get('nom')
+        cognoms = request.form.get('cognoms')
+
+        if not nia or not nom or not cognoms:
+            return render_template('alta_alumnes.html', message="Falten camps obligatòris.")
+
+        try:
+            db_query("INSERT INTO Alumne (nia, nom, cognoms) VALUES (?, ?, ?)", (nia, nom, cognoms), commit=True)
+            return redirect(url_for('index'))
+        except sqlite3.Error as e:
+            return render_template('alta_alumnes.html', message=f"Error: {e}")
+
+    return render_template('alta_alumnes.html')
+
+# API: Obtenir evidències
+@app.route('/api/evidences', methods=['GET'])
+def get_evidences():
+    try:
+        evidences = db_query("""
+            SELECT e.id AS id_evidencia, e.descripcio AS evidencia_nom, 
+                   d.nom AS descriptor_nom, d.valor AS descriptor_valor
+            FROM Evidencia e
+            LEFT JOIN Evidencia_Descriptor ed ON e.id = ed.id_evidencia
+            LEFT JOIN Descriptor d ON ed.id_descriptor = d.id
+        """, fetchall=True)
+
+        if not evidences:
+            return jsonify([])  # Retornem una llista buida si no hi ha dades
+
+        # Processar les dades agrupant-les per evidència
+        result = {}
+        for evidencia in evidences:
+            id_evidencia = evidencia['id_evidencia']
+            nom_evidencia = evidencia['evidencia_nom']
+            descriptor_nom = evidencia['descriptor_nom']
+            descriptor_valor = evidencia['descriptor_valor']
+
+            if id_evidencia not in result:
+                result[id_evidencia] = {
+                    'id': id_evidencia,
+                    'nom': nom_evidencia,
+                    'descriptors': []
+                }
+
+            # Afegim descriptors només si són vàlids
+            if descriptor_nom and descriptor_valor is not None:
+                result[id_evidencia]['descriptors'].append({
+                    'nom': descriptor_nom,
+                    'valor': descriptor_valor
+                })
+
+        # Retornem les evidències agrupades
+        return jsonify(list(result.values()))
+    except sqlite3.Error as e:
+        print(f"Error obtenint evidències: {e}")
+        return jsonify(error="Error amb la base de dades."), 500
+
+# Mostrar detalls d'un RA
+@app.route('/ra/<int:id_ra>')
+def veure_ra(id_ra):
+    try:
+        ra = db_query("SELECT * FROM RA WHERE id_ra = ?", (id_ra,), fetchone=True)
+        if ra is None:
+            abort(404, description=f"RA amb id {id_ra} no trobat.")
+
+        detalls = db_query("""
+            SELECT 
+                Criteri.id_criteri AS id_criteri,
+                Evidencia.id AS id_evidencia,
+                Alumne.nia AS nia,
+                Criteri.descripcio AS criteri_descripcio, 
+                Evidencia.descripcio AS evidencia_descripcio, 
+                Alumne.nom AS alumne_nom, 
+                Alumne.cognoms AS alumne_cognoms, 
+                Criteri_Alumne_Evidencia.valor AS valor
+            FROM 
+                Criteri_Alumne_Evidencia
+            JOIN Criteri ON Criteri_Alumne_Evidencia.id_criteri = Criteri.id_criteri
+            JOIN Evidencia ON Criteri_Alumne_Evidencia.id_evidencia = Evidencia.id
+            JOIN Alumne ON Criteri_Alumne_Evidencia.nia = Alumne.nia
+            WHERE 
+                Criteri.id_ra = ?
+        """, (id_ra,), fetchall=True)
+
+        return render_template('detalls_ra.html', ra=ra, detalls=detalls)
+    except sqlite3.Error as e:
+        print("Error carregant els detalls:", e)
+        abort(500, description=f"Error: {e}")
+
+
+@app.route('/api/ra/<int:id_ra>')
+def get_ra_details(id_ra):
+    try:
+        detalls = db_query("""
+            SELECT 
+                Criteri.id_criteri,
+                Evidencia.id AS id_evidencia,
+                Alumne.nia,
+                Criteri.descripcio AS criteri_descripcio, 
+                Evidencia.descripcio AS evidencia_descripcio, 
+                Alumne.nom AS alumne_nom, 
+                Alumne.cognoms AS alumne_cognoms, 
+                Criteri_Alumne_Evidencia.valor AS valor
+            FROM 
+                Criteri_Alumne_Evidencia
+            JOIN Criteri ON Criteri_Alumne_Evidencia.id_criteri = Criteri.id_criteri
+            JOIN Evidencia ON Criteri_Alumne_Evidencia.id_evidencia = Evidencia.id
+            JOIN Alumne ON Criteri_Alumne_Evidencia.nia = Alumne.nia
+            WHERE 
+                Criteri.id_ra = ?
+        """, (id_ra,), fetchall=True)
+        
+        # Retorna els resultats en format JSON
+        return jsonify({'detalls': [dict(row) for row in detalls]})
+    except Exception as e:
+        print(f"Error recuperant dades per al RA {id_ra}: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/visualitzar', methods=['GET', 'POST'])
+def visualitzar():
+    if request.method == 'POST':
+        nia = request.form['nia']
+        try:
+            moduls = db_query("""
+                SELECT DISTINCT Modul.id_modul, Modul.nom
+                FROM Modul
+                JOIN RA ON Modul.id_modul = RA.id_modul
+                JOIN Criteri ON RA.id_ra = Criteri.id_ra
+                LEFT JOIN Criteri_Alumne_Evidencia ON Criteri.id_criteri = Criteri_Alumne_Evidencia.id_criteri
+                WHERE Criteri_Alumne_Evidencia.nia = ? 
+                    OR EXISTS (
+                        SELECT 1
+                        FROM Criteri_Alumne_Evidencia cae
+                        WHERE cae.id_criteri = Criteri.id_criteri
+                    )
+            """, (nia,), fetchall=True)
+            return render_template('moduls.html', moduls=moduls, nia=nia)
+        except sqlite3.Error as e:
+            return render_template('visualitzar.html', message=f"Error: {e}")
+
+    return render_template('visualitzar.html')
+
 @app.route('/alta-entitats', methods=['GET', 'POST'])
 def alta_entitats():
     cicles = db_query("SELECT id_cicle, nom FROM Cicle", fetchall=True)
@@ -84,125 +230,94 @@ def alta_entitats():
         message=message
     )
 
-# Formulari per donar d'alta alumnes
-@app.route('/alta-alumnes', methods=['GET', 'POST'])
-def alta_alumnes():
-    if request.method == 'POST':
-        nia = request.form['nia']
-        nom = request.form['nom']
-        cognoms = request.form['cognoms']
 
-        try:
-            db_query("INSERT INTO Alumne (nia, nom, cognoms) VALUES (?, ?, ?)", (nia, nom, cognoms), commit=True)
-            return redirect(url_for('index'))
-        except sqlite3.Error as e:
-            return render_template('alta_alumnes.html', message=f"Error: {e}")
-
-    return render_template('alta_alumnes.html')
-
-# Visualitzar dades d'alumnes i mòduls associats
-@app.route('/visualitzar', methods=['GET', 'POST'])
-def visualitzar():
-    if request.method == 'POST':
-        nia = request.form['nia']
-        try:
-            moduls = db_query("""
-                SELECT Modul.id_modul, Modul.nom
-                FROM Alumne
-                JOIN Modul_Alumne ON Alumne.nia = Modul_Alumne.nia
-                JOIN Modul ON Modul_Alumne.id_modul = Modul.id_modul
-                WHERE Alumne.nia = ?
-            """, (nia,), fetchall=True)
-            return render_template('moduls.html', moduls=moduls, nia=nia)
-        except sqlite3.Error as e:
-            return render_template('visualitzar.html', message=f"Error: {e}")
-
-    return render_template('visualitzar.html')
-
-# Mostrar els RAs d'un mòdul
 @app.route('/modul/<int:id_modul>')
 def veure_modul(id_modul):
     try:
         ras = db_query("""
-            SELECT RA.id_ra, RA.nom, RA.ponderacio
+            SELECT 
+                RA.id_ra,
+                RA.nom,
+                RA.ponderacio,
+                COALESCE(SUM(CASE 
+                             WHEN CAE.valor IS NOT NULL AND CAE.valor > 0 THEN CAE.valor
+                             ELSE 0
+                         END) / COUNT(CASE 
+                                          WHEN CAE.valor IS NOT NULL THEN 1 
+                                          ELSE NULL 
+                                      END), 0) AS progress,
+                COALESCE(SUM(CASE 
+                             WHEN CAE.valor IS NOT NULL AND CAE.valor > 0 THEN 
+                                 (CAE.valor * RA.ponderacio / 100) 
+                             ELSE 0
+                         END), 0) AS aconseguit,
+                DATE(MAX(CAE.data)) AS ultima_data
             FROM RA
+            LEFT JOIN Criteri ON RA.id_ra = Criteri.id_ra
+            LEFT JOIN Criteri_Alumne_Evidencia CAE ON Criteri.id_criteri = CAE.id_criteri
             WHERE RA.id_modul = ?
+            GROUP BY RA.id_ra, RA.nom, RA.ponderacio;
         """, (id_modul,), fetchall=True)
+
+        print("Resultats retornats pel backend:", ras)  # Depuració
+        # Converteix les dades retornades a un format llegible
+        ras_llegible = [dict(row) for row in ras]
+        print("Resultats llegibles retornats pel backend:", ras_llegible)  # Depuració detallada
+
+
         return render_template('ras.html', ras=ras, id_modul=id_modul)
     except sqlite3.Error as e:
         abort(500, description=f"Error: {e}")
 
-# Mostrar detalls d'un RA
-@app.route('/ra/<int:id_ra>')
-def veure_ra(id_ra):
+
+@app.route('/update-detalls-ra', methods=['POST'])
+def update_detalls_ra():
     try:
-        ra = db_query("SELECT * FROM RA WHERE id_ra = ?", (id_ra,), fetchone=True)
-        if ra is None:
-            abort(404, description=f"RA amb id {id_ra} no trobat.")
+        data = request.json
+        print("Dades rebudes pel servidor:", data)  # Per depuració
 
-        detalls = db_query("""
-            SELECT 
-                Criteri.descripcio AS criteri_descripcio, 
-                Evidencia.descripcio AS evidencia_descripcio, 
-                Alumne.nom AS alumne_nom, 
-                Alumne.cognoms AS alumne_cognoms, 
-                Descriptor.nom AS descriptor_nom, 
-                Descriptor.valor AS descriptor_valor
-            FROM 
-                Criteri_Alumne_Evidencia
-            JOIN Criteri ON Criteri_Alumne_Evidencia.id_criteri = Criteri.id_criteri
-            JOIN Evidencia ON Criteri_Alumne_Evidencia.id_evidencia = Evidencia.id
-            JOIN Alumne ON Criteri_Alumne_Evidencia.nia = Alumne.nia
-            JOIN Evidencia_Descriptor ON Evidencia.id = Evidencia_Descriptor.id_evidencia
-            JOIN Descriptor ON Evidencia_Descriptor.id_descriptor = Descriptor.id
-            WHERE 
-                Criteri.id_ra = ?
-        """, (id_ra,), fetchall=True)
-        return render_template('detalls_ra.html', ra=ra, detalls=detalls)
-    except sqlite3.Error as e:
-        abort(500, description=f"Error: {e}")
+        for detall in data.get('detalls', []):
+            print("Processant detall:", detall)  # Per depuració
+            db_query(
+                """
+                UPDATE Criteri_Alumne_Evidencia
+                SET valor = ?
+                WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
+                """,
+                (detall['valor'], detall['id_criteri'], detall['id_evidencia'], detall['nia']),
+                commit=True
+            )
 
-# Obtenir descriptors per evidència (API)
-@app.route('/get_descriptors/<evidencia>')
-def get_descriptors(evidencia):
-    descriptors = db_query("""
-        SELECT Descriptor.nom
-        FROM Descriptor
-        JOIN Evidencia_Descriptor ON Descriptor.id = Evidencia_Descriptor.id_descriptor
-        JOIN Evidencia ON Evidencia_Descriptor.id_evidencia = Evidencia.id
-        WHERE Evidencia.descripcio = ?
-    """, (evidencia,), fetchall=True)
-    return jsonify(descriptors=[row['nom'] for row in descriptors])
+        return jsonify(success=True)
+    except Exception as e:
+        print("Error desant les dades al servidor:", e)
+        return jsonify(success=False, error=str(e))
 
-# API: Obtenir evidències
-@app.route('/api/evidences', methods=['GET'])
-def get_evidences():
-    evidences = db_query("""
-        SELECT e.id, e.descripcio, d.nom AS descriptor, d.valor
-        FROM Evidencia e
-        LEFT JOIN Evidencia_Descriptor ed ON e.id = ed.id_evidencia
-        LEFT JOIN Descriptor d ON ed.id_descriptor = d.id
-    """, fetchall=True)
+@app.route('/update-ras', methods=['POST'])
+def update_ras():
+    try:
+        # Llegeix les dades JSON de la petició
+        data = request.get_json()
+        print("Dades rebudes pel backend:", data)  # Depuració
+        print("RAs a actualitzar:", data.get('ras', []))  # Depuració
 
-    result = {}
-    for evidencia in evidences:
-        id_evidencia = evidencia['id']
-        nom_evidencia = evidencia['descripcio']
-        descriptor = evidencia['descriptor']
-        valor = evidencia['valor']
+        # Itera per actualitzar les ponderacions
+        for ra in data.get('ras', []):
+            print(f"Actualitzant RA amb id {ra['id_ra']} a ponderació {ra['ponderacio']}")  # Depuració
+            db_query("""
+                UPDATE RA
+                SET ponderacio = ?
+                WHERE id_ra = ?;
+            """, (ra['ponderacio'], ra['id_ra']))
 
-        if id_evidencia not in result:
-            result[id_evidencia] = {
-                'nom': nom_evidencia,
-                'descriptors': []
-            }
-        if descriptor and valor is not None:
-            result[id_evidencia]['descriptors'].append({
-                'nom': descriptor,
-                'valor': valor
-            })
+        # Retorna una resposta JSON correcta
+        return jsonify({"success": True, "message": "Ponderacions actualitzades"})
+    except Exception as e:
+        print("Error desant les ponderacions:", e)
+        return jsonify({"success": False, "message": str(e)}), 500
 
-    return jsonify(result)
+
+
 
 # Manejo d'errors personalitzats
 @app.errorhandler(404)
@@ -210,4 +325,4 @@ def resource_not_found(e):
     return render_template('404.html', error=e), 404
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5004)
+    app.run(debug=True, port=5002)
