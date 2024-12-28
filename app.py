@@ -158,8 +158,9 @@ def get_ra_details(id_ra):
 @app.route('/visualitzar', methods=['GET', 'POST'])
 def visualitzar():
     if request.method == 'POST':
-        nia = request.form['nia']
+        nia = request.form['nia']  # Obtenir el NIA introduït per l'usuari
         try:
+            # Consulta SQL per obtenir els mòduls de l'alumne
             moduls = db_query("""
                 SELECT DISTINCT Modul.id_modul, Modul.nom
                 FROM Modul
@@ -173,10 +174,15 @@ def visualitzar():
                         WHERE cae.id_criteri = Criteri.id_criteri
                     )
             """, (nia,), fetchall=True)
+
+            # Renderitzar la plantilla amb els mòduls i el NIA
             return render_template('moduls.html', moduls=moduls, nia=nia)
+
         except sqlite3.Error as e:
+            # Retornar un missatge d'error si falla la consulta
             return render_template('visualitzar.html', message=f"Error: {e}")
 
+    # Si és GET, mostrar la pàgina inicial
     return render_template('visualitzar.html')
 
 @app.route('/alta-entitats', methods=['GET', 'POST'])
@@ -231,47 +237,64 @@ def alta_entitats():
     )
 
 
-@app.route('/modul/<int:id_modul>')
-def veure_modul(id_modul):
+@app.route('/modul/<int:id_modul>/<int:nia>')
+def veure_modul_per_alumne(id_modul, nia):
     try:
+        # Consulta SQL amb filtre pel NIA
         ras = db_query("""
+            WITH EvidenciesPerCriteri AS (
+                SELECT 
+                    Criteri.id_criteri,
+                    Criteri.id_ra,
+                    Criteri.ponderacio AS ponderacio_criteri, 
+                    AVG(CAE.valor) AS mitjana_evidencies
+                FROM 
+                    Criteri
+                LEFT JOIN 
+                    Criteri_Alumne_Evidencia CAE ON Criteri.id_criteri = CAE.id_criteri
+                WHERE 
+                    CAE.nia = ?
+                GROUP BY 
+                    Criteri.id_criteri, Criteri.id_ra, Criteri.ponderacio
+            )
             SELECT 
                 RA.id_ra,
-                RA.nom,
-                RA.ponderacio,
-                COALESCE(
-                    SUM(
-                        CASE 
-                            WHEN CAE.valor IS NOT NULL THEN (CAE.valor * Criteri.ponderacio / 100)
-                            ELSE 0 
-                        END
-                    ) / NULLIF(SUM(Criteri.ponderacio), 0),
-                    0
-                ) AS progress, -- Valor ponderat basat en la ponderació dels criteris
-                COALESCE(
-                    SUM(
-                        CASE 
-                            WHEN CAE.valor IS NOT NULL THEN (CAE.valor * RA.ponderacio / 100)
-                            ELSE 0 
-                        END
-                    ),
-                    0
-                ) AS aconseguit, -- Valor ponderat amb la ponderació del RA
-                DATE(MAX(CAE.data)) AS ultima_data
-            FROM RA
-            LEFT JOIN Criteri ON RA.id_ra = Criteri.id_ra
-            LEFT JOIN Criteri_Alumne_Evidencia CAE ON Criteri.id_criteri = CAE.id_criteri
-            WHERE RA.id_modul = ?
-            GROUP BY RA.id_ra, RA.nom, RA.ponderacio;
-        """, (id_modul,), fetchall=True)
+                RA.nom AS nom_ra,
+                RA.ponderacio AS ponderacio_ra,
+                COALESCE(SUM(EvidenciesPerCriteri.mitjana_evidencies * EvidenciesPerCriteri.ponderacio_criteri / 100), 0) AS progress
+            FROM 
+                RA
+            LEFT JOIN 
+                EvidenciesPerCriteri ON RA.id_ra = EvidenciesPerCriteri.id_ra
+            WHERE 
+                RA.id_modul = ?
+            GROUP BY 
+                RA.id_ra, RA.nom, RA.ponderacio;
+        """, (nia, id_modul), fetchall=True)
 
-        print("Resultats retornats pel backend:", ras)  # Depuració
-        ras_llegible = [dict(row) for row in ras]
-        print("Resultats llegibles retornats pel backend:", ras_llegible)  # Depuració detallada
+        # Imprimir resultats de manera llegible
+        if not ras:
+            print(f"No s'han trobat dades per al NIA {nia} i el Mòdul {id_modul}")
+        else:
+            print(f"Dades obtingudes per al NIA {nia} i el Mòdul {id_modul}:")
+            for fila in ras:
+                print(dict(fila))  # Converteix cada fila a diccionari
 
-        return render_template('ras.html', ras=ras, id_modul=id_modul)
+        # Retornar dades al frontend
+        ras_llegible = [
+            {
+                **dict(row),
+                'progress': round(row['progress'], 2),
+                'aconseguit': round(row['progress'] * row['ponderacio_ra'] / 100, 2),
+                'nom_ra': row['nom_ra']
+            }
+            for row in ras
+        ]
+        return render_template('ras.html', ras=ras_llegible, id_modul=id_modul, nia=nia)
+
     except sqlite3.Error as e:
-        abort(500, description=f"Error: {e}")
+        print(f"Error amb la base de dades: {e}")
+        abort(500, description=f"Error amb la base de dades: {e}")
 
 @app.route('/update-detalls-ra', methods=['POST'])
 def update_detalls_ra():

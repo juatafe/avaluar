@@ -11,10 +11,12 @@
         <h1>Mòduls de l'Alumne</h1>
         <div class="button-container">
             {% for modul in moduls %}
-                <button onclick="location.href='/modul/{{ modul[0] }}'">{{ modul[1] }}</button>
+                <button class="module-button" onclick="location.href='/modul/{{ modul.id_modul }}/{{ nia }}'">
+                    {{ modul.nom }}
+                </button>
             {% endfor %}
         </div>
-        <button onclick="location.href='/'" class="back-button">Tornar</button>
+        <button class="back-button" onclick="window.history.back()">Tornar</button>
     </div>
 
     <footer>

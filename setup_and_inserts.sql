@@ -173,6 +173,8 @@ INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES
     (6, 11), (6, 12), (6, 13), (6, 14);
 
 -- Inserir dades a la taula Criteri_Alumne_Evidencia
-INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia) VALUES (1, 1, 123456);
-INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia) VALUES (1, 2, 123456);
-INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia) VALUES (2, 1, 654321);
+INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) 
+VALUES 
+    (1, 1, 123456, 8.0), -- Criteri 1, Evidència 1
+    (1, 2, 123456, 10.0), -- Criteri 1, Evidència 2
+    (2, 3, 123456, 9.0); -- Criteri 2, Evidència 3

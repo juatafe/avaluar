@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RAs</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
     <div class="container">
         <h1>RAs</h1>
@@ -23,16 +25,19 @@
                 </thead>
                 <tbody>
                     {% for ra in ras %}
-                        <tr>
-                            <td>{{ ra[1] }}</td>
-                            <td><input type="number" value="{{ ra[2] }}" class="ponderacio-input" data-id="{{ ra[0] }}"></td>
-                            <td>{{ ra[3] }}</td>
-                            <td>{{ ra[4] }}</td>
-                            <td>{{ ra[5] }}</td>
-                            <td><a href="/ra/{{ ra[0] }}" class="action-link">Detalls</a></td>
-                        </tr>
+                    <tr>
+                        <td>{{ ra.nom_ra }}</td>
+                        <td><input type="number" value="{{ ra.ponderacio_ra }}" class="ponderacio-input"
+                                data-id="{{ ra.id_ra }}"></td>
+                        <td>{{ ra.progress }}</td>
+                        <td>{{ ra.aconseguit }}</td>
+                        <td>{{ ra.ultima_data }}</td>
+                        <td><a href="/ra/{{ ra.id_ra }}" class="action-link">Detalls</a></td>
+                    </tr>
                     {% endfor %}
                 </tbody>
+                
+
             </table>
         </div>
         <button class="save-button">Desar Ponderacions</button>
@@ -40,9 +45,11 @@
     </div>
 
     <footer>
-        <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens Felis</a></p>
+        <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens
+                Felis</a></p>
     </footer>
 
     <script src="/static/ras.js"></script>
 </body>
+
 </html>
