@@ -1,3 +1,6 @@
+let evidences = [];
+
+
 async function fetchEvidences() {
     try {
         const response = await fetch('/api/evidences');
@@ -24,27 +27,108 @@ function manualUpdate(input) {
 }
 
 function processRow(row) {
-    const idCriteri = row.dataset.idCriteri;
+    const evidences = [];
     const nia = row.dataset.nia;
+    const idCriteri = row.dataset.idCriteri;
+    let ponderacio = null;
 
-    if (!idCriteri || !nia) {
-        console.warn('Fila sense dades bàsiques:', { idCriteri, nia });
-        return [];
+    console.log("Processant fila amb nia:", nia);
+
+    // Capturar la ponderació
+    const ponderacioInput = row.querySelector('.ponderacio');
+    if (ponderacioInput) {
+        ponderacio = parseFloat(ponderacioInput.value) || 0; // Si està buit, assumir 0
+        console.log(`Ponderació capturada: ${ponderacio}`);
     }
 
-    return Array.from(row.querySelectorAll('td[data-id-evidencia]')).map(cell => {
-        const idEvidencia = cell.dataset.idEvidencia || null;
-        const valorInput = cell.querySelector('input');
-        const valor = valorInput ? parseFloat(valorInput.value) || 0 : 0;
+    row.querySelectorAll('[data-id-evidencia]').forEach(evidenceElem => {
+        const idEvidencia = evidenceElem.dataset.idEvidencia;
+        const descriptorSelect = evidenceElem.querySelector('select');
+        const input = evidenceElem.querySelector('input');
 
-        if (idEvidencia) {
-            return { id_criteri: idCriteri, id_evidencia: idEvidencia, nia, valor };
-        } else {
-            console.warn('Cèl·lula sense idEvidencia:', cell);
-            return null;
+        const valorDescriptor = descriptorSelect?.value || null;
+        const valorInput = input?.value ? parseFloat(input.value) : null;
+
+        // Si el descriptor és "Selecciona descriptor" o no hi ha valor, enviar com a eliminació
+        if (!idEvidencia || valorDescriptor === "" || valorDescriptor === "Selecciona descriptor") {
+            console.warn(`Afegint per eliminar: idEvidencia=${idEvidencia}, valorDescriptor=${valorDescriptor}`);
+            evidences.push({
+                id_evidencia: idEvidencia,
+                id_criteri: idCriteri,
+                nia: nia,
+                valor: null // Es marca com a nul per eliminar al backend
+            });
+            return;
         }
-    }).filter(Boolean);
+
+        // Afegir una entrada vàlida
+        evidences.push({
+            id_evidencia: idEvidencia,
+            id_criteri: idCriteri,
+            nia: nia,
+            valor: valorInput || valorDescriptor,
+        });
+
+        console.log(`Afegit: id_criteri=${idCriteri}, id_evidencia=${idEvidencia}, valor=${valorInput || valorDescriptor}`);
+    });
+
+    return { id_criteri: idCriteri, nia: nia, ponderacio: ponderacio, evidencies: evidences };
 }
+
+async function guardarDetalls() {
+    const rows = document.querySelectorAll('tr[data-id-criteri]');
+    const detalls = [];
+    const ponderacions = [];
+
+    rows.forEach(row => {
+        const idCriteri = row.dataset.idCriteri;
+        const nia = row.dataset.nia;
+        const ponderacioInput = row.querySelector('.ponderacio');
+        const ponderacio = ponderacioInput ? parseFloat(ponderacioInput.value) || 0 : null;
+
+        if (ponderacio !== null) {
+            ponderacions.push({ id_criteri: idCriteri, valor: ponderacio });
+        }
+
+        row.querySelectorAll('[data-id-evidencia]').forEach(evidenceElem => {
+            const idEvidencia = evidenceElem.dataset.idEvidencia;
+            const descriptorSelect = evidenceElem.querySelector('select');
+            const valor = descriptorSelect ? descriptorSelect.value : null;
+
+            detalls.push({
+                id_criteri: idCriteri,
+                id_evidencia: idEvidencia,
+                nia: nia,
+                valor: valor || null
+            });
+        });
+    });
+
+    console.log("Dades a enviar (detalls):", detalls);
+    console.log("Dades a enviar (ponderacions):", ponderacions);
+
+    try {
+        const response = await fetch('/update-detalls-ra', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ detalls, ponderacions }),
+        });
+
+        const result = await response.json();
+        console.log("Resposta del servidor:", result);
+
+        if (!result.success) {
+            throw new Error(result.error);
+        }
+
+        alert("Dades desades correctament!");
+    } catch (error) {
+        console.error("Error desant dades:", error);
+        alert("Error desant dades.");
+    }
+}
+
+
 
 function updateNota(select) {
     const selectedOption = select.options[select.selectedIndex];
@@ -57,66 +141,6 @@ function updateNota(select) {
     }
     calculateTotals(); // Actualitzar els totals
 }
-
-/* async function guardarDetalls() {
-    const rows = document.querySelectorAll('.table-wrapper table tbody tr');
-    const detalls = Array.from(rows).flatMap(processRow);
-
-    if (detalls.length === 0) {
-        alert('No hi ha dades vàlides per desar.');
-        return;
-    }
-
-    try {
-        const response = await fetch('/update-detalls-ra', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ detalls }),
-        });
-        const result = await response.json();
-        if (!result.success) throw new Error(result.error);
-        alert('Dades desades correctament!');
-    } catch (error) {
-        console.error('Error desant els detalls:', error);
-        alert('Error desant els detalls.');
-    }
-} */
-
-async function guardarDetalls() {
-    const rows = document.querySelectorAll('.table-wrapper table tbody tr');
-    const detalls = Array.from(rows).flatMap(processRow);
-
-    if (detalls.length === 0) {
-        alert('No hi ha dades vàlides per desar.');
-        return;
-    }
-
-    console.log('Dades a enviar al servidor:', detalls); // Afegir per depuració
-
-    try {
-        const response = await fetch('/update-detalls-ra', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ detalls }), // Converteix a JSON
-        });
-
-        console.log('Resposta del servidor:', response);
-
-        if (!response.ok) {
-            throw new Error(`Error del servidor: ${response.status}`);
-        }
-
-        const result = await response.json();
-        console.log('Resultat del servidor:', result);
-
-        if (!result.success) throw new Error(result.error);
-        alert('Dades desades correctament!');
-    } catch (error) {
-        console.error('Error desant els detalls:', error);
-        alert('Error desant els detalls.');
-    }
-}
-
 
 function calculateTotals() {
     const table = document.querySelector('.table-wrapper table');
@@ -222,86 +246,126 @@ function calculateTotals() {
     totalsRow.querySelector('.total-progres').textContent = totalProgresAverage;
 }
 
+document.addEventListener('input', (event) => {
+    if (event.target.classList.contains('ponderacio')) {
+        let value = parseFloat(event.target.value);
 
+        if (value < 0 || value > 100) {
+            alert("El valor ha d'estar entre 0 i 100.");
+            event.target.value = value < 0 ? 0 : 100;
+        }
+    }
+});
 
 function createTable(evidences, savedData = []) {
+    console.log("Iniciant la creació de la taula...");
+    console.log("Evidències rebudes:", evidences);
+    console.log("Dades desades rebudes:", savedData);
+
     const tableWrapper = document.querySelector('.table-wrapper');
     tableWrapper.innerHTML = '';
 
-    const criterios = [
-        { criteri: 'Criteri 1', valor: 20, aconseguit: 0, progres: 0, id_criteri: 1, nia: 123456 }
-    ];
+    // Generar dinàmicament els criteris a partir de savedData
+    const criterios = savedData.map(data => ({
+        criteri: data.criteri_descripcio, // Usa el nom del criteri
+        valor: data.ponderacio || 0, // Usa la ponderació del criteri o 0 per defecte
+        aconseguit: data.aconseguit || 0, // Usa el valor aconseguit o 0
+        progres: data.progres || 0, // Usa el progrés o 0
+        id_criteri: data.id_criteri, // Identificador del criteri
+        nia: data.nia // Identificador d'alumne
+    }));
+
+    console.log("Criteris definits dinàmicament:", criterios);
 
     const table = document.createElement('table');
     table.innerHTML = `
-            <thead>
-                <tr>
-                    <th>Criteris</th>
-                    <th>Ponderació (%)</th>
-                    <th>Aconseguit</th>
-                    <th>Progrés</th>
-                    ${evidences.map(evidence => `<th>${evidence.nom}</th>`).join('')}
-                </tr>
-            </thead>
-            <tbody>
-                ${criterios.map(row => `
-                    <tr data-id-criteri="${row.id_criteri}" data-nia="${row.nia}">
-                        <td>${row.criteri}</td>
-                        <td><input type="number" class="ponderacio" value="${row.valor}" oninput="calculateTotals()"></td>
-                        <td class="aconseguit">${row.aconseguit.toFixed(2)}</td>
-                        <td class="progress">${row.progres}</td>
-                        ${evidences.map(evidence => {
-        const savedValue = savedData.find(
-            d => d.id_criteri == row.id_criteri && d.id_evidencia == evidence.id
-        )?.valor || 0;
-
+        <thead>
+            <tr>
+                <th>Criteris</th>
+                <th>Ponderació (%)</th>
+                <th>Aconseguit</th>
+                <th>Progrés</th>
+                ${evidences.map(evidence => `<th>${evidence.nom || "Sense nom"}</th>`).join('')}
+            </tr>
+        </thead>
+        <tbody>
+            ${criterios.map(row => {
+        console.log("Processant criteri:", row);
         return `
-                                <td data-id-evidencia="${evidence.id}">
-                                    ${evidence.descriptors && evidence.descriptors.length > 0 ? `
-    <select onchange="updateNota(this)">
-        <option value="" ${!savedValue ? 'selected' : ''}>Seleccionar descriptor</option>
-        ${evidence.descriptors.map(desc => `
-            <option value="${desc.nom}" data-nota="${desc.valor}" ${savedValue && desc.valor == savedValue ? 'selected' : ''}>
-                ${desc.nom}
-            </option>
-        `).join('')}
-    </select>
-` : `<span class="no-descriptor">Sense descripció</span>`}
+                <tr data-id-criteri="${row.id_criteri}" data-nia="${row.nia}">
+                    <td>${row.criteri}</td>
+                    <td><input type="number" class="ponderacio" min="0" max="100" value="${row.valor}" oninput="calculateTotals()"></td>
+                    <td class="aconseguit">${row.aconseguit.toFixed(2)}</td>
+                    <td class="progress">${row.progres}</td>
+                    ${evidences.map(evidence => {
+            console.log("Processant evidència:", evidence);
+            const savedValue = savedData.find(
+                d => d.id_criteri == row.id_criteri && d.id_evidencia == evidence.id
+            )?.valor || "";
 
-                                    <input 
-                                        type="number" 
-                                        min="0" 
-                                        max="10" 
-                                        value="${savedValue}" 
-                                        placeholder="Nota" 
-                                        oninput="manualUpdate(this)"
-                                    >
-                                </td>
-                            `;
-    }).join('')}
-                    </tr>
-                `).join('')}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td>TOTALS</td>
-                    <td class="total-ponderacio">0</td>
-                    <td class="total-aconseguit">0.00</td>
-                    <td class="total-progres">0.00</td>
-                    ${evidences.map(() => `<td><span class="evidence-total">0.00</span></td>`).join('')}
+            console.log(`Valor desat per a evidència ${evidence.id}:`, savedValue);
+
+            const descriptors = evidence.descriptors || [];
+            console.log(`Descriptors disponibles per a evidència ${evidence.id}:`, descriptors);
+
+            return `
+    <td data-id-evidencia="${evidence.id || 'undefined'}">
+        ${descriptors.length > 0
+                    ? `
+            <select onchange="updateNota(this)">
+                <option value="" ${!savedValue ? 'selected' : ''}>Seleccionar descriptor</option>
+                ${descriptors.map(desc => {
+                        const isSelected = parseFloat(savedValue) === parseFloat(desc.valor) ? 'selected' : '';
+                        return `
+                        <option value="${desc.valor}" data-nota="${desc.valor}" ${isSelected}>
+                            ${desc.nom}
+                        </option>
+                    `;
+                    }).join('')}
+            </select>
+            `
+                    : `<span class="no-descriptor">Sense descripció</span>`
+                }
+
+        <input 
+            type="number" 
+            min="0" 
+            max="10" 
+            value="${savedValue || ''}" 
+            placeholder="Nota" 
+            oninput="manualUpdate(this)"
+        >
+    </td>
+`;
+
+        }).join('')}
                 </tr>
-            </tfoot>
-        `;
+            `;
+    }).join('')}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>TOTALS</td>
+                <td class="total-ponderacio">0</td>
+                <td class="total-aconseguit">0.00</td>
+                <td class="total-progres">0.00</td>
+                ${evidences.map(() => `<td><span class="evidence-total">0.00</span></td>`).join('')}
+            </tr>
+        </tfoot>
+    `;
+
+    console.log("HTML de la taula generat:", table.innerHTML);
 
     tableWrapper.appendChild(table);
 
-    // Recalcular els totals després de generar la taula
+    console.log("Taula afegida al DOM, recalculant totals...");
     calculateTotals();
+    console.log("Finalitzada la creació de la taula.");
 }
 
 
 
-// Funció per inicialitzar la pàgina
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Pàgina carregada.');
 
@@ -318,7 +382,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.json();
             })
     ])
-        .then(([evidences, savedData]) => {
+        .then(([loadedEvidences, savedData]) => {
+            evidences = loadedEvidences; // Desa les evidències globalment
             console.log('Evidències carregades:', evidences);
             console.log('Dades desades carregades:', savedData);
 

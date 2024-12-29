@@ -6,6 +6,7 @@ async function guardarPonderacions() {
         ponderacio: parseFloat(input.value), // Assegura que és un número
     }));
 
+
     try {
         // Envia les dades al backend
         const response = await fetch('/update-ras', {
@@ -30,6 +31,17 @@ async function guardarPonderacions() {
         alert('Error desant les ponderacions. Revisa la consola per més detalls.');
     }
 }
+
+document.addEventListener('input', (event) => {
+    if (event.target.classList.contains('ponderacio-input')) {
+        let value = parseFloat(event.target.value);
+
+        if (value < 0 || value > 100) {
+            alert("El valor ha d'estar entre 0 i 100.");
+            event.target.value = value < 0 ? 0 : 100;
+        }
+    }
+});
 
 // Afegir l'event listener quan el document està llest
 document.addEventListener('DOMContentLoaded', () => {

@@ -6,11 +6,25 @@ import sys
 
 app = Flask(__name__)
 
+from datetime import datetime
+
+# Registra el filtre `date` per a Jinja2
+@app.template_filter('date')
+def format_date(value, format='%d/%m/%Y'):
+    if value is None:
+        return 'No registrada'
+    try:
+        # Converteix el valor en un objecte datetime
+        date_value = datetime.strptime(value, '%Y-%m-%d')
+        return date_value.strftime(format)
+    except ValueError:
+        return value  # Retorna el valor sense modificar si no és vàlid
+
+
 # Determinar el directori base
 BASE_DIR = getattr(sys, 'frozen', False) and os.path.dirname(sys.executable) or os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, 'avaluar.db')
 
-# Funció per establir connexió amb la base de dades
 def db_query(query, params=(), fetchone=False, fetchall=False, commit=False):
     try:
         with sqlite3.connect(DB_PATH) as conn:
@@ -149,6 +163,9 @@ def get_ra_details(id_ra):
                 Criteri.id_ra = ?
         """, (id_ra,), fetchall=True)
         
+        # Log per depurar
+        print(f"Detalls retornats pel RA {id_ra}: {detalls}")
+        
         # Retorna els resultats en format JSON
         return jsonify({'detalls': [dict(row) for row in detalls]})
     except Exception as e:
@@ -247,7 +264,8 @@ def veure_modul_per_alumne(id_modul, nia):
                     Criteri.id_criteri,
                     Criteri.id_ra,
                     Criteri.ponderacio AS ponderacio_criteri, 
-                    AVG(CAE.valor) AS mitjana_evidencies
+                    AVG(CAE.valor) AS mitjana_evidencies,
+                    MAX(CAE.data) AS ultima_data
                 FROM 
                     Criteri
                 LEFT JOIN 
@@ -261,7 +279,8 @@ def veure_modul_per_alumne(id_modul, nia):
                 RA.id_ra,
                 RA.nom AS nom_ra,
                 RA.ponderacio AS ponderacio_ra,
-                COALESCE(SUM(EvidenciesPerCriteri.mitjana_evidencies * EvidenciesPerCriteri.ponderacio_criteri / 100), 0) AS progress
+                COALESCE(SUM(EvidenciesPerCriteri.mitjana_evidencies * EvidenciesPerCriteri.ponderacio_criteri / 100), 0) AS progress,
+                MAX(EvidenciesPerCriteri.ultima_data) AS ultima_data
             FROM 
                 RA
             LEFT JOIN 
@@ -272,53 +291,129 @@ def veure_modul_per_alumne(id_modul, nia):
                 RA.id_ra, RA.nom, RA.ponderacio;
         """, (nia, id_modul), fetchall=True)
 
-        # Imprimir resultats de manera llegible
+        # Gestionar el cas de resultats buits
         if not ras:
             print(f"No s'han trobat dades per al NIA {nia} i el Mòdul {id_modul}")
-        else:
-            print(f"Dades obtingudes per al NIA {nia} i el Mòdul {id_modul}:")
-            for fila in ras:
-                print(dict(fila))  # Converteix cada fila a diccionari
+            ras = []  # Assigna una llista buida per evitar errors
 
-        # Retornar dades al frontend
+        # Processar els resultats per enviar al frontend
         ras_llegible = [
             {
                 **dict(row),
                 'progress': round(row['progress'], 2),
                 'aconseguit': round(row['progress'] * row['ponderacio_ra'] / 100, 2),
-                'nom_ra': row['nom_ra']
+                'nom_ra': row['nom_ra'],
+                'ultima_data': row['ultima_data'] or 'No registrada'
             }
             for row in ras
         ]
+
+        # Retornar el template amb les dades
         return render_template('ras.html', ras=ras_llegible, id_modul=id_modul, nia=nia)
 
     except sqlite3.Error as e:
         print(f"Error amb la base de dades: {e}")
         abort(500, description=f"Error amb la base de dades: {e}")
 
+# Ruta per actualitzar els detalls
+@app.route('/update-detalls', methods=['POST'])
+def update_detalls():
+    try:
+        data = request.json
+        for detall in data.get('detalls', []):
+            id_criteri = detall['id_criteri']
+            id_evidencia = detall['id_evidencia']
+            nia = detall['nia']
+            valor = detall['valor']
+            criteri_p = detall['ponderacio']
+
+            with sqlite3.connect(DB_PATH) as conn:
+                cursor = conn.cursor()
+
+                if not valor:  # Si el valor és buit, eliminem la fila
+                    print(f"Eliminant entrada per id_criteri={id_criteri}, id_evidencia={id_evidencia}, nia={nia}")
+                    cursor.execute("""
+                        DELETE FROM Criteri_Alumne_Evidencia
+                        WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
+                    """, (id_criteri, id_evidencia, nia))
+                else:  # Actualitzar o inserir
+                    cursor.execute("""
+                        UPDATE Criteri_Alumne_Evidencia
+                        SET valor = ?
+                        WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
+                    """, (valor, id_criteri, id_evidencia, nia))
+
+                    if cursor.rowcount == 0:  # Si no existeix, inserir
+                        cursor.execute("""
+                            INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor)
+                            VALUES (?, ?, ?, ?)
+                        """, (id_criteri, id_evidencia, nia, valor))
+
+                conn.commit()
+
+        return jsonify(success=True)
+    except Exception as e:
+        return jsonify(success=False, error=str(e))
+
+# Ruta per actualitzar els detalls de RA
 @app.route('/update-detalls-ra', methods=['POST'])
 def update_detalls_ra():
     try:
         data = request.json
-        print("Dades rebudes pel servidor:", data)  # Per depuració
+        print("Dades rebudes per actualitzar detalls:", data)
 
+        # Processar detalls
         for detall in data.get('detalls', []):
-            print("Processant detall:", detall)  # Per depuració
-            db_query(
-                """
-                UPDATE Criteri_Alumne_Evidencia
-                SET valor = ?
-                WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
-                """,
-                (detall['valor'], detall['id_criteri'], detall['id_evidencia'], detall['nia']),
-                commit=True
-            )
+            id_criteri = detall['id_criteri']
+            id_evidencia = detall['id_evidencia']
+            nia = detall['nia']
+            valor = detall['valor']
+
+            if not valor:  # Si el valor és buit, eliminem la fila
+                db_query("""
+                    DELETE FROM Criteri_Alumne_Evidencia
+                    WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
+                """, (id_criteri, id_evidencia, nia), commit=True)
+            else:  # Actualitzar o inserir
+                db_query("""
+                    UPDATE Criteri_Alumne_Evidencia
+                    SET valor = ?
+                    WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
+                """, (valor, id_criteri, id_evidencia, nia), commit=True)
+
+                # Inserir si no existeix
+                db_query("""
+                    INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor)
+                    VALUES (?, ?, ?, ?)
+                """, (id_criteri, id_evidencia, nia, valor), commit=True)
+
+        # Processar ponderacions
+        for ponderacio in data.get('ponderacions', []):
+            id_criteri = ponderacio['id_criteri']
+            valor = ponderacio['valor']
+
+            db_query("""
+                UPDATE Criteri
+                SET ponderacio = ?
+                WHERE id_criteri = ?
+            """, (valor, id_criteri), commit=True)
+
+        # Processar criteris_p
+        for item in data.get('criteri_p', []):
+            db_query("""
+                UPDATE Criteri
+                SET ponderacio = ?
+                WHERE id_criteri = ?
+            """, (item['ponderacio'], item['id_criteri']), commit=True)
 
         return jsonify(success=True)
+
     except Exception as e:
-        print("Error desant les dades al servidor:", e)
+        print("Error actualitzant els detalls:", e)
         return jsonify(success=False, error=str(e))
 
+
+# Ruta per actualitzar les ponderacions dels RAs
 @app.route('/update-ras', methods=['POST'])
 def update_ras():
     try:
@@ -342,13 +437,5 @@ def update_ras():
         print("Error desant les ponderacions:", e)
         return jsonify({"success": False, "message": str(e)}), 500
 
-
-
-
-# Manejo d'errors personalitzats
-@app.errorhandler(404)
-def resource_not_found(e):
-    return render_template('404.html', error=e), 404
-
 if __name__ == '__main__':
-    app.run(debug=True, port=5002)
+    app.run(debug=True, port=5004)

@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RAs</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+
 </head>
 
 <body>
@@ -16,7 +18,7 @@
                 <thead>
                     <tr>
                         <th>Nom</th>
-                        <th>Ponderació</th>
+                        <th>Ponderació (%)</th>
                         <th>Progres</th>
                         <th>Aconseguit</th>
                         <th>Data de Registre</th>
@@ -28,10 +30,12 @@
                     <tr>
                         <td>{{ ra.nom_ra }}</td>
                         <td><input type="number" value="{{ ra.ponderacio_ra }}" class="ponderacio-input"
-                                data-id="{{ ra.id_ra }}"></td>
+                                data-id="{{ ra.id_ra }}"
+                                min="0" 
+                                max="100"></td>
                         <td>{{ ra.progress }}</td>
                         <td>{{ ra.aconseguit }}</td>
-                        <td>{{ ra.ultima_data }}</td>
+                        <td>{{ ra['ultima_data']|date('d/m/Y') }}</td>
                         <td><a href="/ra/{{ ra.id_ra }}" class="action-link">Detalls</a></td>
                     </tr>
                     {% endfor %}
@@ -41,7 +45,7 @@
             </table>
         </div>
         <button class="save-button">Desar Ponderacions</button>
-        <button onclick="location.href='/'" class="back-button">Tornar</button>
+        <button class="back-button" onclick="window.history.back()">Tornar</button>
     </div>
 
     <footer>

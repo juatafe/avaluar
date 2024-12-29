@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RA - {{ ra[1] }}</title>
+    <title>Resultats d'Aprenentatge - {{ ra[1] }}</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+
 </head>
 <body>
     <h1>RA - {{ ra[1] }}</h1>
     <button onclick="guardarDetalls()" class="save-button">Desar Dades</button>
-    <button onclick="location.href='/'" class="back-button">Tornar</button>
+    <button class="back-button" onclick="window.history.back()">Tornar</button>
 
     <div class="table-wrapper">
         <!-- El contenido de las tablas será generado dinámicamente -->

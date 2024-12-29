@@ -214,3 +214,36 @@ footer {
 .module-button:active {
     transform: translateY(0);
 }
+
+.table-wrapper {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+table tr {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+select:invalid {
+    border-color: #ff6b6b;
+    background-color: #ffecec;
+}
+.error {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+button:focus,
+input:focus,
+select:focus {
+    outline: 2px solid var(--secondary-hover-color);
+}
+footer {
+    background: linear-gradient(to right, var(--primary-color), var(--primary-hover-color));
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+body {
+    font-size: calc(1rem + 0.2vw);
+}
+button {
+    margin: 15px 10px;
+}

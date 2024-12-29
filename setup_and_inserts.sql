@@ -120,12 +120,12 @@ INSERT INTO Modul (nom, id_cicle) VALUES ('Fonaments Hardware', 1);
 INSERT INTO Modul (nom, id_cicle) VALUES ('XAL', 2);
 
 -- Inserir dades a la taula RA
-INSERT INTO RA (nom, ponderacio, id_modul) VALUES ('RA 1', 0.5, 1);
-INSERT INTO RA (nom, ponderacio, id_modul) VALUES ('RA 2', 0.5, 2);
+INSERT INTO RA (nom, ponderacio, id_modul) VALUES ('RA 1', 20, 1);
+INSERT INTO RA (nom, ponderacio, id_modul) VALUES ('RA 2', 30, 2);
 
 -- Inserir dades a la taula Criteri
-INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 1', 0.3, 1);
-INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 2', 0.7, 2);
+INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 1', 30, 1);
+INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 2', 40, 2);
 
 -- Inserir dades a la taula Alumne
 INSERT INTO Alumne (nia, nom, cognoms) VALUES (123456, 'Joan', 'Garcia');
