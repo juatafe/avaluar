@@ -37,3 +37,8 @@ Get-Content setup_and_inserts.sql | sqlite3 avaluar.db
 
 sudo lsof -i :5002
 sudo kill -9 PID
+
+
+wine python-installer.exe
+wine pip install pyinstaller
+wine python.exe -m PyInstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py

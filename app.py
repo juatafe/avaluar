@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
+import webbrowser
+from threading import Timer
 from flask import Flask, render_template, request, redirect, url_for, jsonify, abort
 import sqlite3
 import os
 import sys
+from datetime import datetime
+import signal  # Per capturar el tancament del procés
 
 app = Flask(__name__)
 
-from datetime import datetime
+
+# Funció per obrir el navegador
+def open_browser():
+    webbrowser.open_new("http://127.0.0.1:5004/")
 
 # Registra el filtre `date` per a Jinja2
 @app.template_filter('date')
@@ -457,5 +464,36 @@ def update_ras():
         print("Error desant les ponderacions:", e)
         return jsonify({"success": False, "message": str(e)}), 500
 
+
+@app.template_filter('date')
+def format_date(value, format='%d/%m/%Y'):
+    if value is None:
+        return 'No registrada'
+    try:
+        date_value = datetime.strptime(value, '%Y-%m-%d')
+        return date_value.strftime(format)
+    except ValueError:
+        return value
+
+# Funció per obrir el navegador
+def open_browser():
+    webbrowser.open_new("http://127.0.0.1:5004/")
+
+# Manejador per al tancament net
+def handle_exit(signum, frame):
+    print("\nTancant l'aplicació correctament...")
+    # Aquí pots afegir qualsevol lògica de tancament, com tancar connexions a bases de dades.
+    sys.exit(0)
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5004)
+    # Registrar el manejador per a SIGINT (Ctrl+C)
+    signal.signal(signal.SIGINT, handle_exit)
+
+    # Llança un temporitzador per obrir el navegador
+    Timer(1, open_browser).start()
+
+    # Inicia l'aplicació Flask
+    try:
+        app.run(debug=True, port=5004)
+    except KeyboardInterrupt:
+        handle_exit(None, None)
