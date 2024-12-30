@@ -37,7 +37,7 @@ Els descriptors permeten una avaluació més precisa i qualitativa, afegint sign
 - **Càlcul de l'Aconseguit de cada criteri**:
   $$`
   \text{Aconseguit\_Criteri} = \left( \frac{\sum \text{Nota\_Evidencia}}{\text{Nombre\_Evidencies}} \right) \times \text{Ponderacio\_Criteri}
-  $$
+  `$$
 
   - `Nota_Evidencia`: Valor de cada evidència registrada segons el descriptor.
   - `Nombre_Evidencies`: Nombre total d'evidències associades al criteri.
