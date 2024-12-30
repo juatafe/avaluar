@@ -123,11 +123,6 @@ erDiagram
         REAL valor
     }
 
-    Modul_Alumne {
-        INTEGER id_modul
-        INTEGER nia
-    }
-
     Evidencia_Descriptor {
         INTEGER id_evidencia
         INTEGER id_descriptor
@@ -145,8 +140,6 @@ erDiagram
     Cicle ||--o{ Modul : "inclou"
     Modul ||--o{ RA : "inclou"
     RA ||--o{ Criteri : "defineix"
-    Modul ||--o{ Modul_Alumne : "té"
-    Modul_Alumne }o--|| Alumne : "relaciona"
     Alumne ||--o{ Criteri_Alumne_Evidencia : "avalua"
     Evidencia ||--o{ Evidencia_Descriptor : "té descriptors"
     Descriptor ||--o{ Evidencia_Descriptor : "defineix"
