@@ -16,6 +16,23 @@ async function fetchEvidences() {
     }
 }
 
+async function fetchCriteris(id_ra) {
+    try {
+        const response = await fetch(`/get_criteris/${id_ra}`);
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+        const data = await response.json();
+        console.log("Ponderacions dels criteris carregades des de l'API:", data);
+        return data.criteris || []; // Retorna la llista de criteris o una llista buida
+    } catch (error) {
+        console.error('Error fetching criteris:', error);
+        return [];
+    }
+}
+
+
+
 function manualUpdate(input) {
     const value = parseFloat(input.value);
     if (isNaN(value) || value < 0 || value > 10) {
@@ -86,20 +103,30 @@ async function guardarDetalls() {
         const ponderacioInput = row.querySelector('.ponderacio');
         const ponderacio = ponderacioInput ? parseFloat(ponderacioInput.value) || 0 : null;
 
+        // Guardar ponderacions
         if (ponderacio !== null) {
             ponderacions.push({ id_criteri: idCriteri, valor: ponderacio });
         }
 
+        // Processar evidències per fila
         row.querySelectorAll('[data-id-evidencia]').forEach(evidenceElem => {
             const idEvidencia = evidenceElem.dataset.idEvidencia;
             const descriptorSelect = evidenceElem.querySelector('select');
-            const valor = descriptorSelect ? descriptorSelect.value : null;
+            const valorInput = evidenceElem.querySelector('input');
 
+            let valor = null;
+            if (descriptorSelect && descriptorSelect.value) {
+                valor = descriptorSelect.value; // Prioritzar el valor del select
+            } else if (valorInput && valorInput.value) {
+                valor = parseFloat(valorInput.value); // Si no hi ha valor al select, usar l'input
+            }
+
+            // Afegir al detall, encara que el valor sigui nul
             detalls.push({
                 id_criteri: idCriteri,
                 id_evidencia: idEvidencia,
                 nia: nia,
-                valor: valor || null
+                valor: valor || null // Assegurar que nul es tracta correctament
             });
         });
     });
@@ -130,17 +157,29 @@ async function guardarDetalls() {
 
 
 
+
 function updateNota(select) {
     const selectedOption = select.options[select.selectedIndex];
-    const nota = selectedOption.dataset.nota || 0;
+    const nota = selectedOption.dataset.nota || 0; // Obté el valor de la nota
     const input = select.parentElement.querySelector('input');
+    
     if (select.value === '') {
         input.value = ''; // Si no hi ha cap valor seleccionat
     } else {
-        input.value = nota; // Assignar el valor corresponent
+        input.value = nota; // Assigna el valor corresponent al camp d'entrada
     }
+
+    // Marca el valor per enviar-lo al backend
+    const row = select.closest('tr');
+    const idCriteri = row.dataset.idCriteri;
+    const idEvidencia = select.closest('td').dataset.idEvidencia;
+    const nia = row.dataset.nia;
+
+    console.log(`Actualitzant nota: Criteri=${idCriteri}, Evidència=${idEvidencia}, NIA=${nia}, Valor=${nota}`);
+    //guardarDetalls(); // Desem automàticament després d'una actualització
     calculateTotals(); // Actualitzar els totals
 }
+
 
 function calculateTotals() {
     const table = document.querySelector('.table-wrapper table');
@@ -257,25 +296,35 @@ document.addEventListener('input', (event) => {
     }
 });
 
-function createTable(evidences, savedData = []) {
+function createTable(evidences, savedData = [], criteris = []) {
     console.log("Iniciant la creació de la taula...");
     console.log("Evidències rebudes:", evidences);
     console.log("Dades desades rebudes:", savedData);
+    console.log("Criteris rebuts:", criteris);
 
     const tableWrapper = document.querySelector('.table-wrapper');
     tableWrapper.innerHTML = '';
 
-    // Generar dinàmicament els criteris a partir de savedData
-    const criterios = savedData.map(data => ({
-        criteri: data.criteri_descripcio, // Usa el nom del criteri
-        valor: data.ponderacio || 0, // Usa la ponderació del criteri o 0 per defecte
-        aconseguit: data.aconseguit || 0, // Usa el valor aconseguit o 0
-        progres: data.progres || 0, // Usa el progrés o 0
-        id_criteri: data.id_criteri, // Identificador del criteri
-        nia: data.nia // Identificador d'alumne
-    }));
+    // Filtrar criteris únics
+    const uniqueCriterios = criteris.length > 0
+        ? criteris.map(data => ({
+              criteri: data.descripcio,
+              valor: data.ponderacio || 0,
+              aconseguit: 0,
+              progres: 0,
+              id_criteri: data.id_criteri,
+              nia: ''
+          }))
+        : [...new Map(savedData.map(data => [data.id_criteri, data])).values()].map(data => ({
+              criteri: data.criteri_descripcio,
+              valor: data.ponderacio,
+              aconseguit: data.aconseguit || 0,
+              progres: data.progres || 0,
+              id_criteri: data.id_criteri,
+              nia: data.nia
+          }));
 
-    console.log("Criteris definits dinàmicament:", criterios);
+    console.log("Criteris processats:", uniqueCriterios);
 
     const table = document.createElement('table');
     table.innerHTML = `
@@ -289,59 +338,39 @@ function createTable(evidences, savedData = []) {
             </tr>
         </thead>
         <tbody>
-            ${criterios.map(row => {
-        console.log("Processant criteri:", row);
-        return `
+            ${uniqueCriterios.map(row => `
                 <tr data-id-criteri="${row.id_criteri}" data-nia="${row.nia}">
                     <td>${row.criteri}</td>
                     <td><input type="number" class="ponderacio" min="0" max="100" value="${row.valor}" oninput="calculateTotals()"></td>
                     <td class="aconseguit">${row.aconseguit.toFixed(2)}</td>
                     <td class="progress">${row.progres}</td>
                     ${evidences.map(evidence => {
-            console.log("Processant evidència:", evidence);
-            const savedValue = savedData.find(
-                d => d.id_criteri == row.id_criteri && d.id_evidencia == evidence.id
-            )?.valor || "";
+                        const savedValue = savedData.find(
+                            d => d.id_criteri === row.id_criteri && d.id_evidencia === evidence.id
+                        )?.valor || "";
 
-            console.log(`Valor desat per a evidència ${evidence.id}:`, savedValue);
-
-            const descriptors = evidence.descriptors || [];
-            console.log(`Descriptors disponibles per a evidència ${evidence.id}:`, descriptors);
-
-            return `
-    <td data-id-evidencia="${evidence.id || 'undefined'}">
-        ${descriptors.length > 0
-                    ? `
-            <select onchange="updateNota(this)">
-                <option value="" ${!savedValue ? 'selected' : ''}>Seleccionar descriptor</option>
-                ${descriptors.map(desc => {
-                        const isSelected = parseFloat(savedValue) === parseFloat(desc.valor) ? 'selected' : '';
+                        const descriptors = evidence.descriptors || [];
                         return `
-                        <option value="${desc.valor}" data-nota="${desc.valor}" ${isSelected}>
-                            ${desc.nom}
-                        </option>
-                    `;
+                            <td data-id-evidencia="${evidence.id}">
+                                ${descriptors.length > 0
+                                    ? `
+                                        <select onchange="updateNota(this)">
+                                            <option value="" ${!savedValue ? 'selected' : ''}>Seleccionar descriptor</option>
+                                            ${descriptors.map(desc => `
+                                                <option value="${desc.valor}" data-nota="${desc.valor}" ${parseFloat(savedValue) === parseFloat(desc.valor) ? 'selected' : ''}>
+                                                    ${desc.nom}
+                                                </option>
+                                            `).join('')}
+                                        </select>
+                                    `
+                                    : `<span class="no-descriptor">Sense descripció</span>`
+                                }
+                                <input type="number" min="0" max="10" value="${savedValue || ''}" placeholder="Nota" oninput="manualUpdate(this)">
+                            </td>
+                        `;
                     }).join('')}
-            </select>
-            `
-                    : `<span class="no-descriptor">Sense descripció</span>`
-                }
-
-        <input 
-            type="number" 
-            min="0" 
-            max="10" 
-            value="${savedValue || ''}" 
-            placeholder="Nota" 
-            oninput="manualUpdate(this)"
-        >
-    </td>
-`;
-
-        }).join('')}
                 </tr>
-            `;
-    }).join('')}
+            `).join('')}
         </tbody>
         <tfoot>
             <tr>
@@ -354,16 +383,11 @@ function createTable(evidences, savedData = []) {
         </tfoot>
     `;
 
-    console.log("HTML de la taula generat:", table.innerHTML);
-
+    //console.log("HTML generat:", table.innerHTML);
     tableWrapper.appendChild(table);
-
-    console.log("Taula afegida al DOM, recalculant totals...");
     calculateTotals();
     console.log("Finalitzada la creació de la taula.");
 }
-
-
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -373,8 +397,15 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`ID RA carregat: ${id_ra}`);
 
     Promise.all([
-        fetchEvidences(),
+        fetchEvidences(), // Carrega les evidències
         fetch(`/api/ra/${id_ra}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error del servidor: ${response.status}`);
+                }
+                return response.json();
+            }),
+        fetch(`/get_criteris/${id_ra}`) // Carrega les ponderacions dels criteris
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Error del servidor: ${response.status}`);
@@ -382,12 +413,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.json();
             })
     ])
-        .then(([loadedEvidences, savedData]) => {
+        .then(([loadedEvidences, savedData, criterisData]) => {
             evidences = loadedEvidences; // Desa les evidències globalment
             console.log('Evidències carregades:', evidences);
             console.log('Dades desades carregades:', savedData);
+            console.log('Ponderacions carregades:', criterisData);
 
-            createTable(evidences, savedData.detalls || []);
+            createTable(evidences, savedData.detalls || [], criterisData.criteris || []);
         })
         .catch(error => {
             console.error('Error carregant dades:', error);

@@ -140,6 +140,19 @@ def veure_ra(id_ra):
         print("Error carregant els detalls:", e)
         abort(500, description=f"Error: {e}")
 
+@app.route('/get_criteris/<int:id_ra>')
+def get_criteris(id_ra):
+    try:
+        criteris = db_query(
+            "SELECT id_criteri, descripcio, ponderacio FROM Criteri WHERE id_ra = ?",
+            (id_ra,),
+            fetchall=True
+        )
+        print("Criteris retornats:", criteris)
+        return jsonify(criteris=[dict(row) for row in criteris])
+    except Exception as e:
+        print("Error recuperant criteris:", e)
+        return jsonify(success=False, error=str(e))
 
 @app.route('/api/ra/<int:id_ra>')
 def get_ra_details(id_ra):
