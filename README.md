@@ -2,47 +2,78 @@
 Aplicació per aconseguir posar notes als mòduls sense ponderar instruments 
 
 ```mermaid
-flowchart TD
-    %% Entitat Cicle
-    Cicle["🟦 Cicle"] -->|id_cicle| CicleID["⚪ id_cicle"]
-    Cicle -->|nom| CicleNom["⚪ nom"]
+erDiagram
+    %% Entitats principals
+    Cicle {
+        INTEGER id_cicle
+        VARCHAR nom
+    }
 
-    %% Entitat Modul
-    Modul["🟦 Modul"] -->|id_modul| ModulID["⚪ id_modul"]
-    Modul -->|nom| ModulNom["⚪ nom"]
-    Modul -->|id_cicle| ModulCicle["⚪ id_cicle"]
-    ModulCicle --> Cicle
+    Modul {
+        INTEGER id_modul
+        VARCHAR nom
+        INTEGER id_cicle
+    }
 
-    %% Entitat RA
-    RA["🟦 RA"] -->|id_ra| RAID["⚪ id_ra"]
-    RA -->|nom| RANom["⚪ nom"]
-    RA -->|ponderacio| RAPonderacio["⚪ ponderacio"]
-    RA -->|id_modul| RAModul["⚪ id_modul"]
-    RAModul --> Modul
+    RA {
+        INTEGER id_ra
+        VARCHAR nom
+        REAL ponderacio
+        INTEGER id_modul
+    }
 
-    %% Entitat Criteri
-    Criteri["🟦 Criteri"] -->|id_criteri| CriteriID["⚪ id_criteri"]
-    Criteri -->|descripcio| CriteriDescripcio["⚪ descripcio"]
-    Criteri -->|ponderacio| CriteriPonderacio["⚪ ponderacio"]
-    Criteri -->|id_ra| CriteriRA["⚪ id_ra"]
-    CriteriRA --> RA
+    Criteri {
+        INTEGER id_criteri
+        TEXT descripcio
+        REAL ponderacio
+        INTEGER id_ra
+    }
 
-    %% Entitat Evidencia
-    Evidencia["🟦 Evidencia"] -->|id_evidencia| EvidenciaID["⚪ id_evidencia"]
-    Evidencia -->|nom| EvidenciaNom["⚪ nom"]
-    Evidencia -->|id_criteri| EvidenciaCriteri["⚪ id_criteri"]
-    EvidenciaCriteri --> Criteri
+    Alumne {
+        INTEGER nia
+        TEXT nom
+        TEXT cognoms
+    }
 
-    %% Entitat Alumne
-    Alumne["🟦 Alumne"] -->|nia| AlumneNIA["⚪ nia"]
-    Alumne -->|nom| AlumneNom["⚪ nom"]
+    Evidencia {
+        INTEGER id
+        TEXT descripcio
+    }
 
-    %% Entitat Criteri_Alumne_Evidencia
-    CAE["🟦 Criteri_Alumne_Evidencia"] -->|id_criteri| CAECriteri["⚪ id_criteri"]
-    CAE -->|id_evidencia| CAEEvidencia["⚪ id_evidencia"]
-    CAE -->|nia| CAEAlumne["⚪ nia"]
-    CAE -->|valor| CAEValor["⚪ valor"]
-    CAECriteri --> Criteri
-    CAEEvidencia --> Evidencia
-    CAEAlumne --> Alumne
+    Descriptor {
+        INTEGER id
+        TEXT nom
+        REAL valor
+    }
+
+    Modul_Alumne {
+        INTEGER id_modul
+        INTEGER nia
+    }
+
+    Evidencia_Descriptor {
+        INTEGER id_evidencia
+        INTEGER id_descriptor
+    }
+
+    Criteri_Alumne_Evidencia {
+        INTEGER id_criteri
+        INTEGER id_evidencia
+        INTEGER nia
+        REAL valor
+        DATETIME data
+    }
+
+    %% Relacions
+    Cicle ||--o{ Modul : "inclou"
+    Modul ||--o{ RA : "inclou"
+    RA ||--o{ Criteri : "defineix"
+    Modul ||--o{ Modul_Alumne : "té"
+    Modul_Alumne }o--|| Alumne : "relaciona"
+    Alumne ||--o{ Criteri_Alumne_Evidencia : "avalua"
+    Evidencia ||--o{ Evidencia_Descriptor : "té descriptors"
+    Descriptor ||--o{ Evidencia_Descriptor : "defineix"
+    Criteri ||--o{ Criteri_Alumne_Evidencia : "especifica"
+    Evidencia ||--o{ Criteri_Alumne_Evidencia : "avalua"
+
 ``` 
