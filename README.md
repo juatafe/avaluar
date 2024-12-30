@@ -35,23 +35,23 @@ Els descriptors permeten una avaluació més precisa i qualitativa, afegint sign
 
 ### Fórmules
 - **Càlcul de l'Aconseguit de cada criteri**:
-  \[
+  $$
   \text{Aconseguit\_Criteri} = \left( \frac{\sum \text{Nota\_Evidencia}}{\text{Nombre\_Evidencies}} \right) \times \text{Ponderacio\_Criteri}
-  \]
+  $$
 
   - `Nota_Evidencia`: Valor de cada evidència registrada segons el descriptor.
   - `Nombre_Evidencies`: Nombre total d'evidències associades al criteri.
   - `Ponderacio_Criteri`: Pes específic del criteri en el resultat d'aprenentatge.
 
 - **Càlcul del Progrés de cada RA**:
-  \[
+  $$
   \text{Progrés\_RA} = \sum \text{Aconseguit\_Criteri}
-  \]
+  $$
 
 - **Càlcul de la Nota del mòdul**:
-  \[
-  \text{Nota\_Modul} = \sum \left( \text{Progrés\_RA} \times \text{Ponderacio\_RA} \right)
-  \]
+  $$
+  \text{Nota\_Modul} = \sum \left( \text{Aconseguit\_RA} \times \text{Ponderacio\_RA} \right)
+  $$
 
   - `Ponderacio_RA`: Pes assignat a cada resultat d'aprenentatge dins del mòdul.
 
@@ -68,9 +68,9 @@ Els descriptors permeten una avaluació més precisa i qualitativa, afegint sign
    - Evidència 3: Descriptor **"Suficient"** (6 punts).
 
    - Aconseguit del criteri:
-     \[
+     $$
      \text{Aconseguit\_Criteri} = \left( \frac{10 + 8 + 6}{3} \right) \times 0.3 = 7.2
-     \]
+     $$
 
 2. Si el RA té tres criteris, el progrés es calcula sumant els `Aconseguit_Criteri` dels tres.
 
