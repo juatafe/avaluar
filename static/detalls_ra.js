@@ -1,6 +1,5 @@
 let evidences = [];
 
-
 async function fetchEvidences() {
     try {
         const response = await fetch('/api/evidences');
@@ -30,8 +29,6 @@ async function fetchCriteris(id_ra) {
         return [];
     }
 }
-
-
 
 function manualUpdate(input) {
     const value = parseFloat(input.value);
@@ -140,6 +137,8 @@ async function guardarDetalls() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ detalls, ponderacions }),
         });
+        console.log('Dades a enviar guardarDetalls():', JSON.stringify(detalls)); // on 'data' és l'objecte enviat al backend
+
 
         const result = await response.json();
         console.log("Resposta del servidor:", result);
@@ -153,10 +152,8 @@ async function guardarDetalls() {
         console.error("Error desant dades:", error);
         alert("Error desant dades.");
     }
+    calculateTotals();
 }
-
-
-
 
 function updateNota(select) {
     const selectedOption = select.options[select.selectedIndex];
@@ -179,7 +176,6 @@ function updateNota(select) {
     //guardarDetalls(); // Desem automàticament després d'una actualització
     calculateTotals(); // Actualitzar els totals
 }
-
 
 function calculateTotals() {
     const table = document.querySelector('.table-wrapper table');
@@ -296,6 +292,19 @@ document.addEventListener('input', (event) => {
     }
 });
 
+function populateTable(criteris) {
+    criteris.forEach(criteri => {
+        const row = document.querySelector(`tr[data-id-criteri="${criteri.id_criteri}"]`);
+        if (row) {
+            const inputPonderacio = row.querySelector('.ponderacio');
+            if (inputPonderacio) {
+                inputPonderacio.value = criteri.ponderacio;
+            }
+        }
+    });
+    calculateTotals();
+}
+
 function createTable(evidences, savedData = [], criteris = []) {
     console.log("Iniciant la creació de la taula...");
     console.log("Evidències rebudes:", evidences);
@@ -305,26 +314,31 @@ function createTable(evidences, savedData = [], criteris = []) {
     const tableWrapper = document.querySelector('.table-wrapper');
     tableWrapper.innerHTML = '';
 
-    // Filtrar criteris únics
-    const uniqueCriterios = criteris.length > 0
-        ? criteris.map(data => ({
-              criteri: data.descripcio,
-              valor: data.ponderacio || 0,
-              aconseguit: 0,
-              progres: 0,
-              id_criteri: data.id_criteri,
-              nia: ''
-          }))
-        : [...new Map(savedData.map(data => [data.id_criteri, data])).values()].map(data => ({
-              criteri: data.criteri_descripcio,
-              valor: data.ponderacio,
-              aconseguit: data.aconseguit || 0,
-              progres: data.progres || 0,
-              id_criteri: data.id_criteri,
-              nia: data.nia
-          }));
+    const uniqueCriterios = {}; // Inicialitzar l'objecte
 
-    console.log("Criteris processats:", uniqueCriterios);
+    // Processar dades guardades
+    savedData.forEach(data => {
+        if (!uniqueCriterios[data.id_criteri]) {
+            uniqueCriterios[data.id_criteri] = {
+                criteri: data.criteri_descripcio, // Descripció del criteri
+                valor: data.ponderacio || 0, // Ponderació del criteri
+                id_criteri: data.id_criteri,
+                nia: data.nia // ID del criteri
+            };
+        }
+    });
+    
+    // Actualitzar ponderació i descripció si cal
+    criteris.forEach(data => {
+        if (uniqueCriterios[data.id_criteri]) {
+            uniqueCriterios[data.id_criteri].criteri = data.descripcio || uniqueCriterios[data.id_criteri].criteri;
+            uniqueCriterios[data.id_criteri].valor = data.ponderacio || uniqueCriterios[data.id_criteri].valor;
+        }
+    });
+    
+    // Convertir objecte a array si es requereix per ús posterior
+    const uniqueCriteriosArray = Object.values(uniqueCriterios);
+    console.log("Criteris processats amb ponderació i descripció:", uniqueCriteriosArray);
 
     const table = document.createElement('table');
     table.innerHTML = `
@@ -338,12 +352,12 @@ function createTable(evidences, savedData = [], criteris = []) {
             </tr>
         </thead>
         <tbody>
-            ${uniqueCriterios.map(row => `
+            ${uniqueCriteriosArray.map(row => `
                 <tr data-id-criteri="${row.id_criteri}" data-nia="${row.nia}">
                     <td>${row.criteri}</td>
                     <td><input type="number" class="ponderacio" min="0" max="100" value="${row.valor}" oninput="calculateTotals()"></td>
-                    <td class="aconseguit">${row.aconseguit.toFixed(2)}</td>
-                    <td class="progress">${row.progres}</td>
+                    <td class="aconseguit">${row.aconseguit ? row.aconseguit.toFixed(2) : '0.00'}</td>
+                    <td class="progress">${row.progres ? row.progres.toFixed(2) : '0.00'}</td>
                     ${evidences.map(evidence => {
                         const savedValue = savedData.find(
                             d => d.id_criteri === row.id_criteri && d.id_evidencia === evidence.id
@@ -383,12 +397,14 @@ function createTable(evidences, savedData = [], criteris = []) {
         </tfoot>
     `;
 
-    //console.log("HTML generat:", table.innerHTML);
+    console.log("HTML de la taula generat:", table.innerHTML);
+
     tableWrapper.appendChild(table);
+
+    console.log("Taula afegida al DOM, recalculant totals...");
     calculateTotals();
     console.log("Finalitzada la creació de la taula.");
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Pàgina carregada.');
@@ -397,15 +413,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`ID RA carregat: ${id_ra}`);
 
     Promise.all([
-        fetchEvidences(), // Carrega les evidències
+        fetchEvidences(),
         fetch(`/api/ra/${id_ra}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Error del servidor: ${response.status}`);
-                }
-                return response.json();
-            }),
-        fetch(`/get_criteris/${id_ra}`) // Carrega les ponderacions dels criteris
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Error del servidor: ${response.status}`);
@@ -413,16 +422,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.json();
             })
     ])
-        .then(([loadedEvidences, savedData, criterisData]) => {
+        .then(([loadedEvidences, savedData]) => {
             evidences = loadedEvidences; // Desa les evidències globalment
             console.log('Evidències carregades:', evidences);
             console.log('Dades desades carregades:', savedData);
-            console.log('Ponderacions carregades:', criterisData);
 
-            createTable(evidences, savedData.detalls || [], criterisData.criteris || []);
+            createTable(evidences, savedData.detalls || []);
+            return fetchCriteris(id_ra);
+        })
+        .then(criteris => {
+            console.log("Criteris recuperats del backend:", criteris);
+            populateTable(criteris);
         })
         .catch(error => {
             console.error('Error carregant dades:', error);
             alert('No s’han pogut carregar les dades.');
         });
+
+
+    
 });

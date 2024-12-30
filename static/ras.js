@@ -43,6 +43,18 @@ document.addEventListener('input', (event) => {
     }
 });
 
+function redirigirAmbNIA(nia) {
+    if (nia) {
+        window.location.href = `/visualitzar?nia=${nia}`;
+    } else {
+        alert("El NIA no està disponible.");
+    }
+}
+
+
+
+
+
 // Afegir l'event listener quan el document està llest
 document.addEventListener('DOMContentLoaded', () => {
     const saveButton = document.querySelector('.save-button');

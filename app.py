@@ -188,29 +188,30 @@ def get_ra_details(id_ra):
 @app.route('/visualitzar', methods=['GET', 'POST'])
 def visualitzar():
     if request.method == 'POST':
-        nia = request.form['nia']  # Obtenir el NIA introduït per l'usuari
-        try:
+        nia = request.args.get('nia') or request.form.get('nia') #request.form['nia']  # Obtenir el NIA introduït per l'usuari
+        if nia:
+            try:
             # Consulta SQL per obtenir els mòduls de l'alumne
-            moduls = db_query("""
-                SELECT DISTINCT Modul.id_modul, Modul.nom
-                FROM Modul
-                JOIN RA ON Modul.id_modul = RA.id_modul
-                JOIN Criteri ON RA.id_ra = Criteri.id_ra
-                LEFT JOIN Criteri_Alumne_Evidencia ON Criteri.id_criteri = Criteri_Alumne_Evidencia.id_criteri
-                WHERE Criteri_Alumne_Evidencia.nia = ? 
-                    OR EXISTS (
-                        SELECT 1
-                        FROM Criteri_Alumne_Evidencia cae
-                        WHERE cae.id_criteri = Criteri.id_criteri
-                    )
-            """, (nia,), fetchall=True)
+                moduls = db_query("""
+                    SELECT DISTINCT Modul.id_modul, Modul.nom
+                    FROM Modul
+                    JOIN RA ON Modul.id_modul = RA.id_modul
+                    JOIN Criteri ON RA.id_ra = Criteri.id_ra
+                    LEFT JOIN Criteri_Alumne_Evidencia ON Criteri.id_criteri = Criteri_Alumne_Evidencia.id_criteri
+                    WHERE Criteri_Alumne_Evidencia.nia = ? 
+                        OR EXISTS (
+                            SELECT 1
+                            FROM Criteri_Alumne_Evidencia cae
+                            WHERE cae.id_criteri = Criteri.id_criteri
+                        )
+                """, (nia,), fetchall=True)
 
-            # Renderitzar la plantilla amb els mòduls i el NIA
-            return render_template('moduls.html', moduls=moduls, nia=nia)
+                # Renderitzar la plantilla amb els mòduls i el NIA
+                return render_template('moduls.html', moduls=moduls, nia=nia)
 
-        except sqlite3.Error as e:
+            except sqlite3.Error as e:
             # Retornar un missatge d'error si falla la consulta
-            return render_template('visualitzar.html', message=f"Error: {e}")
+                return render_template('visualitzar.html', message=f"Error: {e}")
 
     # Si és GET, mostrar la pàgina inicial
     return render_template('visualitzar.html')
@@ -425,6 +426,12 @@ def update_detalls_ra():
         print("Error actualitzant els detalls:", e)
         return jsonify(success=False, error=str(e))
 
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    return response
 
 # Ruta per actualitzar les ponderacions dels RAs
 @app.route('/update-ras', methods=['POST'])

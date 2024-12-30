@@ -44,9 +44,11 @@
 
             </table>
         </div>
-        <button class="save-button">Desar Ponderacions</button>
-        <button class="back-button" onclick="window.history.back()">Tornar</button>
-    </div>
+        <form method="POST" action="/visualitzar">
+            <input type="hidden" name="nia" value="{{ nia }}">
+            <button type="submit" class="back-button">Tornar</button>
+        </form>
+        </div>
 
     <footer>
         <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens
