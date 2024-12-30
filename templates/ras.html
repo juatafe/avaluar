@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAs</title>
+    <title>Resultats d'Aprenentatge</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
 
@@ -12,17 +12,17 @@
 
 <body>
     <div class="container">
-        <h1>RAs</h1>
+        <h1>Resultats d'Aprenentatge - {{ nom_modul }}</h1>
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>Nom</th>
+                        <th>Nom RA</th>
                         <th>Ponderació (%)</th>
-                        <th>Progres</th>
+                        <th>Progrés</th>
                         <th>Aconseguit</th>
                         <th>Data de Registre</th>
-                        <th>Acció</th>
+                        <th>Avaluar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,19 +36,28 @@
                         <td>{{ ra.progress }}</td>
                         <td>{{ ra.aconseguit }}</td>
                         <td>{{ ra['ultima_data']|date('d/m/Y') }}</td>
-                        <td><a href="/ra/{{ ra.id_ra }}" class="action-link">Detalls</a></td>
+                        <td><a href="/ra/{{ ra.id_ra }}" class="action-link">Posar notes</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
-                
-
+                <tfoot>
+                    <tr>
+                        <td><strong>Totals</strong></td>
+                        <td id="total-ponderacio"><strong>0</strong></td>
+                        <td id="total-progress"><strong>0.00</strong></td>
+                        <td id="total-aconseguit"><strong>0.00</strong></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
+        <button class="save-button btn btn-primary">Desar</button>
         <form method="POST" action="/visualitzar">
             <input type="hidden" name="nia" value="{{ nia }}">
             <button type="submit" class="back-button">Tornar</button>
         </form>
-        </div>
+    </div>
 
     <footer>
         <p>&copy; 2024 - Desenvolupat per <a href="https://juatafe.github.io" target="_blank">Juan Bautista Talens
@@ -56,6 +65,28 @@
     </footer>
 
     <script src="/static/ras.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const rows = document.querySelectorAll('tbody tr');
+            let totalPonderacio = 0;
+            let totalProgress = 0;
+            let totalAconseguit = 0;
+
+            rows.forEach(row => {
+                const ponderacio = parseFloat(row.querySelector('.ponderacio-input').value) || 0;
+                const progress = parseFloat(row.cells[2].textContent) || 0;
+                const aconseguit = parseFloat(row.cells[3].textContent) || 0;
+
+                totalPonderacio += ponderacio;
+                totalProgress += progress;
+                totalAconseguit += aconseguit;
+            });
+
+            document.getElementById('total-ponderacio').textContent = totalPonderacio.toFixed(2);
+            document.getElementById('total-progress').textContent = totalProgress.toFixed(2);
+            document.getElementById('total-aconseguit').textContent = totalAconseguit.toFixed(2);
+        });
+    </script>
 </body>
 
 </html>

@@ -464,6 +464,28 @@ def update_ras():
         print("Error desant les ponderacions:", e)
         return jsonify({"success": False, "message": str(e)}), 500
 
+@app.route('/ras/<int:id_modul>')
+def mostrar_ras(id_modul):
+    try:
+        # Obtenir el nom del mòdul
+        modul = db_query("SELECT nom FROM Modul WHERE id_modul = ?", (id_modul,))
+        if not modul:
+            return "Mòdul no trobat", 404
+        nom_modul = modul[0][0]
+
+        # Obtenir els resultats d'aprenentatge (RA) del mòdul
+        ras = db_query("""
+            SELECT ra.id_ra, ra.nom AS nom_ra, ra.ponderacio AS ponderacio_ra, ra.progress, ra.aconseguit, ra.ultima_data
+            FROM RA ra
+            WHERE ra.id_modul = ?
+        """, (id_modul,))
+
+        # Renderitzar la plantilla amb les dades
+        return render_template('ras.html', nom_modul=nom_modul, ras=ras)
+    except Exception as e:
+        print("Error mostrant els resultats d'aprenentatge:", e)
+        return "Error mostrant els resultats d'aprenentatge", 500
+
 
 @app.template_filter('date')
 def format_date(value, format='%d/%m/%Y'):
