@@ -1,7 +1,7 @@
 # avaluar
 Aplicació per aconseguir posar notes als mòduls sense ponderar instruments 
 
-flowchart TD
+```mermaid flowchart TD
     %% Entitat Cicle
     Cicle["🟦 Cicle"] -->|id_cicle| CicleID["⚪ id_cicle"]
     Cicle -->|nom| CicleNom["⚪ nom"]
