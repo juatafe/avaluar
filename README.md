@@ -53,7 +53,7 @@ En cada RA es pot accedir mitjançant un link `Posar Nota` al detall de cada cri
   $`\text{Progrés\_RA} = \sum \text{Aconseguit\_Criteri}`$
 
 - **Càlcul de la Nota del mòdul**:
-  $`\text{Nota\_Modul} = \sum \left( \text{Aconseguit\_RA} \times \text{Ponderacio\_RA} \right)`$
+  $`\text{Nota\_Modul} = \sum \text{Acosseguit\_Total} = \sum \left( \text{Progrés\_RA} \times \text{Ponderacio\_RA} \right)`$
 
   - `Ponderacio_RA`: Pes assignat a cada resultat d'aprenentatge dins del mòdul.
 
