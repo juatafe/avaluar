@@ -1,4 +1,41 @@
 # -*- coding: utf-8 -*-
+
+"""
+Aquest mòdul implementa una aplicació web Flask per a la gestió de registres i avaluacions d'estudiants.
+Inclou rutes per a renderitzar plantilles, gestionar enviaments de formularis i proporcionar punts finals d'API.
+Rutes:
+- `/`: Renderitza la pàgina principal.
+- `/alta-alumnes`: Gestiona el formulari per a afegir nous estudiants.
+- `/api/evidences`: Proporciona un punt final d'API per a recuperar dades d'evidències.
+- `/ra/<int:id_ra>`: Mostra els detalls d'un RA (Resultat d'Aprenentatge) específic.
+- `/get_criteris/<int:id_ra>`: Proporciona un punt final d'API per a recuperar criteris per a un RA específic.
+- `/api/ra/<int:id_ra>`: Proporciona un punt final d'API per a recuperar dades detallades per a un RA específic.
+- `/visualitzar`: Gestiona el formulari per a visualitzar els mòduls d'estudiants.
+- `/alta-entitats`: Gestiona el formulari per a afegir noves entitats (Cicle, Mòdul, RA, Criteri, Evidència).
+- `/modul/<int:id_modul>/<int:nia>`: Mostra els detalls del mòdul per a un estudiant específic.
+- `/update-detalls`: Punt final d'API per a actualitzar detalls.
+- `/update-detalls-ra`: Punt final d'API per a actualitzar detalls de RA.
+- `/update-ras`: Punt final d'API per a actualitzar les ponderacions de RA.
+- `/ras/<int:id_modul>`: Mostra els RA per a un mòdul específic.
+Funcions:
+- `open_browser()`: Obri el navegador web per defecte a l'URL de l'aplicació.
+- `format_date(value, format='%d/%m/%Y')`: Filtre Jinja2 per a formatar dates.
+- `db_query(query, params=(), fetchone=False, fetchall=False, commit=False)`: Executa una consulta a la base de dades.
+- `handle_exit(signum, frame)`: Gestiona l'eixida de l'aplicació per a un tancament net.
+Base de dades:
+- L'aplicació utilitza SQLite per a l'emmagatzematge de dades, amb el fitxer de base de dades situat a `avaluar.db`.
+Plantilles:
+- L'aplicació utilitza plantilles Jinja2 per a renderitzar pàgines HTML.
+Gestió d'errors:
+- L'aplicació inclou gestió d'errors per a operacions de base de dades i errors HTTP.
+Seguretat:
+- L'aplicació inclou mesures de seguretat bàsiques com la validació d'entrades i la gestió d'errors.
+Ús:
+- Executa l'aplicació a la carpeta dist/ amb `./app o amb app.exe`.
+- L'aplicació s'obrirà en el navegador web per defecte a `http://127.0.0.1:5004/`.
+"""
+
+
 import webbrowser
 from threading import Timer
 from flask import Flask, render_template, request, redirect, url_for, jsonify, abort
@@ -519,3 +556,5 @@ if __name__ == '__main__':
         app.run(debug=True, port=5004)
     except KeyboardInterrupt:
         handle_exit(None, None)
+
+
