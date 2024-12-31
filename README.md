@@ -4,11 +4,11 @@ L'objectiu d'aquesta aplicació és facilitar l'avaluació per competències en 
 
 ## Registre Automàtic d'Evidències per a Nous Alumnes
 
-Quan es registra un alumne nou, el sistema crea automàticament una entrada a la taula `Criteri_Alumne_Evidencia` amb una evidència inicial, denominada **"Avaluació Zero"**, associada a tots els criteris. Aquesta funció garanteix que cada alumne comenci amb un registre base sobre el qual es podrà avaluar el seu progrés.
+Quan es registra un alumne nou, el sistema ha de crear automàticament una entrada a la taula `Criteri_Alumne_Evidencia` amb una evidència inicial, denominada **"Avaluació Zero"**, associada a tots els criteris. Aquesta funció garanteix que es mostren els mòduls matriculats de l'alumne ja que no existeix cap relació entre les taules Mòdul i Alumne per evitar resundància. 
 
 ## Descriptors Associats a Evidències
 
-Cada evidència té una sèrie de descriptors predefinits que es creen automàticament quan es registra l'evidència. Aquests descriptors inclouen una qualificació associada que ajuda a uniformitzar les notes i la interpretació del progrés. Alguns exemples de descriptors són:
+Cada evidència té una sèrie de descriptors predefinits que cal crear quan es registra l'evidència. Aquests descriptors inclouen una qualificació associada que obtenir una qualificació sumativa i la interpretació del progrés en una nota. Alguns exemples de descriptors són:
 
 - **Assolit**: 5
 - **Excel·lent**: 10
@@ -25,9 +25,15 @@ Els descriptors permeten una avaluació més precisa i qualitativa, afegint sign
    - `Suficient`: 6 punts
    - `Insuficient`: 4 punts
 
-2. Quan un alumne rep una nota d'aquesta evidència, es pot assignar directament el valor associat al descriptor escollit, simplificant el càlcul i mantenint la coherència.
+2. Quan a un alumne se li associa un descriptor a una evidència, s'assigna directament el valor associat al descriptor escollit, simplificant el càlcul i mantenint la coherència.
 
 ## Càlcul del Progrés i Aconseguit
+
+Amb el NIA de l'estudiant s'accedeix al llistat de mòduls on té registres de valors d'evidències a la taula `Criteri_Alumne_Evidencia` . Com que l'app està preparada (encara no) per a crear una evidència com a avaluació zero apareixen tots els mòduls matriculats. 
+
+En accedir a un mòdul es pot observar el llistat dels RAs amb la ponderació, el progrés i l'aconseguit. A peu de taula es tenen els resultats totals. La nota del mòdul és el total de la columna aconseguit. 
+
+En cada RA es pot accedir mitjançant un link `Posar Nota` al detall de cada criteri. En altra pàgina es llisten tots els criteris associats a l'RA. En aquesta vista s'obté una taula amb la ponderació, aconseguit i progrés de cada criteri i a peu de taula els totals. 
 
 ### Conceptes Clau
 1. **Progrés de cada RA**: El progrés d'un resultat d'aprenentatge es determina pel sumatori dels valors aconseguits dels criteris associats.
