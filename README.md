@@ -60,6 +60,18 @@ En cada RA es pot accedir mitjançant un link `Posar Nota` al detall de cada cri
 
   - `Ponderacio_RA`: Pes assignat a cada resultat d'aprenentatge dins del mòdul.
 
+## Execució de l'Aplicació
+
+Per executar l'aplicació, cal seguir els passos següents:
+
+1. Descarregar els fitxers de l'aplicació des del repositori de GitHub.
+2. Assegurar-se que el fitxer `avaluar.db` es troba en el mateix directori que l'executable de l'aplicació.
+3. Executar l'aplicació segons el sistema operatiu:
+
+   - **Linux/Mac**: Executar el fitxer `./app` des del terminal.
+   - **Windows**: Executar el fitxer `app.exe` fent doble clic o des del terminal.
+
+Els fitxers de l'aplicació es troben a la carpeta `dist` del repositori de GitHub. Podeu descarregar-los i seguir les instruccions anteriors per posar en marxa l'aplicació.
 
 ## Exemple d'Aplicació
 1. Un alumne té associades tres evidències per a un criteri 1 amb una ponderació del 30%. Les seves notes són:
@@ -84,13 +96,6 @@ En cada RA es pot accedir mitjançant un link `Posar Nota` al detall de cada cri
    Ací caldria tenir en compte el % que va a empresa o bé treballar sobre el 100% pensant que després caldrà fer el càlcul. Pot ser seria millor implementar una millora que tinga en compte qué % va a empresa i quin a Criteris. 
 
 
-## Avantatges del Sistema
-- **Automatització**: Els càlculs són automàtics, reduint l'error humà i estalviant temps al professorat.
-- **Descriptors predefinits**: Els descriptors estandarditzen les notes i faciliten una interpretació coherent entre professors i alumnes.
-- **Flexibilitat**: Permet avaluar els alumnes basant-se en els criteris establerts, sense necessitat de ponderar manualment cada instrument.
-- **Claredat**: Les fórmules proporcionen un marc transparent per al càlcul de les notes i del progrés dels alumnes.
-  
-Aquest sistema facilita l'avaluació contínua i orientada a competències, assegurant que els alumnes avancen en base als resultats establerts. La nota de cada avaluació no és la nota final sino l'avaluació continua del curs o la "foto" de l'aconseguit en eixe moment. 
 
 ## Base de dades
 La base de dades està dissenyada per gestionar la informació relacionada amb els cicles formatius, mòduls, resultats d'aprenentatge (RA), criteris, alumnes, evidències i descriptors. A continuació es descriuen les entitats principals i les seves relacions:
@@ -226,3 +231,19 @@ erDiagram
     Evidencia ||--o{ Criteri_Alumne_Evidencia : "avalua"
 
 ``` 
+
+
+## Avantatges del Sistema
+- **Automatització**: Els càlculs són automàtics, reduint l'error humà i estalviant temps al professorat.
+- **Descriptors predefinits**: Els descriptors estandarditzen les notes i faciliten una interpretació coherent entre professors i alumnes.
+- **Flexibilitat**: Permet avaluar els alumnes basant-se en els criteris establerts, sense necessitat de ponderar manualment cada instrument.
+- **Claredat**: Les fórmules proporcionen un marc transparent per al càlcul de les notes i del progrés dels alumnes.
+  
+Aquest sistema facilita l'avaluació contínua i orientada a competències, assegurant que els alumnes avancen en base als resultats establerts. La nota de cada avaluació no és la nota final sino l'avaluació continua del curs o la "foto" de l'aconseguit en eixe moment. 
+
+
+## Millores Futures
+- Un selector d'evidències en lloc de llistar-les totes.
+- Els formularis d'inserció de dades.
+- En tancar la finestra que tanque el servidor.
+- Importar dades extretes d'itaca.
