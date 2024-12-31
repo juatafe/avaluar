@@ -41,6 +41,7 @@ En cada RA es pot accedir mitjançant un link `Posar Nota` al detall de cada cri
 
 ### Fórmules
 - **Càlcul de l'Aconseguit de cada criteri**:
+  
   $`
   \text{Aconseguit\_Criteri} = \left( \frac{\sum \text{Nota\_Evidencia}}{\text{Nombre\_Evidencies}} \right) \times \text{Ponderacio\_Criteri}
   `$
@@ -50,9 +51,11 @@ En cada RA es pot accedir mitjançant un link `Posar Nota` al detall de cada cri
   - `Ponderacio_Criteri`: Pes específic del criteri en el resultat d'aprenentatge.
 
 - **Càlcul del Progrés de cada RA**:
+  
   $`\text{Progrés\_RA} = \sum \text{Aconseguit\_Criteri}`$
 
 - **Càlcul de la Nota del mòdul**:
+  
   $`\text{Nota\_Modul} = \sum \text{Acosseguit\_Total} = \sum \left( \text{Progrés\_RA} \times \text{Ponderacio\_RA} \right)`$
 
   - `Ponderacio_RA`: Pes assignat a cada resultat d'aprenentatge dins del mòdul.
@@ -64,20 +67,27 @@ En cada RA es pot accedir mitjançant un link `Posar Nota` al detall de cada cri
 - **Claredat**: Les fórmules proporcionen un marc transparent per al càlcul de les notes i del progrés dels alumnes.
 
 ## Exemple d'Aplicació
-1. Un alumne té associades tres evidències per a un criteri amb una ponderació del 30%. Les seves notes són:
+1. Un alumne té associades tres evidències per a un criteri 1 amb una ponderació del 30%. Les seves notes són:
    - Evidència 1: Descriptor **"Excel·lent"** (10 punts).
    - Evidència 2: Descriptor **"Bé"** (8 punts).
    - Evidència 3: Descriptor **"Suficient"** (6 punts).
 
    - Aconseguit del criteri:
       
-     $`\text{Aconseguit\_Criteri} = \left( \frac{10 + 8 + 6}{3} \right) \times 0.3 = 7.2`$
+     $`\text{Aconseguit\_Criteri} = \left( \frac{10 + 8 + 6}{3} \right) \times 0.3 = 2.4`$
 
-2. Si el RA té tres criteris, el progrés es calcula sumant els `Aconseguit_Criteri` dels tres.
+2. Si el RA té tres criteris, el progrés es calcula sumant els `Aconseguit_Criteri` dels tres:
+   1. Aconseguit Criteri 1 amb 30% 2,4
+   2. Aconseguit Criteri 2 amb 50% 4,5
+   3. Aconseguit Criteri 3 amb 20% 1,1
+   
+   La Nota total del RA seria 8
+   
 
 3. Finalment, la nota del mòdul es calcula integrant el progrés de tots els RA amb les seves ponderacions.
+   Ací caldria tenir en compte el % que va a empresa o bé treballar sobre el 100% pensant que després caldrà fer el càlcul. Pot ser seria millor implementar una millora que tinga en compte qué % va a empresa i quin a Criteris. 
 
-Aquest sistema facilita l'avaluació contínua i orientada a competències, assegurant que els alumnes avancen en base als resultats establerts.
+Aquest sistema facilita l'avaluació contínua i orientada a competències, assegurant que els alumnes avancen en base als resultats establerts. La nota de cada avaluació no és la nota final sino l'avaluació continua del curs o la "foto" de l'aconseguit en eixe moment. 
 
 ```mermaid
 erDiagram
