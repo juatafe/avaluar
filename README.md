@@ -92,6 +92,71 @@ En cada RA es pot accedir mitjançant un link `Posar Nota` al detall de cada cri
   
 Aquest sistema facilita l'avaluació contínua i orientada a competències, assegurant que els alumnes avancen en base als resultats establerts. La nota de cada avaluació no és la nota final sino l'avaluació continua del curs o la "foto" de l'aconseguit en eixe moment. 
 
+## Base de dades
+La base de dades està dissenyada per gestionar la informació relacionada amb els cicles formatius, mòduls, resultats d'aprenentatge (RA), criteris, alumnes, evidències i descriptors. A continuació es descriuen les entitats principals i les seves relacions:
+
+
+#### Entitats Principals
+
+- **Cicle**: Representa un cicle formatiu.
+  - `id_cicle` (INTEGER): Identificador únic del cicle.
+  - `nom` (VARCHAR): Nom del cicle.
+
+- **Modul**: Representa un mòdul dins d'un cicle formatiu.
+  - `id_modul` (INTEGER): Identificador únic del mòdul.
+  - `nom` (VARCHAR): Nom del mòdul.
+  - `id_cicle` (INTEGER): Identificador del cicle al qual pertany el mòdul.
+
+- **RA**: Representa un resultat d'aprenentatge dins d'un mòdul.
+  - `id_ra` (INTEGER): Identificador únic del RA.
+  - `nom` (VARCHAR): Nom del RA.
+  - `ponderacio` (REAL): Ponderació del RA.
+  - `id_modul` (INTEGER): Identificador del mòdul al qual pertany el RA.
+
+- **Criteri**: Representa un criteri d'avaluació dins d'un RA.
+  - `id_criteri` (INTEGER): Identificador únic del criteri.
+  - `descripcio` (TEXT): Descripció del criteri.
+  - `ponderacio` (REAL): Ponderació del criteri.
+  - `id_ra` (INTEGER): Identificador del RA al qual pertany el criteri.
+
+- **Alumne**: Representa un alumne.
+  - `nia` (INTEGER): Identificador únic de l'alumne.
+  - `nom` (TEXT): Nom de l'alumne.
+  - `cognoms` (TEXT): Cognoms de l'alumne.
+
+- **Evidencia**: Representa una evidència d'avaluació.
+  - `id` (INTEGER): Identificador únic de l'evidència.
+  - `descripcio` (TEXT): Descripció de l'evidència.
+
+- **Descriptor**: Representa un descriptor associat a una evidència.
+  - `id` (INTEGER): Identificador únic del descriptor.
+  - `nom` (TEXT): Nom del descriptor.
+  - `valor` (REAL): Valor associat al descriptor.
+
+- **Evidencia_Descriptor**: Relaciona evidències amb descriptors.
+  - `id_evidencia` (INTEGER): Identificador de l'evidència.
+  - `id_descriptor` (INTEGER): Identificador del descriptor.
+
+- **Criteri_Alumne_Evidencia**: Relaciona criteris, alumnes i evidències per avaluar.
+  - `id_criteri` (INTEGER): Identificador del criteri.
+  - `id_evidencia` (INTEGER): Identificador de l'evidència.
+  - `nia` (INTEGER): Identificador de l'alumne.
+  - `valor` (REAL): Valor de l'avaluació.
+  - `data` (DATETIME): Data de l'avaluació.
+
+#### Relacions
+
+- **Cicle** inclou **Modul**: Un cicle pot incloure múltiples mòduls.
+- **Modul** inclou **RA**: Un mòdul pot incloure múltiples resultats d'aprenentatge (RA).
+- **RA** defineix **Criteri**: Un resultat d'aprenentatge pot definir múltiples criteris d'avaluació.
+- **Alumne** avalua **Criteri_Alumne_Evidencia**: Un alumne pot ser avaluat en múltiples criteris a través de diverses evidències.
+- **Evidencia** té **Evidencia_Descriptor**: Una evidència pot tenir múltiples descriptors associats.
+- **Descriptor** defineix **Evidencia_Descriptor**: Un descriptor pot estar associat a múltiples evidències.
+- **Criteri** especifica **Criteri_Alumne_Evidencia**: Un criteri pot ser utilitzat per avaluar múltiples alumnes a través de diverses evidències.
+- **Evidencia** avalua **Criteri_Alumne_Evidencia**: Una evidència pot ser utilitzada per avaluar múltiples criteris per a diversos alumnes.
+
+### Entitat-Relació
+
 ```mermaid
 erDiagram
     %% Entitats principals
