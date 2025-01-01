@@ -1,4 +1,29 @@
+<!-- 
+
+Aquesta plantilla HTML s'utilitza per mostrar els resultats d'aprenentatge (Resultats d'Aprenentatge) per a un mòdul específic.
+La plantilla inclou una taula que llista cada resultat d'aprenentatge juntament amb el seu pes, progrés, aconseguit,
+i la data de l'última actualització.
+
+Elements Clau:
+- El títol de la pàgina és "Resultats d'Aprenentatge".
+- La taula conté columnes per al nom del resultat d'aprenentatge, el seu pes (Ponderació), progrés, aconseguit,
+    la data de l'última actualització, i un enllaç d'acció per avaluar el resultat.
+- El peu de pàgina inclou un avís de drets d'autor i un enllaç al lloc web del desenvolupador.
+- La plantilla utilitza fitxers CSS i JavaScript externs situats al directori /static.
+- JavaScript s'utilitza per calcular i mostrar el pes total, progrés i aconseguit per a tots els resultats d'aprenentatge.
+
+Variables de la Plantilla:
+- {{ nom_modul }}: El nom del mòdul.
+- {{ ras }}: Una llista de resultats d'aprenentatge.
+- {{ nia }}: Un valor de camp ocult utilitzat en el formulari per tornar a la pàgina anterior.
+
+Funcionalitat JavaScript:
+- En DOMContentLoaded, l'script calcula el pes total, progrés i aconseguit per a tots els resultats d'aprenentatge
+    i actualitza les cel·les corresponents al peu de la taula.
+-->
 <!DOCTYPE html>
+
+<html lang="ca">
 <html lang="ca">
 
 <head>

@@ -4,7 +4,7 @@ L'objectiu d'aquesta aplicació és facilitar l'avaluació per competències en 
 
 ## Registre Automàtic d'Evidències per a Nous Alumnes
 
-Quan es registra un alumne nou, el sistema ha de crear automàticament una entrada a la taula `Criteri_Alumne_Evidencia` amb una evidència inicial, denominada **"Avaluació Zero"**, associada a tots els criteris. Aquesta funció garanteix que es mostren els mòduls matriculats de l'alumne ja que no existeix cap relació entre les taules Mòdul i Alumne per evitar resundància. 
+Quan es registra un alumne nou, el sistema ha de crear automàticament una entrada a la taula `Criteri_Alumne_Evidencia` amb una evidència inicial, denominada **"Avaluació Zero"**, associada a tots els criteris. Aquesta funció garanteix que es mostren els mòduls matriculats de l'alumne ja que no existeix cap relació entre les taules Mòdul i Alumne per evitar redundància. A més, les evidències poden pertanyer a altres mòduls permetent així treballs intermodulars. 
 
 ## Descriptors Associats a Evidències
 
@@ -16,7 +16,7 @@ Cada evidència té una sèrie de descriptors predefinits que cal crear quan es 
 - **Suficient**: 6
 - **Insuficient**: 4
 
-Els descriptors permeten una avaluació més precisa i qualitativa, afegint significat a les notes numèriques.
+Els descriptors permeten una avaluació més precisa i qualitativa, afegint significat a les notes numèriques en funció de rúbriques, llistes de coteig,  observacions etc.
 
 ### Exemple d'ús dels descriptors
 1. Una evidència denominada **"Projecte 1"** pot tenir els següents descriptors:
@@ -95,7 +95,7 @@ Els fitxers de l'aplicació es troben a la carpeta `dist` del repositori de GitH
    
    Ací caldria tenir en compte el % que va a empresa o bé treballar sobre el 100% pensant que després caldrà fer el càlcul. Pot ser seria millor implementar una millora que tinga en compte qué % va a empresa i quin a Criteris. 
 
-
+Si en algun moment una observació indica que l'alumne ha oblidat allò que semblava assolit, pot ser que no haja adquirit la competència i, per tant, cal actuar per proporcionar-li més eines per assolir-la. Així, la nota reflectirà de manera contínua el progrés en l'adquisició del resultat d'aprenentatge.
 
 ## Base de dades
 La base de dades està dissenyada per gestionar la informació relacionada amb els cicles formatius, mòduls, resultats d'aprenentatge (RA), criteris, alumnes, evidències i descriptors. A continuació es descriuen les entitats principals i les seves relacions:
@@ -239,7 +239,7 @@ erDiagram
 - **Flexibilitat**: Permet avaluar els alumnes basant-se en els criteris establerts, sense necessitat de ponderar manualment cada instrument.
 - **Claredat**: Les fórmules proporcionen un marc transparent per al càlcul de les notes i del progrés dels alumnes.
   
-Aquest sistema facilita l'avaluació contínua i orientada a competències, assegurant que els alumnes avancen en base als resultats establerts. La nota de cada avaluació no és la nota final sino l'avaluació continua del curs o la "foto" de l'aconseguit en eixe moment. 
+Aquest sistema facilita l'avaluació contínua i orientada a competències, assegurant que els alumnes avancen en base als resultats establerts. La nota de cada avaluació no és la nota final sino l'avaluació continua del curs o la "foto" de l'aconseguit en eixe moment. Si en un moment donat una observació o denota que ha oblidat allò que semblava assolit pot ser s'evidencia que no ha adquirit la competència i per tant cal actuar per donar-li més ferramentes per arribar a la mateixa. Així la nota anirà de forma continua reflectint el progrés en l'adquisició del resultat d'aprenentatge. 
 
 
 ## Millores Futures
