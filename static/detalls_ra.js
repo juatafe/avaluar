@@ -159,30 +159,56 @@ async function guardarDetalls() {
 }
 
 function updateNota(select) {
+    // Obtenim l'opció seleccionada i la seva nota
     const selectedOption = select.options[select.selectedIndex];
-    const nota = parseFloat(selectedOption.dataset.nota) || 0; // Obté el valor de la nota
-    const input = select.parentElement.querySelector('input');
+    const nota = parseFloat(selectedOption.dataset.nota) || 0; // Obté la nota del descriptor seleccionat
+    const input = select.parentElement.querySelector('input'); // Troba l'input dins la mateixa cel·la
 
-    // Actualitzar el valor del camp d'entrada associat al `select`
-    if (!selectedOption.value) {
-        input.value = ''; // Reinicia si no hi ha cap valor seleccionat
+    // Assignem o buidem la nota segons l'opció seleccionada
+    if (!select.value) {
+        input.value = ''; // Si no hi ha cap valor seleccionat, buida el camp d'entrada
     } else {
-        input.value = nota; // Assigna la nota corresponent
+        input.value = nota.toFixed(2); // Assigna la nota corresponent al camp d'entrada
     }
 
-    // Obtenir dades per a la consola (debugging)
-    const row = select.closest('tr');
-    const idCriteri = row.dataset.idCriteri;
-    const idEvidencia = select.closest('td').dataset.idEvidencia;
-    const nia = row.dataset.nia;
+    // Recuperem els atributs necessaris de la fila i la cel·la
+    const row = select.closest('tr'); // Obtenim la fila més propera
+    const idCriteri = row ? row.dataset.idCriteri : null; // Dataset de la fila
+    const idEvidencia = select.closest('td') ? select.closest('td').dataset.idEvidencia : null; // Dataset de la cel·la
+    let nia = row ? row.dataset.nia : null; // Dataset de la fila
 
+    // Si el NIA no està definit, intentem obtenir-lo de la fila associada a la evidència id=1
+    if (!nia) {
+        const rowAvaluacioZero = document.querySelector('tr[data-id-criteri][data-nia]'); // Busca una fila amb NIA definit
+        if (rowAvaluacioZero) {
+            nia = rowAvaluacioZero.dataset.nia;
+            console.log("NIA obtingut de l'evidència 'Avaluació Zero':", nia);
+        }
+    }
+
+    // Verifiquem que tots els atributs necessaris estan definits
+    if (!idCriteri || !idEvidencia || !nia) {
+        console.warn('Alguna de les dades no està definida:', {
+            idCriteri,
+            idEvidencia,
+            nia,
+        });
+        return; // Aturem l'execució si falta algun valor
+    }
+
+    // Mostrem a la consola el procés d'actualització
     console.log(
         `Actualitzant nota: Criteri=${idCriteri}, Evidència=${idEvidencia}, NIA=${nia}, Valor=${nota}`
     );
 
-    // Actualitzar totals
+    // Opcional: crida al servidor per desar canvis immediatament
+    // guardarDetalls(); // Desem automàticament després d'una actualització
+
+    // Actualitzem els totals després de modificar una nota
     calculateTotals();
 }
+
+
 
 function calculateTotals() {
     const table = document.querySelector('.table-wrapper table');
@@ -211,7 +237,7 @@ function calculateTotals() {
 
         rows.forEach(row => {
             const cells = row.querySelectorAll('td');
-            const cell = cells[colIndex + 4]; // Ajust per saltar les primeres 4 columnes
+            const cell = cells[colIndex + 4]; // Saltar les primeres columnes (criteris, ponderació, etc.)
 
             if (cell) {
                 const input = cell.querySelector('input');
@@ -229,7 +255,7 @@ function calculateTotals() {
         totalCell.textContent = average;
     });
 
-    // Actualitzar la columna "Progrés" i "Aconseguit" per cada criteri
+    // Actualitzar "Progrés" i "Aconseguit" per cada criteri
     rows.forEach(row => {
         const ponderacio = parseFloat(row.querySelector('.ponderacio').value) || 0;
         const inputs = row.querySelectorAll('td input');
@@ -255,14 +281,8 @@ function calculateTotals() {
     });
 
     // Calcular totals globals
-    const totalPonderacio = Array.from(rows).reduce(
-        (acc, row) => acc + (parseFloat(row.querySelector('.ponderacio').value) || 0),
-        0
-    );
-    const totalAconseguit = Array.from(rows).reduce(
-        (acc, row) => acc + (parseFloat(row.querySelector('.aconseguit').textContent) || 0),
-        0
-    );
+    const totalPonderacio = Array.from(rows).reduce((acc, row) => acc + (parseFloat(row.querySelector('.ponderacio').value) || 0), 0);
+    const totalAconseguit = Array.from(rows).reduce((acc, row) => acc + (parseFloat(row.querySelector('.aconseguit').textContent) || 0), 0);
     const totalProgres = Array.from(rows).reduce(
         (acc, row) => acc + (parseFloat(row.querySelector('.progress').textContent) || 0),
         0
@@ -401,7 +421,7 @@ function populateTable(criteris) {
     calculateTotals();
 }
 
-function createTable(evidences, savedData = [], criteris = []) {
+/* function createTable(evidences, savedData = [], criteris = []) {
     console.log("Iniciant la creació de la taula...");
     console.log("Evidències rebudes:", evidences);
     console.log("Dades desades rebudes:", savedData);
@@ -501,7 +521,7 @@ function createTable(evidences, savedData = [], criteris = []) {
     calculateTotals();
     console.log("Finalitzada la creació de la taula.");
 }
-
+ */
 
 async function fetchEvidences() {
     try {
@@ -543,11 +563,6 @@ function updateEvidenceDropdown() {
 }
 
 function createTable(evidences, savedData = [], criteris = []) {
-    if (!Array.isArray(savedData)) {
-        console.warn("savedData no és un array, inicialitzant-lo com a array buit.");
-        savedData = [];
-    }
-
     const tableWrapper = document.querySelector('.table-wrapper');
     tableWrapper.innerHTML = ''; // Reset de la taula
 
@@ -559,12 +574,12 @@ function createTable(evidences, savedData = [], criteris = []) {
                 <th>Ponderació (%)</th>
                 <th>Aconseguit</th>
                 <th>Progrés</th>
-                ${evidences.map(e => `<th>${e.nom}</th>`).join('')}
+                ${evidences.map(e => `<th>${e.nom || "Sense nom"}</th>`).join('')}
             </tr>
         </thead>
         <tbody>
             ${criteris.map(criteri => `
-                <tr data-id-criteri="${criteri.id_criteri}">
+                <tr data-id-criteri="${criteri.id_criteri}" data-nia="${criteri.nia || ''}">
                     <td>${criteri.descripcio}</td>
                     <td><input type="number" class="ponderacio" value="${criteri.ponderacio || 0}" oninput="calculateTotals()"></td>
                     <td class="aconseguit">0.00</td>
@@ -573,14 +588,19 @@ function createTable(evidences, savedData = [], criteris = []) {
                         const saved = savedData.find(d => d.id_criteri === criteri.id_criteri && d.id_evidencia === evidence.id);
                         const descriptors = evidence.descriptors || [];
                         return `
-                            <td>
-                                <select onchange="updateNota(this)">
-                                    <option value="">Selecciona descriptor</option>
-                                    ${descriptors.map(desc => `
-                                        <option value="${desc.valor}" ${saved?.valor === desc.valor ? 'selected' : ''}>
-                                            ${desc.nom}
-                                        </option>`).join('')}
-                                </select>
+                            <td data-id-evidencia="${evidence.id}">
+                                ${descriptors.length > 0
+                                    ? `
+                                        <select onchange="updateNota(this)">
+                                            <option value="">Selecciona descriptor</option>
+                                            ${descriptors.map(desc => `
+                                                <option value="${desc.valor}" data-nota="${desc.valor}" ${saved?.valor === desc.valor ? 'selected' : ''}>
+                                                    ${desc.nom}
+                                                </option>`).join('')}
+                                        </select>
+                                    `
+                                    : `<span class="no-descriptor">Sense descripció</span>`
+                                }
                                 <input type="number" value="${saved?.valor || ''}" min="0" max="10" oninput="manualUpdate(this)">
                             </td>`;
                     }).join('')}
