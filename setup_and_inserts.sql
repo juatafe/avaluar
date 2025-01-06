@@ -119,13 +119,10 @@ INSERT INTO Cicle (nom) VALUES ('Cicle 2');
 INSERT INTO Modul (nom, id_cicle) VALUES ('Fonaments Hardware', 1);
 INSERT INTO Modul (nom, id_cicle) VALUES ('XAL', 2);
 
--- Inserir dades a la taula RA
-INSERT INTO RA (nom, ponderacio, id_modul) VALUES ('RA 1', 20, 1);
-INSERT INTO RA (nom, ponderacio, id_modul) VALUES ('RA 2', 30, 2);
 
 -- Inserir dades a la taula Criteri
-INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 1', 30, 1);
-INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 2', 40, 2);
+-- INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 1', 30, 1);
+-- INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 2', 40, 2);
 
 -- Inserir dades a la taula Alumne
 INSERT INTO Alumne (nia, nom, cognoms) VALUES (123456, 'Joan', 'Garcia');
@@ -146,6 +143,12 @@ INSERT INTO Evidencia (descripcio) VALUES ('Observació 1');
 INSERT INTO Evidencia (descripcio) VALUES ('Treball 1');
 INSERT INTO Evidencia (descripcio) VALUES ('Pregunta 3');
 INSERT INTO Evidencia (descripcio) VALUES ('Mapa Conceptual 1');
+INSERT INTO Evidencia (descripcio) VALUES ('Sprint 1');
+INSERT INTO Evidencia (descripcio) VALUES ('Sprint 2');
+INSERT INTO Evidencia (descripcio) VALUES ('Sprint 3');
+INSERT INTO Evidencia (descripcio) VALUES ('Sprint 4');
+INSERT INTO Evidencia (descripcio) VALUES ('Sprint 5');
+INSERT INTO Evidencia (descripcio) VALUES ('Presentació');
 
 -- Inserir dades a la taula Descriptor
 INSERT INTO Descriptor (nom, valor) VALUES ('Excel·lent', 10.0);
@@ -170,11 +173,322 @@ INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES
     (3, 8), (3, 9),
     (4, 10), (4, 11),
     (5, 10), (5, 11),
-    (6, 11), (6, 12), (6, 13), (6, 14);
+    (6, 11), (6, 12), (6, 13), (6, 14),
+    (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), -- Sprint 1
+    (8, 1), (8, 2), (8, 3), (8, 4), (8, 5), -- Sprint 2
+    (9, 1), (9, 2), (9, 3), (9, 4), (9, 5), -- Sprint 3
+    (10, 1), (10, 2), (10, 3), (10, 4), (10, 5), -- Sprint 4
+    (11, 1), (11, 2), (11, 3), (11, 4), (11, 5), -- Sprint 5
+    (12, 6), (12, 7); -- Presentació
+
+-- Inserir Resultats d'Aprenentatge FH amb numeració i descripció
+INSERT INTO RA (nom, ponderacio, id_modul) VALUES 
+('RA1- Configura equips microinformàtics, components i perifèrics, analitzant les seues característiques i relació amb el conjunt.', 20, 1),
+('RA2- Instal·la programari de propòsit general, avaluant-ne les característiques i entorns d''aplicació.', 30, 1),
+('RA3- Executa procediments per recuperar el programari base d''un equip, analitzant-los i utilitzant imatges emmagatzemades en memòria auxiliar.', 25, 1),
+('RA4- Implanta maquinari específic de centres de processament de dades (CPD), analitzant-ne les característiques i aplicacions.', 15, 1),
+('RA5- Compleix les normes de prevenció de riscos laborals i de protecció ambiental, identificant els riscos associats, les mesures i equips per prevenir-los.', 10, 1);
+
+-- Inserir tots els criteris per cada RA amb lletra i descripció
+INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES 
+-- Criteris per al RA1
+('a) S''han identificat i caracteritzat els dispositius que constitueixen els blocs funcionals d''un equip microinformàtic.', 10, 1),
+('b) S''ha descrit el paper dels elements físics i lògics que intervenen en el procés de posada en marxa d''un equip.', 10, 1),
+('c) S''ha analitzat l''arquitectura general d''un equip i els mecanismes de connexió entre dispositius.', 10, 1),
+('d) S''han establert els paràmetres de configuració (maquinari i programari) d''un equip microinformàtic amb les utilitats específiques.', 10, 1),
+('e) S''han avaluat les prestacions de l''equip.', 10, 1),
+('f) S''han executat utilitats de comprovació i diagnòstic.', 10, 1),
+('g) S''han identificat avaries i les seues causes.', 10, 1),
+('h) S''han classificat els dispositius perifèrics i els seus mecanismes de comunicació.', 10, 1),
+('i) S''han utilitzat protocols estàndard de comunicació sense fils entre dispositius.', 10, 1),
+
+-- Criteris per al RA2
+('a) S''han catalogat els tipus de programari segons la seua llicència, distribució i propòsit.', 5, 2),
+('b) S''han analitzat les necessitats específiques de programari associades a l''ús de sistemes informàtics en diferents entorns productius.', 10, 2),
+('c) S''han instal·lat i avaluat utilitats per a la gestió d''arxius, recuperació de dades, manteniment i optimització del sistema.', 10, 2),
+('d) S''han instal·lat i avaluat utilitats de seguretat bàsica.', 10, 2),
+('e) S''ha instal·lat i avaluat programari ofimàtic i de propòsit general.', 10, 2),
+('f) S''ha consultat la documentació i les ajudes interactives.', 5, 2),
+('g) S''ha verificat la repercussió de l''eliminació, modificació i/o actualització de les utilitats instal·lades al sistema.', 5, 2),
+('h) S''han provat i comparat aplicacions portables i no portables.', 5, 2),
+('i) S''han realitzat inventaris del programari instal·lat i les característiques de la seua llicència.', 5, 2),
+
+-- Criteris per al RA3
+('a) S''han identificat els suports de memòria auxiliar adequats per a l''emmagatzematge i restauració d''imatges de programari.', 10, 3),
+('b) S''ha reconegut la diferència entre una instal·lació estàndard i una preinstal·lació o imatge de programari.', 10, 3),
+('c) S''han identificat i provat les diferents seqüències d''arrencada configurables en un equip.', 10, 3),
+('d) S''han utilitzat eines per al particionat de discos.', 10, 3),
+('e) S''han emprat diferents utilitats i suports per a realitzar imatges.', 10, 3),
+('f) S''han restaurat imatges des de diferents ubicacions.', 10, 3),
+
+-- Criteris per al RA4
+('a) S''han reconegut les diferències entre les configuracions maquinari de tipus personal i empresarial.', 10, 4),
+('b) S''han analitzat entorns que requereixen implantar solucions maquinari específiques.', 10, 4),
+('c) S''han detallat components maquinari específics per a solucions empresarials.', 10, 4),
+('d) S''han analitzat els requeriments bàsics de seguretat física, organització i condicions ambientals d''un CPD.', 10, 4),
+('e) S''han implantat sistemes d''alimentació ininterrompuda i estabilitzadors de tensió.', 10, 4),
+('f) S''han manipulat correctament dispositius maquinari per a emmagatzematge i alimentació amb connexió en calent.', 10, 4),
+('g) S''han documentat procediments, incidències i paràmetres utilitzats en la instal·lació i configuració de dispositius maquinari.', 10, 4),
+('h) S''han utilitzat eines d''inventariat, registrant les característiques dels dispositius maquinari.', 10, 4),
+('i) S''ha classificat i organitzat la documentació tècnica, controladors, utilitats i accessoris del maquinari.', 10, 4),
+
+-- Criteris per al RA5
+('a) S''han identificat els riscos i el nivell de perillositat que suposen la manipulació dels materials, eines, útils, màquines i mitjans de transport.', 10, 5),
+('b) S''han operat les màquines respectant les normes de seguretat.', 10, 5),
+('c) S''han identificat les causes més freqüents d''accidents en la manipulació de materials i eines, entre altres.', 10, 5),
+('d) S''han descrit els elements de seguretat (proteccions, alarmes, i passos d''emergència, entre altres) de les màquines i els equips de protecció individual (calçat, protecció ocular i indumentària, entre altres).', 10, 5),
+('e) S''ha relacionat la manipulació de materials, eines i màquines amb les mesures de seguretat i protecció personal requerits.', 10, 5),
+('f) S''han identificat les possibles fonts de contaminació de l''entorn ambiental.', 10, 5),
+('g) S''han classificat els residus generats per a la seua retirada selectiva.', 10, 5),
+('h) S''ha valorat l''ordre i la neteja d''instal·lacions i equips com a primer factor de prevenció de riscos.', 10, 5);
 
 -- Inserir dades a la taula Criteri_Alumne_Evidencia
-INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) 
-VALUES 
-    (1, 1, 123456, 8.0), -- Criteri 1, Evidència 1
-    (1, 2, 123456, 10.0), -- Criteri 1, Evidència 2
-    (2, 3, 123456, 9.0); -- Criteri 2, Evidència 3
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 7, 123456, 0.0); -- a) S’han identificat i caracteritzat els dispositius que constitueixen els blocs funcionals d’un equip microinformàtic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 8, 123456, 0.0); -- a) S’han identificat i caracteritzat els dispositius que constitueixen els blocs funcionals d’un equip microinformàtic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 9, 123456, 0.0); -- a) S’han identificat i caracteritzat els dispositius que constitueixen els blocs funcionals d’un equip microinformàtic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 10, 123456, 0.0); -- a) S’han identificat i caracteritzat els dispositius que constitueixen els blocs funcionals d’un equip microinformàtic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 11, 123456, 0.0); -- a) S’han identificat i caracteritzat els dispositius que constitueixen els blocs funcionals d’un equip microinformàtic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 12, 123456, 0.0); -- a) S’han identificat i caracteritzat els dispositius que constitueixen els blocs funcionals d’un equip microinformàtic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 7, 123456, 0.0); -- b) S’ha descrit el paper dels elements físics i lògics que intervenen en el procés de posada en marxa d’un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 8, 123456, 0.0); -- b) S’ha descrit el paper dels elements físics i lògics que intervenen en el procés de posada en marxa d’un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 9, 123456, 0.0); -- b) S’ha descrit el paper dels elements físics i lògics que intervenen en el procés de posada en marxa d’un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 10, 123456, 0.0); -- b) S’ha descrit el paper dels elements físics i lògics que intervenen en el procés de posada en marxa d’un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 11, 123456, 0.0); -- b) S’ha descrit el paper dels elements físics i lògics que intervenen en el procés de posada en marxa d’un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 12, 123456, 0.0); -- b) S’ha descrit el paper dels elements físics i lògics que intervenen en el procés de posada en marxa d’un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 7, 123456, 0.0); -- c) S’ha analitzat l’arquitectura general d’un equip i els mecanismes de connexió entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 8, 123456, 0.0); -- c) S’ha analitzat l’arquitectura general d’un equip i els mecanismes de connexió entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 9, 123456, 0.0); -- c) S’ha analitzat l’arquitectura general d’un equip i els mecanismes de connexió entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 10, 123456, 0.0); -- c) S’ha analitzat l’arquitectura general d’un equip i els mecanismes de connexió entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 11, 123456, 0.0); -- c) S’ha analitzat l’arquitectura general d’un equip i els mecanismes de connexió entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 12, 123456, 0.0); -- c) S’ha analitzat l’arquitectura general d’un equip i els mecanismes de connexió entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 7, 123456, 0.0); -- d) S’han establert els paràmetres de configuració (maquinari i programari) d’un equip microinformàtic amb les utilitats específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 8, 123456, 0.0); -- d) S’han establert els paràmetres de configuració (maquinari i programari) d’un equip microinformàtic amb les utilitats específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 9, 123456, 0.0); -- d) S’han establert els paràmetres de configuració (maquinari i programari) d’un equip microinformàtic amb les utilitats específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 10, 123456, 0.0); -- d) S’han establert els paràmetres de configuració (maquinari i programari) d’un equip microinformàtic amb les utilitats específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 11, 123456, 0.0); -- d) S’han establert els paràmetres de configuració (maquinari i programari) d’un equip microinformàtic amb les utilitats específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 12, 123456, 0.0); -- d) S’han establert els paràmetres de configuració (maquinari i programari) d’un equip microinformàtic amb les utilitats específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 7, 123456, 0.0); -- e) S’han avaluat les prestacions de l’equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 8, 123456, 0.0); -- e) S’han avaluat les prestacions de l’equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 9, 123456, 0.0); -- e) S’han avaluat les prestacions de l’equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 10, 123456, 0.0); -- e) S’han avaluat les prestacions de l’equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 11, 123456, 0.0); -- e) S’han avaluat les prestacions de l’equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 12, 123456, 0.0); -- e) S’han avaluat les prestacions de l’equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 7, 123456, 0.0); -- f) S’han executat utilitats de comprovació i diagnòstic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 8, 123456, 0.0); -- f) S’han executat utilitats de comprovació i diagnòstic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 9, 123456, 0.0); -- f) S’han executat utilitats de comprovació i diagnòstic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 10, 123456, 0.0); -- f) S’han executat utilitats de comprovació i diagnòstic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 11, 123456, 0.0); -- f) S’han executat utilitats de comprovació i diagnòstic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 12, 123456, 0.0); -- f) S’han executat utilitats de comprovació i diagnòstic.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 7, 123456, 0.0); -- g) S’han identificat avaries i les seues causes.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 8, 123456, 0.0); -- g) S’han identificat avaries i les seues causes.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 9, 123456, 0.0); -- g) S’han identificat avaries i les seues causes.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 10, 123456, 0.0); -- g) S’han identificat avaries i les seues causes.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 11, 123456, 0.0); -- g) S’han identificat avaries i les seues causes.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 12, 123456, 0.0); -- g) S’han identificat avaries i les seues causes.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 7, 123456, 0.0); -- h) S’han classificat els dispositius perifèrics i els seus mecanismes de comunicació.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 8, 123456, 0.0); -- h) S’han classificat els dispositius perifèrics i els seus mecanismes de comunicació.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 9, 123456, 0.0); -- h) S’han classificat els dispositius perifèrics i els seus mecanismes de comunicació.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 10, 123456, 0.0); -- h) S’han classificat els dispositius perifèrics i els seus mecanismes de comunicació.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 11, 123456, 0.0); -- h) S’han classificat els dispositius perifèrics i els seus mecanismes de comunicació.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 12, 123456, 0.0); -- h) S’han classificat els dispositius perifèrics i els seus mecanismes de comunicació.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 7, 123456, 0.0); -- i) S’han utilitzat protocols estàndard de comunicació sense fils entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 8, 123456, 0.0); -- i) S’han utilitzat protocols estàndard de comunicació sense fils entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 9, 123456, 0.0); -- i) S’han utilitzat protocols estàndard de comunicació sense fils entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 10, 123456, 0.0); -- i) S’han utilitzat protocols estàndard de comunicació sense fils entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 11, 123456, 0.0); -- i) S’han utilitzat protocols estàndard de comunicació sense fils entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 12, 123456, 0.0); -- i) S’han utilitzat protocols estàndard de comunicació sense fils entre dispositius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 7, 123456, 0.0); -- a) S’han catalogat els tipus de programari segons la seua llicència, distribució i propòsit.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 8, 123456, 0.0); -- a) S’han catalogat els tipus de programari segons la seua llicència, distribució i propòsit.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 9, 123456, 0.0); -- a) S’han catalogat els tipus de programari segons la seua llicència, distribució i propòsit.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 10, 123456, 0.0); -- a) S’han catalogat els tipus de programari segons la seua llicència, distribució i propòsit.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 11, 123456, 0.0); -- a) S’han catalogat els tipus de programari segons la seua llicència, distribució i propòsit.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 12, 123456, 0.0); -- a) S’han catalogat els tipus de programari segons la seua llicència, distribució i propòsit.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 7, 123456, 0.0); -- b) S’han analitzat les necessitats específiques de programari associades a l’ús de sistemes informàtics en diferents entorns productius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 8, 123456, 0.0); -- b) S’han analitzat les necessitats específiques de programari associades a l’ús de sistemes informàtics en diferents entorns productius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 9, 123456, 0.0); -- b) S’han analitzat les necessitats específiques de programari associades a l’ús de sistemes informàtics en diferents entorns productius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 10, 123456, 0.0); -- b) S’han analitzat les necessitats específiques de programari associades a l’ús de sistemes informàtics en diferents entorns productius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 11, 123456, 0.0); -- b) S’han analitzat les necessitats específiques de programari associades a l’ús de sistemes informàtics en diferents entorns productius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 12, 123456, 0.0); -- b) S’han analitzat les necessitats específiques de programari associades a l’ús de sistemes informàtics en diferents entorns productius.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 7, 123456, 0.0); -- c) S’han instal·lat i avaluat utilitats per a la gestió d’arxius, recuperació de dades, manteniment i optimització del sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 8, 123456, 0.0); -- c) S’han instal·lat i avaluat utilitats per a la gestió d’arxius, recuperació de dades, manteniment i optimització del sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 9, 123456, 0.0); -- c) S’han instal·lat i avaluat utilitats per a la gestió d’arxius, recuperació de dades, manteniment i optimització del sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 10, 123456, 0.0); -- c) S’han instal·lat i avaluat utilitats per a la gestió d’arxius, recuperació de dades, manteniment i optimització del sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 11, 123456, 0.0); -- c) S’han instal·lat i avaluat utilitats per a la gestió d’arxius, recuperació de dades, manteniment i optimització del sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 12, 123456, 0.0); -- c) S’han instal·lat i avaluat utilitats per a la gestió d’arxius, recuperació de dades, manteniment i optimització del sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 7, 123456, 0.0); -- d) S’han instal·lat i avaluat utilitats de seguretat bàsica.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 8, 123456, 0.0); -- d) S’han instal·lat i avaluat utilitats de seguretat bàsica.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 9, 123456, 0.0); -- d) S’han instal·lat i avaluat utilitats de seguretat bàsica.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 10, 123456, 0.0); -- d) S’han instal·lat i avaluat utilitats de seguretat bàsica.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 11, 123456, 0.0); -- d) S’han instal·lat i avaluat utilitats de seguretat bàsica.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 12, 123456, 0.0); -- d) S’han instal·lat i avaluat utilitats de seguretat bàsica.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 7, 123456, 0.0); -- e) S’ha instal·lat i avaluat programari ofimàtic i de propòsit general.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 8, 123456, 0.0); -- e) S’ha instal·lat i avaluat programari ofimàtic i de propòsit general.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 9, 123456, 0.0); -- e) S’ha instal·lat i avaluat programari ofimàtic i de propòsit general.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 10, 123456, 0.0); -- e) S’ha instal·lat i avaluat programari ofimàtic i de propòsit general.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 11, 123456, 0.0); -- e) S’ha instal·lat i avaluat programari ofimàtic i de propòsit general.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 12, 123456, 0.0); -- e) S’ha instal·lat i avaluat programari ofimàtic i de propòsit general.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 7, 123456, 0.0); -- f) S’ha consultat la documentació i les ajudes interactives.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 8, 123456, 0.0); -- f) S’ha consultat la documentació i les ajudes interactives.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 9, 123456, 0.0); -- f) S’ha consultat la documentació i les ajudes interactives.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 10, 123456, 0.0); -- f) S’ha consultat la documentació i les ajudes interactives.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 11, 123456, 0.0); -- f) S’ha consultat la documentació i les ajudes interactives.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 12, 123456, 0.0); -- f) S’ha consultat la documentació i les ajudes interactives.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 7, 123456, 0.0); -- g) S’ha verificat la repercussió de l’eliminació, modificació i/o actualització de les utilitats instal·lades al sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 8, 123456, 0.0); -- g) S’ha verificat la repercussió de l’eliminació, modificació i/o actualització de les utilitats instal·lades al sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 9, 123456, 0.0); -- g) S’ha verificat la repercussió de l’eliminació, modificació i/o actualització de les utilitats instal·lades al sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 10, 123456, 0.0); -- g) S’ha verificat la repercussió de l’eliminació, modificació i/o actualització de les utilitats instal·lades al sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 11, 123456, 0.0); -- g) S’ha verificat la repercussió de l’eliminació, modificació i/o actualització de les utilitats instal·lades al sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 12, 123456, 0.0); -- g) S’ha verificat la repercussió de l’eliminació, modificació i/o actualització de les utilitats instal·lades al sistema.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 7, 123456, 0.0); -- h) S’han provat i comparat aplicacions portables i no portables.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 8, 123456, 0.0); -- h) S’han provat i comparat aplicacions portables i no portables.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 9, 123456, 0.0); -- h) S’han provat i comparat aplicacions portables i no portables.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 10, 123456, 0.0); -- h) S’han provat i comparat aplicacions portables i no portables.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 11, 123456, 0.0); -- h) S’han provat i comparat aplicacions portables i no portables.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 12, 123456, 0.0); -- h) S’han provat i comparat aplicacions portables i no portables.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 7, 123456, 0.0); -- i) S’han realitzat inventaris del programari instal·lat i les característiques de la seua llicència.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 8, 123456, 0.0); -- i) S’han realitzat inventaris del programari instal·lat i les característiques de la seua llicència.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 9, 123456, 0.0); -- i) S’han realitzat inventaris del programari instal·lat i les característiques de la seua llicència.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 10, 123456, 0.0); -- i) S’han realitzat inventaris del programari instal·lat i les característiques de la seua llicència.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 11, 123456, 0.0); -- i) S’han realitzat inventaris del programari instal·lat i les característiques de la seua llicència.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 12, 123456, 0.0); -- i) S’han realitzat inventaris del programari instal·lat i les característiques de la seua llicència.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 7, 123456, 0.0); -- a) S’han identificat els suports de memòria auxiliar adequats per a l’emmagatzematge i restauració d’imatges de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 8, 123456, 0.0); -- a) S’han identificat els suports de memòria auxiliar adequats per a l’emmagatzematge i restauració d’imatges de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 9, 123456, 0.0); -- a) S’han identificat els suports de memòria auxiliar adequats per a l’emmagatzematge i restauració d’imatges de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 10, 123456, 0.0); -- a) S’han identificat els suports de memòria auxiliar adequats per a l’emmagatzematge i restauració d’imatges de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 11, 123456, 0.0); -- a) S’han identificat els suports de memòria auxiliar adequats per a l’emmagatzematge i restauració d’imatges de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 12, 123456, 0.0); -- a) S’han identificat els suports de memòria auxiliar adequats per a l’emmagatzematge i restauració d’imatges de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 7, 123456, 0.0); -- b) S’ha reconegut la diferència entre una instal·lació estàndard i una preinstal·lació o imatge de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 8, 123456, 0.0); -- b) S’ha reconegut la diferència entre una instal·lació estàndard i una preinstal·lació o imatge de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 9, 123456, 0.0); -- b) S’ha reconegut la diferència entre una instal·lació estàndard i una preinstal·lació o imatge de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 10, 123456, 0.0); -- b) S’ha reconegut la diferència entre una instal·lació estàndard i una preinstal·lació o imatge de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 11, 123456, 0.0); -- b) S’ha reconegut la diferència entre una instal·lació estàndard i una preinstal·lació o imatge de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 12, 123456, 0.0); -- b) S’ha reconegut la diferència entre una instal·lació estàndard i una preinstal·lació o imatge de programari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 7, 123456, 0.0); -- c) S’han identificat i provat les diferents seqüències d’arrencada configurables en un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 8, 123456, 0.0); -- c) S’han identificat i provat les diferents seqüències d’arrencada configurables en un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 9, 123456, 0.0); -- c) S’han identificat i provat les diferents seqüències d’arrencada configurables en un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 10, 123456, 0.0); -- c) S’han identificat i provat les diferents seqüències d’arrencada configurables en un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 11, 123456, 0.0); -- c) S’han identificat i provat les diferents seqüències d’arrencada configurables en un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 12, 123456, 0.0); -- c) S’han identificat i provat les diferents seqüències d’arrencada configurables en un equip.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 7, 123456, 0.0); -- d) S’han utilitzat eines per al particionat de discos.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 8, 123456, 0.0); -- d) S’han utilitzat eines per al particionat de discos.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 9, 123456, 0.0); -- d) S’han utilitzat eines per al particionat de discos.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 10, 123456, 0.0); -- d) S’han utilitzat eines per al particionat de discos.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 11, 123456, 0.0); -- d) S’han utilitzat eines per al particionat de discos.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 12, 123456, 0.0); -- d) S’han utilitzat eines per al particionat de discos.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 7, 123456, 0.0); -- e) S’han emprat diferents utilitats i suports per a realitzar imatges.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 8, 123456, 0.0); -- e) S’han emprat diferents utilitats i suports per a realitzar imatges.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 9, 123456, 0.0); -- e) S’han emprat diferents utilitats i suports per a realitzar imatges.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 10, 123456, 0.0); -- e) S’han emprat diferents utilitats i suports per a realitzar imatges.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 11, 123456, 0.0); -- e) S’han emprat diferents utilitats i suports per a realitzar imatges.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 12, 123456, 0.0); -- e) S’han emprat diferents utilitats i suports per a realitzar imatges.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 7, 123456, 0.0); -- f) S’han restaurat imatges des de diferents ubicacions.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 8, 123456, 0.0); -- f) S’han restaurat imatges des de diferents ubicacions.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 9, 123456, 0.0); -- f) S’han restaurat imatges des de diferents ubicacions.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 10, 123456, 0.0); -- f) S’han restaurat imatges des de diferents ubicacions.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 11, 123456, 0.0); -- f) S’han restaurat imatges des de diferents ubicacions.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 12, 123456, 0.0); -- f) S’han restaurat imatges des de diferents ubicacions.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 7, 123456, 0.0); -- a) S’han reconegut les diferències entre les configuracions maquinari de tipus personal i empresarial.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 8, 123456, 0.0); -- a) S’han reconegut les diferències entre les configuracions maquinari de tipus personal i empresarial.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 9, 123456, 0.0); -- a) S’han reconegut les diferències entre les configuracions maquinari de tipus personal i empresarial.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 10, 123456, 0.0); -- a) S’han reconegut les diferències entre les configuracions maquinari de tipus personal i empresarial.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 11, 123456, 0.0); -- a) S’han reconegut les diferències entre les configuracions maquinari de tipus personal i empresarial.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 12, 123456, 0.0); -- a) S’han reconegut les diferències entre les configuracions maquinari de tipus personal i empresarial.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 7, 123456, 0.0); -- b) S’han analitzat entorns que requereixen implantar solucions maquinari específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 8, 123456, 0.0); -- b) S’han analitzat entorns que requereixen implantar solucions maquinari específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 9, 123456, 0.0); -- b) S’han analitzat entorns que requereixen implantar solucions maquinari específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 10, 123456, 0.0); -- b) S’han analitzat entorns que requereixen implantar solucions maquinari específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 11, 123456, 0.0); -- b) S’han analitzat entorns que requereixen implantar solucions maquinari específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 12, 123456, 0.0); -- b) S’han analitzat entorns que requereixen implantar solucions maquinari específiques.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 7, 123456, 0.0); -- c) S’han detallat components maquinari específics per a solucions empresarials.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 8, 123456, 0.0); -- c) S’han detallat components maquinari específics per a solucions empresarials.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 9, 123456, 0.0); -- c) S’han detallat components maquinari específics per a solucions empresarials.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 10, 123456, 0.0); -- c) S’han detallat components maquinari específics per a solucions empresarials.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 11, 123456, 0.0); -- c) S’han detallat components maquinari específics per a solucions empresarials.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 12, 123456, 0.0); -- c) S’han detallat components maquinari específics per a solucions empresarials.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 7, 123456, 0.0); -- d) S’han analitzat els requeriments bàsics de seguretat física, organització i condicions ambientals d’un CPD.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 8, 123456, 0.0); -- d) S’han analitzat els requeriments bàsics de seguretat física, organització i condicions ambientals d’un CPD.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 9, 123456, 0.0); -- d) S’han analitzat els requeriments bàsics de seguretat física, organització i condicions ambientals d’un CPD.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 10, 123456, 0.0); -- d) S’han analitzat els requeriments bàsics de seguretat física, organització i condicions ambientals d’un CPD.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 11, 123456, 0.0); -- d) S’han analitzat els requeriments bàsics de seguretat física, organització i condicions ambientals d’un CPD.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 12, 123456, 0.0); -- d) S’han analitzat els requeriments bàsics de seguretat física, organització i condicions ambientals d’un CPD.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 7, 123456, 0.0); -- e) S’han implantat sistemes d’alimentació ininterrompuda i estabilitzadors de tensió.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 8, 123456, 0.0); -- e) S’han implantat sistemes d’alimentació ininterrompuda i estabilitzadors de tensió.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 9, 123456, 0.0); -- e) S’han implantat sistemes d’alimentació ininterrompuda i estabilitzadors de tensió.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 10, 123456, 0.0); -- e) S’han implantat sistemes d’alimentació ininterrompuda i estabilitzadors de tensió.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 11, 123456, 0.0); -- e) S’han implantat sistemes d’alimentació ininterrompuda i estabilitzadors de tensió.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 12, 123456, 0.0); -- e) S’han implantat sistemes d’alimentació ininterrompuda i estabilitzadors de tensió.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 7, 123456, 0.0); -- f) S’han manipulat correctament dispositius maquinari per a emmagatzematge i alimentació amb connexió en calent.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 8, 123456, 0.0); -- f) S’han manipulat correctament dispositius maquinari per a emmagatzematge i alimentació amb connexió en calent.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 9, 123456, 0.0); -- f) S’han manipulat correctament dispositius maquinari per a emmagatzematge i alimentació amb connexió en calent.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 10, 123456, 0.0); -- f) S’han manipulat correctament dispositius maquinari per a emmagatzematge i alimentació amb connexió en calent.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 11, 123456, 0.0); -- f) S’han manipulat correctament dispositius maquinari per a emmagatzematge i alimentació amb connexió en calent.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 12, 123456, 0.0); -- f) S’han manipulat correctament dispositius maquinari per a emmagatzematge i alimentació amb connexió en calent.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 7, 123456, 0.0); -- g) S’han documentat procediments, incidències i paràmetres utilitzats en la instal·lació i configuració de dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 8, 123456, 0.0); -- g) S’han documentat procediments, incidències i paràmetres utilitzats en la instal·lació i configuració de dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 9, 123456, 0.0); -- g) S’han documentat procediments, incidències i paràmetres utilitzats en la instal·lació i configuració de dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 10, 123456, 0.0); -- g) S’han documentat procediments, incidències i paràmetres utilitzats en la instal·lació i configuració de dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 11, 123456, 0.0); -- g) S’han documentat procediments, incidències i paràmetres utilitzats en la instal·lació i configuració de dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 12, 123456, 0.0); -- g) S’han documentat procediments, incidències i paràmetres utilitzats en la instal·lació i configuració de dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 7, 123456, 0.0); -- h) S’han utilitzat eines d’inventariat, registrant les característiques dels dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 8, 123456, 0.0); -- h) S’han utilitzat eines d’inventariat, registrant les característiques dels dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 9, 123456, 0.0); -- h) S’han utilitzat eines d’inventariat, registrant les característiques dels dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 10, 123456, 0.0); -- h) S’han utilitzat eines d’inventariat, registrant les característiques dels dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 11, 123456, 0.0); -- h) S’han utilitzat eines d’inventariat, registrant les característiques dels dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 12, 123456, 0.0); -- h) S’han utilitzat eines d’inventariat, registrant les característiques dels dispositius maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 7, 123456, 0.0); -- i) S’ha classificat i organitzat la documentació tècnica, controladors, utilitats i accessoris del maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 8, 123456, 0.0); -- i) S’ha classificat i organitzat la documentació tècnica, controladors, utilitats i accessoris del maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 9, 123456, 0.0); -- i) S’ha classificat i organitzat la documentació tècnica, controladors, utilitats i accessoris del maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 10, 123456, 0.0); -- i) S’ha classificat i organitzat la documentació tècnica, controladors, utilitats i accessoris del maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 11, 123456, 0.0); -- i) S’ha classificat i organitzat la documentació tècnica, controladors, utilitats i accessoris del maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (9, 12, 123456, 0.0); -- i) S’ha classificat i organitzat la documentació tècnica, controladors, utilitats i accessoris del maquinari.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 7, 123456, 0.0); -- a) S’han identificat els riscos i el nivell de perillositat que suposen la manipulació dels materials, eines, útils, màquines i mitjans de transport.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 8, 123456, 0.0); -- a) S’han identificat els riscos i el nivell de perillositat que suposen la manipulació dels materials, eines, útils, màquines i mitjans de transport.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 9, 123456, 0.0); -- a) S’han identificat els riscos i el nivell de perillositat que suposen la manipulació dels materials, eines, útils, màquines i mitjans de transport.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 10, 123456, 0.0); -- a) S’han identificat els riscos i el nivell de perillositat que suposen la manipulació dels materials, eines, útils, màquines i mitjans de transport.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 11, 123456, 0.0); -- a) S’han identificat els riscos i el nivell de perillositat que suposen la manipulació dels materials, eines, útils, màquines i mitjans de transport.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (1, 12, 123456, 0.0); -- a) S’han identificat els riscos i el nivell de perillositat que suposen la manipulació dels materials, eines, útils, màquines i mitjans de transport.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 7, 123456, 0.0); -- b) S’han operat les màquines respectant les normes de seguretat.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 8, 123456, 0.0); -- b) S’han operat les màquines respectant les normes de seguretat.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 9, 123456, 0.0); -- b) S’han operat les màquines respectant les normes de seguretat.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 10, 123456, 0.0); -- b) S’han operat les màquines respectant les normes de seguretat.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 11, 123456, 0.0); -- b) S’han operat les màquines respectant les normes de seguretat.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (2, 12, 123456, 0.0); -- b) S’han operat les màquines respectant les normes de seguretat.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 7, 123456, 0.0); -- c) S’han identificat les causes més freqüents d’accidents en la manipulació de materials i eines, entre altres.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 8, 123456, 0.0); -- c) S’han identificat les causes més freqüents d’accidents en la manipulació de materials i eines, entre altres.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 9, 123456, 0.0); -- c) S’han identificat les causes més freqüents d’accidents en la manipulació de materials i eines, entre altres.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 10, 123456, 0.0); -- c) S’han identificat les causes més freqüents d’accidents en la manipulació de materials i eines, entre altres.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 11, 123456, 0.0); -- c) S’han identificat les causes més freqüents d’accidents en la manipulació de materials i eines, entre altres.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (3, 12, 123456, 0.0); -- c) S’han identificat les causes més freqüents d’accidents en la manipulació de materials i eines, entre altres.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 7, 123456, 0.0); -- d) S’han descrit els elements de seguretat (proteccions, alarmes, i passos d’emergència, entre altres) de les màquines i els equips de protecció individual (calçat, protecció ocular i indumentària, entre altres).
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 8, 123456, 0.0); -- d) S’han descrit els elements de seguretat (proteccions, alarmes, i passos d’emergència, entre altres) de les màquines i els equips de protecció individual (calçat, protecció ocular i indumentària, entre altres).
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 9, 123456, 0.0); -- d) S’han descrit els elements de seguretat (proteccions, alarmes, i passos d’emergència, entre altres) de les màquines i els equips de protecció individual (calçat, protecció ocular i indumentària, entre altres).
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 10, 123456, 0.0); -- d) S’han descrit els elements de seguretat (proteccions, alarmes, i passos d’emergència, entre altres) de les màquines i els equips de protecció individual (calçat, protecció ocular i indumentària, entre altres).
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 11, 123456, 0.0); -- d) S’han descrit els elements de seguretat (proteccions, alarmes, i passos d’emergència, entre altres) de les màquines i els equips de protecció individual (calçat, protecció ocular i indumentària, entre altres).
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (4, 12, 123456, 0.0); -- d) S’han descrit els elements de seguretat (proteccions, alarmes, i passos d’emergència, entre altres) de les màquines i els equips de protecció individual (calçat, protecció ocular i indumentària, entre altres).
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 7, 123456, 0.0); -- e) S’ha relacionat la manipulació de materials, eines i màquines amb les mesures de seguretat i protecció personal requerits.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 8, 123456, 0.0); -- e) S’ha relacionat la manipulació de materials, eines i màquines amb les mesures de seguretat i protecció personal requerits.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 9, 123456, 0.0); -- e) S’ha relacionat la manipulació de materials, eines i màquines amb les mesures de seguretat i protecció personal requerits.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 10, 123456, 0.0); -- e) S’ha relacionat la manipulació de materials, eines i màquines amb les mesures de seguretat i protecció personal requerits.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 11, 123456, 0.0); -- e) S’ha relacionat la manipulació de materials, eines i màquines amb les mesures de seguretat i protecció personal requerits.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (5, 12, 123456, 0.0); -- e) S’ha relacionat la manipulació de materials, eines i màquines amb les mesures de seguretat i protecció personal requerits.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 7, 123456, 0.0); -- f) S’han identificat les possibles fonts de contaminació de l’entorn ambiental.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 8, 123456, 0.0); -- f) S’han identificat les possibles fonts de contaminació de l’entorn ambiental.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 9, 123456, 0.0); -- f) S’han identificat les possibles fonts de contaminació de l’entorn ambiental.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 10, 123456, 0.0); -- f) S’han identificat les possibles fonts de contaminació de l’entorn ambiental.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 11, 123456, 0.0); -- f) S’han identificat les possibles fonts de contaminació de l’entorn ambiental.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (6, 12, 123456, 0.0); -- f) S’han identificat les possibles fonts de contaminació de l’entorn ambiental.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 7, 123456, 0.0); -- g) S’han classificat els residus generats per a la seua retirada selectiva.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 8, 123456, 0.0); -- g) S’han classificat els residus generats per a la seua retirada selectiva.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 9, 123456, 0.0); -- g) S’han classificat els residus generats per a la seua retirada selectiva.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 10, 123456, 0.0); -- g) S’han classificat els residus generats per a la seua retirada selectiva.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 11, 123456, 0.0); -- g) S’han classificat els residus generats per a la seua retirada selectiva.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (7, 12, 123456, 0.0); -- g) S’han classificat els residus generats per a la seua retirada selectiva.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 7, 123456, 0.0); -- h) S’ha valorat l’ordre i la neteja d’instal·lacions i equips com a primer factor de prevenció de riscos.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 8, 123456, 0.0); -- h) S’ha valorat l’ordre i la neteja d’instal·lacions i equips com a primer factor de prevenció de riscos.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 9, 123456, 0.0); -- h) S’ha valorat l’ordre i la neteja d’instal·lacions i equips com a primer factor de prevenció de riscos.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 10, 123456, 0.0); -- h) S’ha valorat l’ordre i la neteja d’instal·lacions i equips com a primer factor de prevenció de riscos.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 11, 123456, 0.0); -- h) S’ha valorat l’ordre i la neteja d’instal·lacions i equips com a primer factor de prevenció de riscos.
+INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) VALUES (8, 12, 123456, 0.0); -- h) S’ha valorat l’ordre i la neteja d’instal·lacions i equips com a primer factor de prevenció de riscos.
+
+-- Inserir dades a la taula RA
+INSERT INTO RA (nom, ponderacio, id_modul) VALUES ('RA 2', 30, 2);
