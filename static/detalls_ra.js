@@ -1,5 +1,7 @@
 let evidences = [];
+let evidencesAfegides = [];
 let criteris = []; 
+let savedData = []; 
 
 async function fetchEvidences() {
     try {
@@ -158,27 +160,120 @@ async function guardarDetalls() {
 
 function updateNota(select) {
     const selectedOption = select.options[select.selectedIndex];
-    const nota = selectedOption.dataset.nota || 0; // Obté el valor de la nota
+    const nota = parseFloat(selectedOption.dataset.nota) || 0; // Obté el valor de la nota
     const input = select.parentElement.querySelector('input');
-    
-    if (select.value === '') {
-        input.value = ''; // Si no hi ha cap valor seleccionat
+
+    // Actualitzar el valor del camp d'entrada associat al `select`
+    if (!selectedOption.value) {
+        input.value = ''; // Reinicia si no hi ha cap valor seleccionat
     } else {
-        input.value = nota; // Assigna el valor corresponent al camp d'entrada
+        input.value = nota; // Assigna la nota corresponent
     }
 
-    // Marca el valor per enviar-lo al backend
+    // Obtenir dades per a la consola (debugging)
     const row = select.closest('tr');
     const idCriteri = row.dataset.idCriteri;
     const idEvidencia = select.closest('td').dataset.idEvidencia;
     const nia = row.dataset.nia;
 
-    console.log(`Actualitzant nota: Criteri=${idCriteri}, Evidència=${idEvidencia}, NIA=${nia}, Valor=${nota}`);
-    //guardarDetalls(); // Desem automàticament després d'una actualització
-    calculateTotals(); // Actualitzar els totals
+    console.log(
+        `Actualitzant nota: Criteri=${idCriteri}, Evidència=${idEvidencia}, NIA=${nia}, Valor=${nota}`
+    );
+
+    // Actualitzar totals
+    calculateTotals();
 }
 
 function calculateTotals() {
+    const table = document.querySelector('.table-wrapper table');
+    if (!table) {
+        console.error("Error: No s'ha trobat la taula.");
+        return;
+    }
+
+    const rows = table.querySelectorAll('tbody tr');
+    if (rows.length === 0) {
+        console.error("Error: No hi ha files al cos de la taula.");
+        return;
+    }
+
+    const totalsRow = table.querySelector('tfoot tr');
+    if (!totalsRow) {
+        console.error("Error: No s'ha trobat la fila de totals.");
+        return;
+    }
+
+    // Calcular els totals per cada columna d'evidències
+    const totals = Array.from(totalsRow.querySelectorAll('.evidence-total'));
+    totals.forEach((totalCell, colIndex) => {
+        let sum = 0;
+        let count = 0;
+
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            const cell = cells[colIndex + 4]; // Ajust per saltar les primeres 4 columnes
+
+            if (cell) {
+                const input = cell.querySelector('input');
+                const select = cell.querySelector('select');
+                const value = input ? parseFloat(input.value) || 0 : 0;
+
+                if (select && select.value && !isNaN(value)) {
+                    sum += value;
+                    count++;
+                }
+            }
+        });
+
+        const average = count > 0 ? (sum / count).toFixed(2) : 0;
+        totalCell.textContent = average;
+    });
+
+    // Actualitzar la columna "Progrés" i "Aconseguit" per cada criteri
+    rows.forEach(row => {
+        const ponderacio = parseFloat(row.querySelector('.ponderacio').value) || 0;
+        const inputs = row.querySelectorAll('td input');
+        let sum = 0;
+        let count = 0;
+
+        inputs.forEach(input => {
+            const value = parseFloat(input.value);
+            const select = input.parentElement.querySelector('select');
+            if (!isNaN(value) && select && select.value) {
+                sum += value;
+                count++;
+            }
+        });
+
+        const progressCell = row.querySelector('.progress');
+        const aconseguitCell = row.querySelector('.aconseguit');
+        const progressValue = count > 0 ? (sum / count).toFixed(2) : 0;
+        const aconseguitValue = (ponderacio * (progressValue / 100)).toFixed(2);
+
+        progressCell.textContent = progressValue;
+        aconseguitCell.textContent = aconseguitValue;
+    });
+
+    // Calcular totals globals
+    const totalPonderacio = Array.from(rows).reduce(
+        (acc, row) => acc + (parseFloat(row.querySelector('.ponderacio').value) || 0),
+        0
+    );
+    const totalAconseguit = Array.from(rows).reduce(
+        (acc, row) => acc + (parseFloat(row.querySelector('.aconseguit').textContent) || 0),
+        0
+    );
+    const totalProgres = Array.from(rows).reduce(
+        (acc, row) => acc + (parseFloat(row.querySelector('.progress').textContent) || 0),
+        0
+    );
+
+    totalsRow.querySelector('.total-ponderacio').textContent = totalPonderacio.toFixed(2);
+    totalsRow.querySelector('.total-aconseguit').textContent = totalAconseguit.toFixed(2);
+    totalsRow.querySelector('.total-progres').textContent = (totalProgres / rows.length).toFixed(2);
+}
+
+/* function calculateTotals() {
     const table = document.querySelector('.table-wrapper table');
     if (!table) {
         console.error("Error: No s'ha trobat la taula.");
@@ -280,7 +375,7 @@ function calculateTotals() {
     totalsRow.querySelector('.total-ponderacio').textContent = totalPonderacio.toFixed(2);
     totalsRow.querySelector('.total-aconseguit').textContent = totalAconseguit.toFixed(2);
     totalsRow.querySelector('.total-progres').textContent = totalProgresAverage;
-}
+} */
 
 document.addEventListener('input', (event) => {
     if (event.target.classList.contains('ponderacio')) {
@@ -408,8 +503,6 @@ function createTable(evidences, savedData = [], criteris = []) {
 }
 
 
-let evidencesAfegides = [];
-
 async function fetchEvidences() {
     try {
         const response = await fetch('/api/evidences');
@@ -449,7 +542,12 @@ function updateEvidenceDropdown() {
         .join('');
 }
 
-function createTable(evidences, savedData, criteris) {
+function createTable(evidences, savedData = [], criteris = []) {
+    if (!Array.isArray(savedData)) {
+        console.warn("savedData no és un array, inicialitzant-lo com a array buit.");
+        savedData = [];
+    }
+
     const tableWrapper = document.querySelector('.table-wrapper');
     tableWrapper.innerHTML = ''; // Reset de la taula
 
@@ -503,6 +601,7 @@ function createTable(evidences, savedData, criteris) {
     calculateTotals();
 }
 
+
 document.getElementById('add-evidence').addEventListener('click', () => {
     const select = document.getElementById('evidence-select');
     const evidenceId = parseInt(select.value, 10);
@@ -533,13 +632,18 @@ function addEvidenceToAllCriteris(evidence, criteris) {
         return;
     }
 
-    // Per cada criteri, afegeix una entrada a savedData
+    // Si `savedData` no és un array, inicialitzar-lo com a tal
+    if (!Array.isArray(savedData)) {
+        console.warn("savedData no és un array, inicialitzant-lo com a array.");
+        savedData = [];
+    }
+
+    // Per cada criteri, afegeix una entrada a `savedData` si no existeix
     criteris.forEach(criteri => {
         const existingRelation = savedData.find(
             d => d.id_criteri === criteri.id_criteri && d.id_evidencia === evidence.id
         );
 
-        // Només afegir si no existeix ja
         if (!existingRelation) {
             savedData.push({
                 id_criteri: criteri.id_criteri,
@@ -553,7 +657,40 @@ function addEvidenceToAllCriteris(evidence, criteris) {
     console.log("Relacions actualitzades a savedData:", savedData);
 }
 
+
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Pàgina carregada.');
+
+    const id_ra = window.location.pathname.split('/').pop();
+
+    try {
+        // 1. Carregar totes les evidències disponibles
+        evidences = await fetchEvidences();
+        updateEvidenceDropdown(); // Actualitzar el desplegable
+
+        // 2. Carregar criteris i dades guardades
+        criteris = await fetchCriteris(id_ra);
+        const savedDataResponse = await fetch(`/api/ra/${id_ra}`);
+        const savedDataRaw = await savedDataResponse.json();
+
+        // Assegura que `savedData` és un array
+        savedData = savedDataRaw.detalls || [];
+
+        // 3. Filtrar només les evidències assignades segons les dades desades
+        evidencesAfegides = evidences.filter(e =>
+            savedData.some(d => d.id_evidencia === e.id)
+        );
+
+        // 4. Cridar createTable amb només les evidències assignades
+        createTable(evidencesAfegides, savedData, criteris);
+    } catch (error) {
+        console.error('Error inicialitzant la pàgina:', error);
+        alert('Error carregant dades!');
+    }
+});
+
+
+/* document.addEventListener('DOMContentLoaded', async () => {
     console.log('Pàgina carregada.');
 
     const id_ra = window.location.pathname.split('/').pop();
@@ -580,7 +717,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         alert('Error carregant dades!');
     }
 });
-
+ */
 
 /* document.addEventListener('DOMContentLoaded', () => {
     console.log('Pàgina carregada.');
