@@ -46,7 +46,7 @@ from datetime import datetime
 import signal  # Per capturar el tancament del procés
 
 app = Flask(__name__)
-
+app.config['DEBUG'] = False 
 
 # Funció per obrir el navegador
 def open_browser():
@@ -94,20 +94,55 @@ def index():
 @app.route('/alta-alumnes', methods=['GET', 'POST'])
 def alta_alumnes():
     if request.method == 'POST':
+        # Recollir els valors del formulari
         nia = request.form.get('nia')
         nom = request.form.get('nom')
         cognoms = request.form.get('cognoms')
+        id_moduls = request.form.getlist('id_moduls')  # IDs de mòduls seleccionats
 
-        if not nia or not nom or not cognoms:
-            return render_template('alta_alumnes.html', message="Falten camps obligatòris.")
+        # Validació dels camps
+        if not nia or not nom or not cognoms or not id_moduls:
+            return render_template('alta_alumnes.html', message="Falten camps obligatoris.")
 
         try:
-            db_query("INSERT INTO Alumne (nia, nom, cognoms) VALUES (?, ?, ?)", (nia, nom, cognoms), commit=True)
+            # Inserir l'alumne a la taula `Alumne`
+            db_query(
+                "INSERT INTO Alumne (nia, nom, cognoms) VALUES (?, ?, ?)",
+                (nia, nom, cognoms),
+                commit=True
+            )
+
+            # Crear l'evidència inicial "Avaluació Zero" per als criteris de cada mòdul seleccionat
+            for id_modul in id_moduls:
+                criteris = db_query("""
+                    SELECT id_criteri 
+                    FROM Criteri 
+                    WHERE id_ra IN (
+                        SELECT id_ra 
+                        FROM RA 
+                        WHERE id_modul = ?
+                    )
+                """, (id_modul,), fetchall=True)
+
+                for criteri in criteris:
+                    db_query(
+                        """
+                        INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) 
+                        VALUES (?, ?, ?, ?)
+                        """,
+                        (criteri['id_criteri'], 1, nia, None),  # `1` és l'ID de l'evidència "Avaluació Zero"
+                        commit=True
+                    )
+
             return redirect(url_for('index'))
+
         except sqlite3.Error as e:
             return render_template('alta_alumnes.html', message=f"Error: {e}")
 
-    return render_template('alta_alumnes.html')
+    # Carregar mòduls per al formulari GET
+    moduls = db_query("SELECT id_modul, nom FROM Modul", fetchall=True)
+    return render_template('alta_alumnes.html', moduls=moduls)
+
 
 # API: Obtenir evidències
 @app.route('/api/evidences', methods=['GET'])
@@ -534,9 +569,7 @@ def format_date(value, format='%d/%m/%Y'):
     except ValueError:
         return value
 
-# Funció per obrir el navegador
-def open_browser():
-    webbrowser.open_new("http://127.0.0.1:5004/")
+
 
 # Manejador per al tancament net
 def handle_exit(signum, frame):
@@ -553,7 +586,7 @@ if __name__ == '__main__':
 
     # Inicia l'aplicació Flask
     try:
-        app.run(debug=True, port=5004)
+        app.run(debug=False, port=5004)
     except KeyboardInterrupt:
         handle_exit(None, None)
 

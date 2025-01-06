@@ -1,4 +1,5 @@
 let evidences = [];
+let criteris = []; 
 
 async function fetchEvidences() {
     try {
@@ -406,7 +407,182 @@ function createTable(evidences, savedData = [], criteris = []) {
     console.log("Finalitzada la creació de la taula.");
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+
+let evidencesAfegides = [];
+
+async function fetchEvidences() {
+    try {
+        const response = await fetch('/api/evidences');
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+        const data = await response.json();
+        console.log("Evidències disponibles:", data);
+        return data;
+    } catch (error) {
+        console.error('Error carregant evidències:', error);
+        return [];
+    }
+}
+
+async function fetchCriteris(id_ra) {
+    try {
+        const response = await fetch(`/get_criteris/${id_ra}`);
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+        const data = await response.json();
+        criteris = data.criteris || []; // Assigna el resultat a la variable global
+        console.log("Criteris carregats:", criteris);
+        return criteris;
+    } catch (error) {
+        console.error('Error carregant criteris:', error);
+        return [];
+    }
+}
+
+
+function updateEvidenceDropdown() {
+    const select = document.getElementById('evidence-select');
+    select.innerHTML = evidences
+        .map(e => `<option value="${e.id}">${e.nom}</option>`)
+        .join('');
+}
+
+function createTable(evidences, savedData, criteris) {
+    const tableWrapper = document.querySelector('.table-wrapper');
+    tableWrapper.innerHTML = ''; // Reset de la taula
+
+    const table = document.createElement('table');
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Criteris</th>
+                <th>Ponderació (%)</th>
+                <th>Aconseguit</th>
+                <th>Progrés</th>
+                ${evidences.map(e => `<th>${e.nom}</th>`).join('')}
+            </tr>
+        </thead>
+        <tbody>
+            ${criteris.map(criteri => `
+                <tr data-id-criteri="${criteri.id_criteri}">
+                    <td>${criteri.descripcio}</td>
+                    <td><input type="number" class="ponderacio" value="${criteri.ponderacio || 0}" oninput="calculateTotals()"></td>
+                    <td class="aconseguit">0.00</td>
+                    <td class="progress">0.00</td>
+                    ${evidences.map(evidence => {
+                        const saved = savedData.find(d => d.id_criteri === criteri.id_criteri && d.id_evidencia === evidence.id);
+                        const descriptors = evidence.descriptors || [];
+                        return `
+                            <td>
+                                <select onchange="updateNota(this)">
+                                    <option value="">Selecciona descriptor</option>
+                                    ${descriptors.map(desc => `
+                                        <option value="${desc.valor}" ${saved?.valor === desc.valor ? 'selected' : ''}>
+                                            ${desc.nom}
+                                        </option>`).join('')}
+                                </select>
+                                <input type="number" value="${saved?.valor || ''}" min="0" max="10" oninput="manualUpdate(this)">
+                            </td>`;
+                    }).join('')}
+                </tr>`).join('')}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>TOTALS</td>
+                <td class="total-ponderacio">0</td>
+                <td class="total-aconseguit">0.00</td>
+                <td class="total-progres">0.00</td>
+                ${evidences.map(() => '<td class="evidence-total">0.00</td>').join('')}
+            </tr>
+        </tfoot>
+    `;
+
+    tableWrapper.appendChild(table);
+    calculateTotals();
+}
+
+document.getElementById('add-evidence').addEventListener('click', () => {
+    const select = document.getElementById('evidence-select');
+    const evidenceId = parseInt(select.value, 10);
+    const evidence = evidences.find(e => e.id === evidenceId);
+
+    if (!evidence) {
+        alert('Evidència no vàlida!');
+        return;
+    }
+
+    if (evidencesAfegides.some(e => e.id === evidenceId)) {
+        alert('Evidència ja afegida!');
+        return;
+    }
+
+    evidencesAfegides.push(evidence);
+
+    // Passa `criteris` com a paràmetre
+    addEvidenceToAllCriteris(evidence, criteris);
+
+    createTable(evidencesAfegides, savedData, criteris);
+});
+
+
+function addEvidenceToAllCriteris(evidence, criteris) {
+    if (!criteris || criteris.length === 0) {
+        console.warn("No hi ha criteris disponibles per associar la evidència.");
+        return;
+    }
+
+    // Per cada criteri, afegeix una entrada a savedData
+    criteris.forEach(criteri => {
+        const existingRelation = savedData.find(
+            d => d.id_criteri === criteri.id_criteri && d.id_evidencia === evidence.id
+        );
+
+        // Només afegir si no existeix ja
+        if (!existingRelation) {
+            savedData.push({
+                id_criteri: criteri.id_criteri,
+                id_evidencia: evidence.id,
+                nia: null, // Pot ser definit segons el context
+                valor: null // Sense valor inicial
+            });
+        }
+    });
+
+    console.log("Relacions actualitzades a savedData:", savedData);
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Pàgina carregada.');
+
+    const id_ra = window.location.pathname.split('/').pop();
+
+    try {
+        // Carregar totes les evidències disponibles
+        evidences = await fetchEvidences();
+        updateEvidenceDropdown(); // Actualitzar el desplegable
+
+        // Carregar criteris i dades guardades
+        const criteris = await fetchCriteris(id_ra);
+        const savedDataResponse = await fetch(`/api/ra/${id_ra}`);
+        const savedData = await savedDataResponse.json();
+
+        // Filtrar només les evidències assignades segons les dades desades
+        evidencesAfegides = evidences.filter(e =>
+            savedData.detalls.some(d => d.id_evidencia === e.id)
+        );
+
+        // Cridar createTable amb només les evidències assignades
+        createTable(evidencesAfegides, savedData.detalls || [], criteris);
+    } catch (error) {
+        console.error('Error inicialitzant la pàgina:', error);
+        alert('Error carregant dades!');
+    }
+});
+
+
+/* document.addEventListener('DOMContentLoaded', () => {
     console.log('Pàgina carregada.');
 
     const id_ra = window.location.pathname.split('/').pop();
@@ -442,3 +618,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
 });
+ */

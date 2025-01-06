@@ -12,10 +12,18 @@
     <h1>RA - {{ ra[1] }}</h1>
     <button onclick="guardarDetalls()" class="save-button">Desar Dades</button>
     <button class="back-button" onclick="window.history.back()">Tornar</button>
+    <div class="evidence-selector">
+        <label for="evidence-select">Selecciona evidència:</label>
+        <select id="evidence-select">
+            <!-- Les opcions es generaran dinàmicament <option value="">Selecciona una evidència</option> -->
+        </select>
+        <button id="add-evidence">Afig Evidència</button>
+    </div>
 
     <div class="table-wrapper">
-        <!-- El contenido de las tablas será generado dinámicamente -->
+        <!-- La taula es crearà dinàmicament aquí -->
     </div>
+    
 
     <script src="/static/detalls_ra.js"></script>
 </body>

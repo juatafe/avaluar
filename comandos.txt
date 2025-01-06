@@ -42,3 +42,37 @@ sudo kill -9 PID
 wine python-installer.exe
 wine pip install pyinstaller
 wine python.exe -m PyInstaller --onefile --add-data "templates;templates" --add-data "static;static" app.py
+
+
+
+
+# Crear y cambiar a la nueva rama
+git checkout -b proves
+
+# Verificar que estás en la nueva rama
+git branch
+
+# Hacer cambios y confirmarlos
+git add .
+git commit -m "Cambios en la rama de pruebas"
+
+# Subir la nueva rama al repositorio remoto
+git push -u origin proves
+
+
+
+# Cambiar a la rama main
+git checkout main
+
+# Actualizar la rama main con los últimos cambios del repositorio remoto
+git pull origin main
+
+# Fusionar la rama proves en main
+git merge proves
+
+# Resolver conflictos (si los hay) y confirmar la fusión
+git add .
+git commit -m "Resolver conflictos de fusión"
+
+# Subir los cambios fusionados a la rama main en el repositorio remoto
+git push origin main
