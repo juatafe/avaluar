@@ -158,53 +158,85 @@ async function guardarDetalls() {
     calculateTotals();
 }
 
-function updateNota(select) {
-    // Obtenim l'opció seleccionada i la seva nota
-    const selectedOption = select.options[select.selectedIndex];
-    const nota = parseFloat(selectedOption.dataset.nota) || 0; // Obté la nota del descriptor seleccionat
-    const input = select.parentElement.querySelector('input'); // Troba l'input dins la mateixa cel·la
+// function updateNota(select) {
+//     // Obtenim l'opció seleccionada i la seva nota
+//     const selectedOption = select.options[select.selectedIndex];
+//     const nota = parseFloat(selectedOption.dataset.nota) || 0; // Obté la nota del descriptor seleccionat
+//     const input = select.parentElement.querySelector('input'); // Troba l'input dins la mateixa cel·la
 
-    // Assignem o buidem la nota segons l'opció seleccionada
+//     // Assignem o buidem la nota segons l'opció seleccionada
+//     if (!select.value) {
+//         input.value = ''; // Si no hi ha cap valor seleccionat, buida el camp d'entrada
+//     } else {
+//         input.value = nota.toFixed(2); // Assigna la nota corresponent al camp d'entrada
+//     }
+
+//     // Recuperem els atributs necessaris de la fila i la cel·la
+//     const row = select.closest('tr'); // Obtenim la fila més propera
+//     const idCriteri = row ? row.dataset.idCriteri : null; // Dataset de la fila
+//     const idEvidencia = select.closest('td') ? select.closest('td').dataset.idEvidencia : null; // Dataset de la cel·la
+//     let nia = row ? row.dataset.nia : null; // Dataset de la fila
+
+//     // Si el NIA no està definit, intentem obtenir-lo de la fila associada a la evidència id=1
+//     if (!nia) {
+//         const rowAvaluacioZero = document.querySelector('tr[data-id-criteri][data-nia]'); // Busca una fila amb NIA definit
+//         if (rowAvaluacioZero) {
+//             nia = rowAvaluacioZero.dataset.nia;
+//             console.log("NIA obtingut de l'evidència 'Avaluació Zero':", nia);
+//         }
+//     }
+
+//     // Verifiquem que tots els atributs necessaris estan definits
+//     if (!idCriteri || !idEvidencia || !nia) {
+//         console.warn('Alguna de les dades no està definida:', {
+//             idCriteri,
+//             idEvidencia,
+//             nia,
+//         });
+//         return; // Aturem l'execució si falta algun valor
+//     }
+
+//     // Mostrem a la consola el procés d'actualització
+//     console.log(
+//         `Actualitzant nota: Criteri=${idCriteri}, Evidència=${idEvidencia}, NIA=${nia}, Valor=${nota}`
+//     );
+
+//     // Opcional: crida al servidor per desar canvis immediatament
+//     // guardarDetalls(); // Desem automàticament després d'una actualització
+
+//     // Actualitzem els totals després de modificar una nota
+//     calculateTotals();
+// }
+function updateNota(select) {
+    const selectedOption = select.options[select.selectedIndex];
+    const nota = parseFloat(selectedOption.dataset.nota) || 0;
+    const input = select.parentElement.querySelector('input');
+
     if (!select.value) {
-        input.value = ''; // Si no hi ha cap valor seleccionat, buida el camp d'entrada
+        input.value = '';
     } else {
-        input.value = nota.toFixed(2); // Assigna la nota corresponent al camp d'entrada
+        input.value = nota.toFixed(2);
     }
 
-    // Recuperem els atributs necessaris de la fila i la cel·la
-    const row = select.closest('tr'); // Obtenim la fila més propera
-    const idCriteri = row ? row.dataset.idCriteri : null; // Dataset de la fila
-    const idEvidencia = select.closest('td') ? select.closest('td').dataset.idEvidencia : null; // Dataset de la cel·la
-    let nia = row ? row.dataset.nia : null; // Dataset de la fila
+    const row = select.closest('tr');
+    const idCriteri = row.dataset.idCriteri;
+    const idEvidencia = select.closest('td').dataset.idEvidencia;
+    let nia = row.dataset.nia;
 
-    // Si el NIA no està definit, intentem obtenir-lo de la fila associada a la evidència id=1
     if (!nia) {
-        const rowAvaluacioZero = document.querySelector('tr[data-id-criteri][data-nia]'); // Busca una fila amb NIA definit
-        if (rowAvaluacioZero) {
-            nia = rowAvaluacioZero.dataset.nia;
+        const rowZero = document.querySelector('tr[data-id-criteri][data-nia]');
+        if (rowZero) {
+            nia = rowZero.dataset.nia;
             console.log("NIA obtingut de l'evidència 'Avaluació Zero':", nia);
         }
     }
 
-    // Verifiquem que tots els atributs necessaris estan definits
     if (!idCriteri || !idEvidencia || !nia) {
-        console.warn('Alguna de les dades no està definida:', {
-            idCriteri,
-            idEvidencia,
-            nia,
-        });
-        return; // Aturem l'execució si falta algun valor
+        console.warn('Alguna dada no està definida:', { idCriteri, idEvidencia, nia });
+        return;
     }
 
-    // Mostrem a la consola el procés d'actualització
-    console.log(
-        `Actualitzant nota: Criteri=${idCriteri}, Evidència=${idEvidencia}, NIA=${nia}, Valor=${nota}`
-    );
-
-    // Opcional: crida al servidor per desar canvis immediatament
-    // guardarDetalls(); // Desem automàticament després d'una actualització
-
-    // Actualitzem els totals després de modificar una nota
+    console.log(`Actualitzant nota: Criteri=${idCriteri}, Evidència=${idEvidencia}, NIA=${nia}, Valor=${nota}`);
     calculateTotals();
 }
 
@@ -562,6 +594,64 @@ function updateEvidenceDropdown() {
         .join('');
 }
 
+// function createTable(evidences, savedData = [], criteris = []) {
+//     const tableWrapper = document.querySelector('.table-wrapper');
+//     tableWrapper.innerHTML = ''; // Reset de la taula
+
+//     const table = document.createElement('table');
+//     table.innerHTML = `
+//         <thead>
+//             <tr>
+//                 <th>Criteris</th>
+//                 <th>Ponderació (%)</th>
+//                 <th>Aconseguit</th>
+//                 <th>Progrés</th>
+//                 ${evidences.map(e => `<th>${e.nom || "Sense nom"}</th>`).join('')}
+//             </tr>
+//         </thead>
+//         <tbody>
+//             ${criteris.map(criteri => `
+//                 <tr data-id-criteri="${criteri.id_criteri}" data-nia="${criteri.nia || ''}">
+//                     <td>${criteri.descripcio}</td>
+//                     <td><input type="number" class="ponderacio" value="${criteri.ponderacio || 0}" oninput="calculateTotals()"></td>
+//                     <td class="aconseguit">0.00</td>
+//                     <td class="progress">0.00</td>
+//                     ${evidences.map(evidence => {
+//                         const saved = savedData.find(d => d.id_criteri === criteri.id_criteri && d.id_evidencia === evidence.id);
+//                         const descriptors = evidence.descriptors || [];
+//                         return `
+//                             <td data-id-evidencia="${evidence.id}">
+//                                 ${descriptors.length > 0
+//                                     ? `
+//                                         <select onchange="updateNota(this)">
+//                                             <option value="">Selecciona descriptor</option>
+//                                             ${descriptors.map(desc => `
+//                                                 <option value="${desc.valor}" data-nota="${desc.valor}" ${saved?.valor === desc.valor ? 'selected' : ''}>
+//                                                     ${desc.nom}
+//                                                 </option>`).join('')}
+//                                         </select>
+//                                     `
+//                                     : `<span class="no-descriptor">Sense descripció</span>`
+//                                 }
+//                                 <input type="number" value="${saved?.valor || ''}" min="0" max="10" oninput="manualUpdate(this)">
+//                             </td>`;
+//                     }).join('')}
+//                 </tr>`).join('')}
+//         </tbody>
+//         <tfoot>
+//             <tr>
+//                 <td>TOTALS</td>
+//                 <td class="total-ponderacio">0</td>
+//                 <td class="total-aconseguit">0.00</td>
+//                 <td class="total-progres">0.00</td>
+//                 ${evidences.map(() => '<td class="evidence-total">0.00</td>').join('')}
+//             </tr>
+//         </tfoot>
+//     `;
+
+//     tableWrapper.appendChild(table);
+//     calculateTotals();
+// }
 function createTable(evidences, savedData = [], criteris = []) {
     const tableWrapper = document.querySelector('.table-wrapper');
     tableWrapper.innerHTML = ''; // Reset de la taula
@@ -657,6 +747,7 @@ function addEvidenceToAllCriteris(evidence, criteris) {
         console.warn("savedData no és un array, inicialitzant-lo com a array.");
         savedData = [];
     }
+    const niaDisponible = savedData.find(d => d.nia)?.nia || null; // Agafar un NIA existent
 
     // Per cada criteri, afegeix una entrada a `savedData` si no existeix
     criteris.forEach(criteri => {
@@ -668,7 +759,7 @@ function addEvidenceToAllCriteris(evidence, criteris) {
             savedData.push({
                 id_criteri: criteri.id_criteri,
                 id_evidencia: evidence.id,
-                nia: null, // Pot ser definit segons el context
+                nia: niaDisponible, // Pot ser definit segons el context
                 valor: null // Sense valor inicial
             });
         }

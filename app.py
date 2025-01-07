@@ -219,19 +219,19 @@ def veure_ra(id_ra):
         print("Error carregant els detalls:", e)
         abort(500, description=f"Error: {e}")
 
-@app.route('/get_criteris/<int:id_ra>')
-def get_criteris(id_ra):
-    try:
-        criteris = db_query(
-            "SELECT id_criteri, descripcio, ponderacio FROM Criteri WHERE id_ra = ?",
-            (id_ra,),
-            fetchall=True
-        )
-        print("Criteris retornats:", criteris)
-        return jsonify(criteris=[dict(row) for row in criteris])
-    except Exception as e:
-        print("Error recuperant criteris:", e)
-        return jsonify(success=False, error=str(e))
+# @app.route('/get_criteris/<int:id_ra>')
+# def get_criteris(id_ra):
+#     try:
+#         criteris = db_query(
+#             "SELECT id_criteri, descripcio, ponderacio FROM Criteri WHERE id_ra = ?",
+#             (id_ra,),
+#             fetchall=True
+#         )
+#         print("Criteris retornats:", criteris)
+#         return jsonify(criteris=[dict(row) for row in criteris])
+#     except Exception as e:
+#         print("Error recuperant criteris:", e)
+#         return jsonify(success=False, error=str(e))
 
 @app.route('/api/ra/<int:id_ra>')
 def get_ra_details(id_ra):
@@ -409,46 +409,6 @@ def veure_modul_per_alumne(id_modul, nia):
         abort(500, description=f"Error amb la base de dades: {e}")
 
 # Ruta per actualitzar els detalls
-@app.route('/update-detalls', methods=['POST'])
-def update_detalls():
-    try:
-        data = request.json
-        for detall in data.get('detalls', []):
-            id_criteri = detall['id_criteri']
-            id_evidencia = detall['id_evidencia']
-            nia = detall['nia']
-            valor = detall['valor']
-            criteri_p = detall['ponderacio']
-
-            with sqlite3.connect(DB_PATH) as conn:
-                cursor = conn.cursor()
-
-                if not valor:  # Si el valor és buit, eliminem la fila
-                    print(f"Eliminant entrada per id_criteri={id_criteri}, id_evidencia={id_evidencia}, nia={nia}")
-                    cursor.execute("""
-                        DELETE FROM Criteri_Alumne_Evidencia
-                        WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
-                    """, (id_criteri, id_evidencia, nia))
-                else:  # Actualitzar o inserir
-                    cursor.execute("""
-                        UPDATE Criteri_Alumne_Evidencia
-                        SET valor = ?
-                        WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
-                    """, (valor, id_criteri, id_evidencia, nia))
-
-                    if cursor.rowcount == 0:  # Si no existeix, inserir
-                        cursor.execute("""
-                            INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor)
-                            VALUES (?, ?, ?, ?)
-                        """, (id_criteri, id_evidencia, nia, valor))
-
-                conn.commit()
-
-        return jsonify(success=True)
-    except Exception as e:
-        return jsonify(success=False, error=str(e))
-
-# Ruta per actualitzar els detalls de RA
 @app.route('/update-detalls-ra', methods=['POST'])
 def update_detalls_ra():
     try:
@@ -462,21 +422,14 @@ def update_detalls_ra():
             nia = detall['nia']
             valor = detall['valor']
 
-            if not valor:  # Si el valor és buit, eliminem la fila
+            if valor is not None and float(valor) < 0:  # Si el valor és negatiu, eliminem la relació
                 db_query("""
                     DELETE FROM Criteri_Alumne_Evidencia
                     WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
                 """, (id_criteri, id_evidencia, nia), commit=True)
-            else:  # Actualitzar o inserir
+            elif valor is not None:  # Inserir o actualitzar si el valor no és negatiu
                 db_query("""
-                    UPDATE Criteri_Alumne_Evidencia
-                    SET valor = ?
-                    WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
-                """, (valor, id_criteri, id_evidencia, nia), commit=True)
-
-                # Inserir si no existeix
-                db_query("""
-                    INSERT OR IGNORE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor)
+                    INSERT OR REPLACE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor)
                     VALUES (?, ?, ?, ?)
                 """, (id_criteri, id_evidencia, nia, valor), commit=True)
 
@@ -498,6 +451,10 @@ def update_detalls_ra():
                 SET ponderacio = ?
                 WHERE id_criteri = ?
             """, (item['ponderacio'], item['id_criteri']), commit=True)
+
+        print("Dades rebudes (detalls):", data.get('detalls', []))
+        print("Dades rebudes (ponderacions):", data.get('ponderacions', []))
+        print("Dades rebudes (criteri_p):", data.get('criteri_p', []))
 
         return jsonify(success=True)
 
@@ -568,6 +525,30 @@ def format_date(value, format='%d/%m/%Y'):
         return date_value.strftime(format)
     except ValueError:
         return value
+
+
+
+@app.route('/get_criteris/<int:id_ra>')
+def get_criteris(id_ra):
+    try:
+        criteris = db_query("""
+            SELECT 
+                c.id_criteri,
+                c.descripcio,
+                c.ponderacio,
+                cae.nia
+            FROM criteri c
+            LEFT JOIN criteri_alumne_evidencia cae ON cae.id_criteri = c.id_criteri
+            WHERE c.id_ra = ?
+            AND cae.id_evidencia = (
+                SELECT id FROM evidencia WHERE descripcio = 'Avaluació Zero'
+            )
+        """, (id_ra,), fetchall=True)
+        print("Criteris retornats amb NIA:", criteris)
+        return jsonify(criteris=[dict(row) for row in criteris])
+    except Exception as e:
+        print("Error recuperant criteris amb NIA:", e)
+        return jsonify(success=False, error=str(e))
 
 
 
