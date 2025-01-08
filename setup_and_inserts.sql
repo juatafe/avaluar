@@ -184,11 +184,11 @@ INSERT INTO Evidencia_Descriptor (id_evidencia, id_descriptor) VALUES
 
 -- Inserir Resultats d'Aprenentatge FH amb numeració i descripció
 INSERT INTO RA (nom, ponderacio, id_modul) VALUES 
-('RA1- Configura equips microinformàtics, components i perifèrics, analitzant les seues característiques i relació amb el conjunt.', 20, 1),
-('RA2- Instal·la programari de propòsit general, avaluant-ne les característiques i entorns d''aplicació.', 30, 1),
-('RA3- Executa procediments per recuperar el programari base d''un equip, analitzant-los i utilitzant imatges emmagatzemades en memòria auxiliar.', 25, 1),
-('RA4- Implanta maquinari específic de centres de processament de dades (CPD), analitzant-ne les característiques i aplicacions.', 15, 1),
-('RA5- Compleix les normes de prevenció de riscos laborals i de protecció ambiental, identificant els riscos associats, les mesures i equips per prevenir-los.', 10, 1);
+('RA1- Configura equips microinformàtics, components i perifèrics, analitzant les seues característiques i relació amb el conjunt.', 33, 1),
+('RA2- Instal·la programari de propòsit general, avaluant-ne les característiques i entorns d''aplicació.', 22, 1),
+('RA3- Executa procediments per recuperar el programari base d''un equip, analitzant-los i utilitzant imatges emmagatzemades en memòria auxiliar.', 11, 1),
+('RA4- Implanta maquinari específic de centres de processament de dades (CPD), analitzant-ne les característiques i aplicacions.', 17, 1),
+('RA5- Compleix les normes de prevenció de riscos laborals i de protecció ambiental, identificant els riscos associats, les mesures i equips per prevenir-los.', 17, 1);
 
 -- Inserir tots els criteris per cada RA amb lletra i descripció
 INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES 

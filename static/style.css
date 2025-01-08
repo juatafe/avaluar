@@ -247,3 +247,16 @@ body {
 button {
     margin: 15px 10px;
 }
+
+
+.close-button {
+    background: none;
+    border: none;
+    color: red;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.close-button:hover {
+    color: darkred;
+}

@@ -409,53 +409,93 @@ def veure_modul_per_alumne(id_modul, nia):
         abort(500, description=f"Error amb la base de dades: {e}")
 
 # Ruta per actualitzar els detalls
+# @app.route('/update-detalls-ra', methods=['POST'])
+# def update_detalls_ra():
+#     try:
+#         data = request.json
+#         print("Dades rebudes per actualitzar detalls:", data)
+
+#         # Processar detalls
+#         for detall in data.get('detalls', []):
+#             id_criteri = detall['id_criteri']
+#             id_evidencia = detall['id_evidencia']
+#             nia = detall['nia']
+#             valor = detall['valor']
+
+#             if valor is not None and float(valor) < 0:  # Si el valor és negatiu, eliminem la relació
+#                 db_query("""
+#                     DELETE FROM Criteri_Alumne_Evidencia
+#                     WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
+#                 """, (id_criteri, id_evidencia, nia), commit=True)
+#             elif valor is not None:  # Inserir o actualitzar si el valor no és negatiu
+#                 db_query("""
+#                     INSERT OR REPLACE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor)
+#                     VALUES (?, ?, ?, ?)
+#                 """, (id_criteri, id_evidencia, nia, valor), commit=True)
+
+#         # Processar ponderacions
+#         for ponderacio in data.get('ponderacions', []):
+#             id_criteri = ponderacio['id_criteri']
+#             valor = ponderacio['valor']
+
+#             db_query("""
+#                 UPDATE Criteri
+#                 SET ponderacio = ?
+#                 WHERE id_criteri = ?
+#             """, (valor, id_criteri), commit=True)
+
+#         # Processar criteris_p
+#         for item in data.get('criteri_p', []):
+#             db_query("""
+#                 UPDATE Criteri
+#                 SET ponderacio = ?
+#                 WHERE id_criteri = ?
+#             """, (item['ponderacio'], item['id_criteri']), commit=True)
+
+#         print("Dades rebudes (detalls):", data.get('detalls', []))
+#         print("Dades rebudes (ponderacions):", data.get('ponderacions', []))
+#         print("Dades rebudes (criteri_p):", data.get('criteri_p', []))
+
+#         return jsonify(success=True)
+
+#     except Exception as e:
+#         print("Error actualitzant els detalls:", e)
+#         return jsonify(success=False, error=str(e))
 @app.route('/update-detalls-ra', methods=['POST'])
 def update_detalls_ra():
     try:
         data = request.json
         print("Dades rebudes per actualitzar detalls:", data)
 
+        # Validació inicial
+        if not data.get('ra_id'):
+            print("Error: Falta l'ID del RA actiu.")
+            return jsonify(success=False, error="Falta l'ID del RA actiu")
+
+        if not data.get('detalls'):
+            print("Error: No s'han rebut detalls per processar.")
+            return jsonify(success=False, error="No s'han rebut detalls per processar")
+
         # Processar detalls
         for detall in data.get('detalls', []):
-            id_criteri = detall['id_criteri']
-            id_evidencia = detall['id_evidencia']
-            nia = detall['nia']
-            valor = detall['valor']
+            id_criteri = detall.get('id_criteri')
+            id_evidencia = detall.get('id_evidencia')
+            nia = detall.get('nia')
+            valor = detall.get('valor')
 
-            if valor is not None and float(valor) < 0:  # Si el valor és negatiu, eliminem la relació
+            print(f"Processant detall: {detall}")
+            if not id_criteri or not id_evidencia or not nia:
+                print(f"Error: Falta algun camp obligatori. Detall rebut: {detall}")
+                continue
+
+            if valor is not None and float(valor) < 0:
+                print(f"Eliminant relació: criteri={id_criteri}, evidència={id_evidencia}, nia={nia}")
                 db_query("""
                     DELETE FROM Criteri_Alumne_Evidencia
                     WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
                 """, (id_criteri, id_evidencia, nia), commit=True)
-            elif valor is not None:  # Inserir o actualitzar si el valor no és negatiu
-                db_query("""
-                    INSERT OR REPLACE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor)
-                    VALUES (?, ?, ?, ?)
-                """, (id_criteri, id_evidencia, nia, valor), commit=True)
 
-        # Processar ponderacions
-        for ponderacio in data.get('ponderacions', []):
-            id_criteri = ponderacio['id_criteri']
-            valor = ponderacio['valor']
-
-            db_query("""
-                UPDATE Criteri
-                SET ponderacio = ?
-                WHERE id_criteri = ?
-            """, (valor, id_criteri), commit=True)
-
-        # Processar criteris_p
-        for item in data.get('criteri_p', []):
-            db_query("""
-                UPDATE Criteri
-                SET ponderacio = ?
-                WHERE id_criteri = ?
-            """, (item['ponderacio'], item['id_criteri']), commit=True)
-
-        print("Dades rebudes (detalls):", data.get('detalls', []))
-        print("Dades rebudes (ponderacions):", data.get('ponderacions', []))
-        print("Dades rebudes (criteri_p):", data.get('criteri_p', []))
-
+        print("Actualització completada amb èxit.")
         return jsonify(success=True)
 
     except Exception as e:
