@@ -461,46 +461,126 @@ def veure_modul_per_alumne(id_modul, nia):
 #     except Exception as e:
 #         print("Error actualitzant els detalls:", e)
 #         return jsonify(success=False, error=str(e))
+# @app.route('/update-detalls-ra', methods=['POST'])
+# def update_detalls_ra():
+#     try:
+#         data = request.json
+#         print("Dades rebudes per actualitzar detalls:", data)
+
+#         # Validació inicial
+#         if not data.get('ra_id'):
+#             print("Error: Falta l'ID del RA actiu.")
+#             return jsonify(success=False, error="Falta l'ID del RA actiu")
+
+#         if not data.get('detalls'):
+#             print("Error: No s'han rebut detalls per processar.")
+#             return jsonify(success=False, error="No s'han rebut detalls per processar")
+
+#         # Processar detalls
+#         for detall in data.get('detalls', []):
+#             id_criteri = detall.get('id_criteri')
+#             id_evidencia = detall.get('id_evidencia')
+#             nia = detall.get('nia')
+#             valor = detall.get('valor')
+
+#             print(f"Processant detall: {detall}")
+#             if not id_criteri or not id_evidencia or not nia:
+#                 print(f"Error: Falta algun camp obligatori. Detall rebut: {detall}")
+#                 continue
+
+#             if valor is not None and float(valor) < 0:
+#                 print(f"Eliminant relació: criteri={id_criteri}, evidència={id_evidencia}, nia={nia}")
+#                 db_query("""
+#                     DELETE FROM Criteri_Alumne_Evidencia
+#                     WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
+#                 """, (id_criteri, id_evidencia, nia), commit=True)
+
+#         print("Actualització completada amb èxit.")
+#         return jsonify(success=True)
+
+#     except Exception as e:
+#         print("Error actualitzant els detalls:", e)
+#         return jsonify(success=False, error=str(e))
 @app.route('/update-detalls-ra', methods=['POST'])
 def update_detalls_ra():
     try:
         data = request.json
         print("Dades rebudes per actualitzar detalls:", data)
 
-        # Validació inicial
-        if not data.get('ra_id'):
-            print("Error: Falta l'ID del RA actiu.")
-            return jsonify(success=False, error="Falta l'ID del RA actiu")
+        ra_id = data.get('ra_id')
+        detalls = data.get('detalls', [])
+        ponderacions = data.get('ponderacions', [])
 
-        if not data.get('detalls'):
-            print("Error: No s'han rebut detalls per processar.")
-            return jsonify(success=False, error="No s'han rebut detalls per processar")
+        if not ra_id:
+            return jsonify(success=False, error="Falta l'ID del RA actiu.")
 
-        # Processar detalls
-        for detall in data.get('detalls', []):
+        for detall in detalls:
             id_criteri = detall.get('id_criteri')
             id_evidencia = detall.get('id_evidencia')
             nia = detall.get('nia')
             valor = detall.get('valor')
 
-            print(f"Processant detall: {detall}")
-            if not id_criteri or not id_evidencia or not nia:
-                print(f"Error: Falta algun camp obligatori. Detall rebut: {detall}")
-                continue
-
-            if valor is not None and float(valor) < 0:
+            # Afegir condició per diferenciar les relacions a eliminar
+            if valor is None and detall.get('eliminar', False):  # Només eliminar si s'ha marcat explícitament
                 print(f"Eliminant relació: criteri={id_criteri}, evidència={id_evidencia}, nia={nia}")
-                db_query("""
-                    DELETE FROM Criteri_Alumne_Evidencia
-                    WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
-                """, (id_criteri, id_evidencia, nia), commit=True)
+                eliminar_relacio(ra_id, id_criteri, id_evidencia, nia)
+            elif valor is not None:  # Si hi ha un valor, actualitzar o inserir
+                print(f"Actualitzant relació: criteri={id_criteri}, evidència={id_evidencia}, nia={nia}, valor={valor}")
+                actualitzar_relacio(ra_id, id_criteri, id_evidencia, nia, valor)
 
-        print("Actualització completada amb èxit.")
+        # Processar ponderacions
+        for ponderacio in ponderacions:
+            id_criteri = ponderacio.get('id_criteri')
+            valor = ponderacio.get('valor')
+            print(f"Actualitzant ponderació: criteri={id_criteri}, valor={valor}")
+            actualitzar_ponderacio(ra_id, id_criteri, valor)
+
         return jsonify(success=True)
 
     except Exception as e:
-        print("Error actualitzant els detalls:", e)
+        print(f"Error processant actualització: {e}")
         return jsonify(success=False, error=str(e))
+
+
+def eliminar_relacio(ra_id, id_criteri, id_evidencia, nia):
+    """Elimina una relació específica de la base de dades."""
+    try:
+        db_query("""
+            DELETE FROM Criteri_Alumne_Evidencia
+            WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
+        """, (id_criteri, id_evidencia, nia), commit=True)
+        print(f"Relació eliminada: RA={ra_id}, criteri={id_criteri}, evidència={id_evidencia}, nia={nia}")
+    except Exception as e:
+        print(f"Error eliminant relació: {e}")
+
+
+def actualitzar_relacio(ra_id, id_criteri, id_evidencia, nia, valor):
+    """Actualitza o afegeix una relació a la base de dades."""
+    try:
+        db_query("""
+            INSERT OR REPLACE INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor)
+            VALUES (?, ?, ?, ?)
+        """, (id_criteri, id_evidencia, nia, valor), commit=True)
+        print(f"Relació actualitzada: RA={ra_id}, criteri={id_criteri}, evidència={id_evidencia}, nia={nia}, valor={valor}")
+    except Exception as e:
+        print(f"Error actualitzant relació: {e}")
+
+
+def actualitzar_ponderacio(ra_id, id_criteri, valor):
+    """Actualitza la ponderació d'un criteri."""
+    try:
+        db_query("""
+            UPDATE Criteri
+            SET ponderacio = ?
+            WHERE id_criteri = ?
+        """, (valor, id_criteri), commit=True)
+        print(f"Ponderació actualitzada: RA={ra_id}, criteri={id_criteri}, valor={valor}")
+    except Exception as e:
+        print(f"Error actualitzant ponderació: {e}")
+
+
+
+
 
 
 @app.after_request
