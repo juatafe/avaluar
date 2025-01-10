@@ -521,9 +521,9 @@ def update_detalls_ra():
             valor = detall.get('valor')
 
             # Afegir condició per diferenciar les relacions a eliminar
-            if valor is None and detall.get('eliminar', False):  # Només eliminar si s'ha marcat explícitament
-                print(f"Eliminant relació: criteri={id_criteri}, evidència={id_evidencia}, nia={nia}")
-                eliminar_relacio(ra_id, id_criteri, id_evidencia, nia)
+            if valor is None and detall.get('eliminar', True):  # Només eliminar si s'ha marcat explícitament
+                print(f"Eliminant relació: ra_id={ra_id}, evidència={id_evidencia}, nia={nia}")
+                eliminar_relacio(ra_id, id_evidencia, nia)
             elif valor is not None:  # Si hi ha un valor, actualitzar o inserir
                 print(f"Actualitzant relació: criteri={id_criteri}, evidència={id_evidencia}, nia={nia}, valor={valor}")
                 actualitzar_relacio(ra_id, id_criteri, id_evidencia, nia, valor)
@@ -542,14 +542,18 @@ def update_detalls_ra():
         return jsonify(success=False, error=str(e))
 
 
-def eliminar_relacio(ra_id, id_criteri, id_evidencia, nia):
-    """Elimina una relació específica de la base de dades."""
+def eliminar_relacio(ra_id, id_evidencia, nia):
+    """Elimina una relació específica de la base de dades per a tots els criteris del mateix RA."""
     try:
         db_query("""
             DELETE FROM Criteri_Alumne_Evidencia
-            WHERE id_criteri = ? AND id_evidencia = ? AND nia = ?
-        """, (id_criteri, id_evidencia, nia), commit=True)
-        print(f"Relació eliminada: RA={ra_id}, criteri={id_criteri}, evidència={id_evidencia}, nia={nia}")
+            WHERE id_criteri IN (
+                SELECT id
+                FROM Criteri
+                WHERE id_ra = ?
+            ) AND id_evidencia = ? AND nia = ?
+        """, (ra_id, id_evidencia, nia), commit=True)
+        print(f"Relació eliminada: RA={ra_id}, evidència={id_evidencia}, nia={nia}")
     except Exception as e:
         print(f"Error eliminant relació: {e}")
 
