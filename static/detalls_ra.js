@@ -385,7 +385,7 @@ async function fetchCriteris(id_ra) {
         .join('');
 }
  */
-function createTable(evidences, savedData = [], criteris = [], raId) {
+/* function createTable(evidences, savedData = [], criteris = [], raId) {
     const tableWrapper = document.querySelector('.table-wrapper');
     tableWrapper.innerHTML = ''; // Reset de la taula
 
@@ -447,7 +447,78 @@ function createTable(evidences, savedData = [], criteris = [], raId) {
 
     tableWrapper.appendChild(table);
     calculateTotals();
-}
+} */
+
+    function createTable(evidences, savedData = [], criteris = [], raId) {
+        const tableWrapper = document.querySelector('.table-wrapper');
+        tableWrapper.innerHTML = ''; // Reset de la taula
+    
+        const table = document.createElement('table');
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Criteris</th>
+                    <th>Ponderació (%)</th>
+                    <th>Aconseguit</th>
+                    <th>Progrés</th>
+                    ${evidences.map(e => `
+                        <th>${e.nom || "Sense nom"}
+                            <button class="close-button" onclick="eliminarEvidenciaDeCapçalera('${e.id}', '${raId}')">&times;</button>
+                        </th>
+                    `).join('')}
+                </tr>
+            </thead>
+            <tbody>
+                ${criteris.map(criteri => `
+                    <tr data-id-criteri="${criteri.id_criteri}" data-nia="${criteri.nia || ''}">
+                        <td data-fulltext="${criteri.descripcio}" title="${criteri.descripcio}">
+                            ${criteri.descripcio.length > 50 
+                                ? criteri.descripcio.substring(0, 47) + '...' 
+                                : criteri.descripcio}
+                        </td>
+                        <td><input type="number" class="ponderacio" value="${criteri.ponderacio || 0}" oninput="calculateTotals()"></td>
+                        <td class="aconseguit">0.00</td>
+                        <td class="progress">0.00</td>
+                        ${evidences.map(evidence => {
+                            const saved = savedData.find(d => d.id_criteri === criteri.id_criteri && d.id_evidencia === evidence.id);
+                            const descriptors = evidence.descriptors || [];
+                            const nia = criteri.nia || saved?.nia || '';
+                            return `
+                                <td data-id-evidencia="${evidence.id}">
+                                    ${descriptors.length > 0
+                                        ? `
+                                            <select onchange="updateNota(this)">
+                                                <option value="">Selecciona descriptor</option>
+                                                ${descriptors.map(desc => `
+                                                    <option value="${desc.valor}" data-nota="${desc.valor}" ${saved?.valor === desc.valor ? 'selected' : ''}>
+                                                        ${desc.nom}
+                                                    </option>`).join('')}
+                                            </select>
+                                        `
+                                        : `<span class="no-descriptor">Sense descripció</span>`}
+                                    <input type="number" value="${saved?.valor || ''}" min="0" max="10" oninput="manualUpdate(this)">
+                                    <button class="close-button" onclick="eliminarEvidencia('${evidence.id}', '${criteri.id_criteri}', '${nia}', '${raId}')">&times;</button>
+                                </td>`;
+                        }).join('')}
+                    </tr>`).join('')}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>TOTALS</td>
+                    <td class="total-ponderacio">0</td>
+                    <td class="total-aconseguit">0.00</td>
+                    <td class="total-progres">0.00</td>
+                    ${evidences.map(() => '<td class="evidence-total">0.00</td>').join('')}
+                </tr>
+            </tfoot>
+        `;
+    
+        tableWrapper.appendChild(table);
+        calculateTotals();
+    }
+    
+
+
 
 function eliminarEvidenciaDeCapçalera(idEvidencia, raId) {
     console.log("Eliminant evidència de capçalera amb id:", idEvidencia);

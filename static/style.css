@@ -6,8 +6,11 @@
     --secondary-hover-color: #76c7c0; /* Verd intens */
     --background-color: #f1faee; /* Blanc trencat */
     --text-color: #1d3557; /* Blau fosc per a text */
-    --table-header-bg: #457b9d;
+    --table-header-bg: #457b9d; /* Blau encapçalament */
     --table-header-text: white;
+    --table-row-bg: #f8f9fa; /* Color fons files clares */
+    --table-row-alt-bg: #e6f7ff; /* Color fons files alternades */
+    --table-row-hover-bg: #e9ecef; /* Color fons files al passar ratolí */
     font-size: calc(0.2em + 1vw);
 }
 
@@ -31,7 +34,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    max-width: 2200px;
+    max-width: auto;
     margin: auto;
     padding: 1.5em;
 }
@@ -103,7 +106,7 @@ button:hover {
 /* Taules */
 .table-wrapper {
     display: grid;
-    grid-template-columns: auto 1fr; /* Columna fixa + zona desplaçable */
+    grid-template-columns: auto 1fr;
     overflow-x: auto;
     background-color: var(--background-color);
     margin: 1rem 0;
@@ -113,34 +116,123 @@ table {
     width: 100%;
     border-collapse: collapse;
     text-align: center;
+    table-layout: fixed;
 }
 
-table th,
-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-}
-
-thead th {
+table th {
     background-color: var(--table-header-bg);
     color: var(--table-header-text);
     font-weight: bold;
+    padding: 12px;
 }
 
-tfoot td {
-    font-weight: bold;
+table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: var(--table-row-bg); /* Color de fons per a les files */
+    position: relative;
+}
+
+
+table tr:nth-child(even) td {
+    background-color: var(--table-row-alt-bg); /* Files alternades */
+}
+
+table tr:nth-child(odd) td {
+    background-color: var(--table-row-bg); /* Files normals */
+}
+
+table tr:hover td {
+    background-color: var(--table-row-hover-bg); /* Color de fons al passar el ratolí */
+}
+
+/* Tooltip per mostrar text complet */
+table td[data-fulltext]:hover::after {
+    content: attr(data-fulltext); /* Mostra el text complet des de data-text */
+    position: absolute;
+    top: calc(100% + 5px);;
+    left: 10pt;
+    z-index: 9999;
+    background-color: #fff;
+    color: var(--text-color);
+    padding: 0.5rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    white-space: normal;
+    max-width: 300px;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+/* Inputs de Ponderació (%) */
+td input[type="number"] {
+    font-size: 1rem; /* Redueix lleugerament la mida del text */
+    padding: 5px;
+    width: 100%; /* Assegura que el camp ocupi tota l'amplada de la cel·la */
+    max-width: 6rem; /* Defineix un límit màxim per evitar que s'estengui massa */
+    text-align: center; /* Centra el text dins de l'input */
+    box-sizing: border-box; /* Inclou el padding i el borde dins del width */
+}
+
+/* Ajust d'amplada de les columnes amb unitats relatives */
+table th:first-child, 
+table td:first-child {
+    width: 5rem; /* Amplada per a la columna "Criteris" */
+    text-align: left; /* Alineació a l'esquerra */
+}
+
+table th:nth-child(2), 
+table td:nth-child(2) {
+    width: 8rem; /* Amplada per a la columna "Ponderació (%)" */
+    text-align: center;
+}
+
+table th:nth-child(3), 
+table td:nth-child(3) {
+    width: 5rem; /* Amplada per a la columna "Aconseguit" */
+    text-align: center;
+}
+
+table th:nth-child(4), 
+table td:nth-child(4) {
+    width: 5rem; /* Amplada per a la columna "Progrés" */
+    text-align: center;
+}
+
+table th:nth-child(n+5), 
+table td:nth-child(n+5) {
+    width: auto; /* Les altres columnes tindran amplada automàtica */
+}
+
+
+/* Selectors */
+select {
+    font-size: 1.2rem;
+    padding: 0.8em 1rem;
+    min-width: 12rem;
+    max-width: 100%;
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
     background-color: var(--secondary-color);
     color: var(--text-color);
+    transition: all 0.3s ease;
 }
 
-/* Dropdown and input styling */
-td select,
-td input {
-    width: 90%;
-    margin: 5px auto;
-    padding: 5px;
-    font-size: 0.9em;
-    text-align: center;
+select:focus {
+    border-color: var(--primary-hover-color);
+    outline: none;
+    box-shadow: 0 0 5px var(--primary-hover-color);
+}
+
+/* Opcions dins del selector */
+select option {
+    padding: 0.4rem 0.8rem;
+    font-size: 1rem;
 }
 
 /* Responsive Taules */
@@ -188,127 +280,6 @@ footer {
 }
 
 .no-descriptor {
-    color: #888; /* Gris claro */
+    color: #888;
     font-style: italic;
-}
-
-/* Botons dels Mòduls */
-.module-button {
-    background-color: var(--primary-color);
-    color: white;
-    border: 2px solid var(--primary-hover-color);
-    font-size: 1rem;
-    font-weight: bold;
-    text-transform: capitalize;
-    padding: 10px 20px;
-    margin: 10px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.module-button:hover {
-    background-color: var(--primary-hover-color);
-    transform: translateY(-2px);
-}
-
-.module-button:active {
-    transform: translateY(0);
-}
-
-.table-wrapper {
-    overflow-x: auto;
-    max-width: 100%;
-}
-
-table tr {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-select:invalid {
-    border-color: #ff6b6b;
-    background-color: #ffecec;
-}
-.error {
-    color: #ff6b6b;
-    font-size: 0.85rem;
-    margin-top: 5px;
-}
-button:focus,
-input:focus,
-select:focus {
-    outline: 2px solid var(--secondary-hover-color);
-}
-footer {
-    background: linear-gradient(to right, var(--primary-color), var(--primary-hover-color));
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-}
-body {
-    font-size: calc(1rem + 0.2vw);
-}
-button {
-    margin: 15px 10px;
-}
-
-
-.close-button {
-    background: none;
-    border: none;
-    color: red;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.close-button:hover {
-    color: darkred;
-}
-
-
-select {
-    font-size: 1rem; /* Augmenta la mida del text */
-    padding: 0.8em; /* Espai intern més gran */
-    width: 100%; /* Fes que utilitze tota l'amplada del contenidor */
-    border: 1px solid var(--primary-color); /* Color del contorn */
-    border-radius: 4px; /* Vores arrodonides */
-    background-color: var(--secondary-color); /* Color de fons */
-    color: var(--text-color); /* Color del text */
-    transition: all 0.3s ease; /* Animació suau */
-}
-
-select:focus {
-    border-color: var(--primary-hover-color); /* Canvia el color del contorn quan està actiu */
-    outline: none; /* Elimina l'outline predeterminat */
-    box-shadow: 0 0 5px var(--primary-hover-color); /* Afegim ombra per a millor visibilitat */
-}
-
-select option {
-    font-size: 1rem;
-    padding: 0.5em; /* Espai intern de cada opció */
-}
-
-.evidence-selector {
-    display: flex;
-    flex-direction: row; /* Col·loca el botó i el selector en línia */
-    gap: 1em; /* Espai entre el selector i el botó */
-    align-items: center; /* Centra verticalment els elements */
-}
-
-button#add-evidence {
-    font-size: 1rem;
-    padding: 0.8em 1.2em;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
-}
-
-button#add-evidence:hover {
-    background-color: var(--primary-hover-color);
-    transform: scale(1.05);
-}
-
-.evidence-selector {
-    width: 100%;
-    max-width: 500px;
-    margin: 1rem auto; /* Centra el contenidor dins de la pàgina */
 }

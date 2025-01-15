@@ -53,7 +53,7 @@ Funcionalitat JavaScript:
                 <tbody>
                     {% for ra in ras %}
                     <tr>
-                        <td>{{ ra.nom_ra }}</td>
+                        <td data-fulltext="{{ ra.nom_ra }}">{{ ra.nom_ra }}</td>
                         <td><input type="number" value="{{ ra.ponderacio_ra }}" class="ponderacio-input"
                                 data-id="{{ ra.id_ra }}"
                                 min="0" 
