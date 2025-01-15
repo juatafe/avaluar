@@ -32,6 +32,30 @@ Funcionalitat JavaScript:
     <title>Resultats d'Aprenentatge</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <style>
+        /* Tooltip per mostrar text complet */
+        table td {
+            position: relative; /* Assegura que el tooltip es posicioni correctament */
+        }
+
+        table td[data-fulltext]:hover::after {
+            content: attr(data-fulltext); /* Mostra el text complet des de data-fulltext */
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 10pt;
+            z-index: 9999;
+            background-color: #fff;
+            color: var(--text-color);
+            padding: 0.5rem;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            white-space: normal;
+            max-width: 300px;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+    </style>
 
 </head>
 
