@@ -76,3 +76,13 @@ git commit -m "Resolver conflictos de fusión"
 
 # Subir los cambios fusionados a la rama main en el repositorio remoto
 git push origin main
+
+
+# Actualizar main amb lo de proves
+git add .
+git commit -m "Confirmació de canvis en la branca proves"
+git push origin proves
+git checkout main
+git merge proves
+git push origin main
+git checkout proves
