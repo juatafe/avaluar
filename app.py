@@ -90,6 +90,27 @@ def db_query(query, params=(), fetchone=False, fetchall=False, commit=False):
 def index():
     return render_template('index.html')
 
+
+@app.route('/get_modul_name/<int:id_ra>')
+def get_modul_name(id_ra):
+    try:
+        # Consulta SQL per obtenir el nom del mòdul associat al RA
+        modul = db_query("""
+            SELECT Modul.nom
+            FROM RA
+            JOIN Modul ON RA.id_modul = Modul.id_modul
+            WHERE RA.id_ra = ?;
+        """, (id_ra,), fetchone=True)
+
+        if modul:
+            return jsonify({"nom_modul": modul["nom"]})
+        else:
+            return jsonify({"error": "No s'ha trobat el mòdul associat al RA"}), 404
+    except sqlite3.Error as e:
+        print(f"Error obtenint el mòdul associat al RA {id_ra}: {e}")
+        return jsonify({"error": "Error amb la base de dades"}), 500
+
+
 # Formulari per donar d'alta alumnes
 @app.route('/alta-alumnes', methods=['GET', 'POST'])
 def alta_alumnes():

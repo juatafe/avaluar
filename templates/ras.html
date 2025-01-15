@@ -32,36 +32,12 @@ Funcionalitat JavaScript:
     <title>Resultats d'Aprenentatge</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-    <style>
-        /* Tooltip per mostrar text complet */
-        table td {
-            position: relative; /* Assegura que el tooltip es posicioni correctament */
-        }
-
-        table td[data-fulltext]:hover::after {
-            content: attr(data-fulltext); /* Mostra el text complet des de data-fulltext */
-            position: absolute;
-            top: calc(100% + 5px);
-            left: 10pt;
-            z-index: 9999;
-            background-color: #fff;
-            color: var(--text-color);
-            padding: 0.5rem;
-            border: 1px solid var(--primary-color);
-            border-radius: 4px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            white-space: normal;
-            max-width: 300px;
-            font-size: 0.9rem;
-            text-align: left;
-        }
-    </style>
 
 </head>
 
 <body>
     <div class="container">
-        <h1>Resultats d'Aprenentatge - {{ nom_modul }}</h1>
+        <h1>Resultats d'Aprenentatge del mòdul - <span id="nom-modul"></span></h1>
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -77,11 +53,9 @@ Funcionalitat JavaScript:
                 <tbody>
                     {% for ra in ras %}
                     <tr>
-                        <td data-fulltext="{{ ra.nom_ra }}">{{ ra.nom_ra }}</td>
+                        <td data-fulltext="{{ ra.nom_ra }}" title="{{ ra.nom_ra }}">{{ ra.nom_ra }}</td>
                         <td><input type="number" value="{{ ra.ponderacio_ra }}" class="ponderacio-input"
-                                data-id="{{ ra.id_ra }}"
-                                min="0" 
-                                max="100"></td>
+                                data-id="{{ ra.id_ra }}" min="0" max="100"></td>
                         <td>{{ ra.progress }}</td>
                         <td>{{ ra.aconseguit }}</td>
                         <td>{{ ra['ultima_data']|date('d/m/Y') }}</td>
@@ -134,6 +108,21 @@ Funcionalitat JavaScript:
             document.getElementById('total-ponderacio').textContent = totalPonderacio.toFixed(2);
             document.getElementById('total-progress').textContent = totalProgress.toFixed(2);
             document.getElementById('total-aconseguit').textContent = totalAconseguit.toFixed(2);
+            // Petició fetch per obtenir el nom del mòdul
+            const idRa = 1; // Canvia a l'ID del RA que necessites
+            fetch(`/get_modul_name/${idRa}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.nom_modul) {
+                        console.log("Nom del Mòdul:", data.nom_modul);
+                        // Actualitzar el contingut del span amb l'ID "nom-modul"
+                        document.getElementById('nom-modul').textContent = data.nom_modul;
+                    } else {
+                        console.error("Error:", data.error);
+                    }
+                })
+                .catch(error => console.error("Error amb la petició:", error));
+
         });
     </script>
 </body>
