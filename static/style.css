@@ -31,7 +31,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    max-width: 1200px;
+    max-width: 2200px;
     margin: auto;
     padding: 1.5em;
 }
@@ -259,4 +259,56 @@ button {
 
 .close-button:hover {
     color: darkred;
+}
+
+
+select {
+    font-size: 1rem; /* Augmenta la mida del text */
+    padding: 0.8em; /* Espai intern més gran */
+    width: 100%; /* Fes que utilitze tota l'amplada del contenidor */
+    border: 1px solid var(--primary-color); /* Color del contorn */
+    border-radius: 4px; /* Vores arrodonides */
+    background-color: var(--secondary-color); /* Color de fons */
+    color: var(--text-color); /* Color del text */
+    transition: all 0.3s ease; /* Animació suau */
+}
+
+select:focus {
+    border-color: var(--primary-hover-color); /* Canvia el color del contorn quan està actiu */
+    outline: none; /* Elimina l'outline predeterminat */
+    box-shadow: 0 0 5px var(--primary-hover-color); /* Afegim ombra per a millor visibilitat */
+}
+
+select option {
+    font-size: 1rem;
+    padding: 0.5em; /* Espai intern de cada opció */
+}
+
+.evidence-selector {
+    display: flex;
+    flex-direction: row; /* Col·loca el botó i el selector en línia */
+    gap: 1em; /* Espai entre el selector i el botó */
+    align-items: center; /* Centra verticalment els elements */
+}
+
+button#add-evidence {
+    font-size: 1rem;
+    padding: 0.8em 1.2em;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+}
+
+button#add-evidence:hover {
+    background-color: var(--primary-hover-color);
+    transform: scale(1.05);
+}
+
+.evidence-selector {
+    width: 100%;
+    max-width: 500px;
+    margin: 1rem auto; /* Centra el contenidor dins de la pàgina */
 }

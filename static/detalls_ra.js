@@ -38,6 +38,31 @@ async function fetchCriteris(id_ra) {
     }
 }
 
+
+async function updateEvidenceDropdown() {
+    const select = document.getElementById('evidence-select');
+    
+    try {
+        // Carrega les evidències des de l'API
+        const evidences = await fetchEvidences();
+
+        // Buida el desplegable abans d'afegir noves opcions
+        select.innerHTML = '<option value="" disabled selected>Selecciona una evidència</option>';
+
+        // Afegeix cada evidència com a opció
+        evidences.forEach(evidence => {
+            const option = document.createElement('option');
+            option.value = evidence.id; // ID de l'evidència
+            option.textContent = evidence.nom; // Nom de l'evidència
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error actualitzant el desplegable d'evidències:", error);
+    }
+}
+
+
+
 function manualUpdate(input) {
     const value = parseFloat(input.value);
     if (isNaN(value) || value < 0 || value > 10) {
@@ -353,13 +378,13 @@ async function fetchCriteris(id_ra) {
 }
 
 
-function updateEvidenceDropdown() {
+/* function updateEvidenceDropdown() {
     const select = document.getElementById('evidence-select');
     select.innerHTML = evidences
         .map(e => `<option value="${e.id}">${e.nom}</option>`)
         .join('');
 }
-
+ */
 function createTable(evidences, savedData = [], criteris = [], raId) {
     const tableWrapper = document.querySelector('.table-wrapper');
     tableWrapper.innerHTML = ''; // Reset de la taula
