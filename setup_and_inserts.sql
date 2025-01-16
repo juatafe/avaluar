@@ -68,7 +68,8 @@ CREATE TABLE Alumne (
 -- Crear taula Evidencia
 CREATE TABLE Evidencia (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    descripcio TEXT NOT NULL
+    descripcio TEXT NOT NULL,
+    oculta BOOLEAN NOT NULL DEFAULT 0
 );
 
 -- Crear taula Descriptor
@@ -100,16 +101,6 @@ CREATE TABLE Criteri_Alumne_Evidencia (
     FOREIGN KEY (nia) REFERENCES Alumne(nia)
 );
 
-/* -- Crear taula Alumne_RA (necessita id_ra i nia)
-CREATE TABLE Alumne_RA (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nia INTEGER NOT NULL,
-    id_ra INTEGER NOT NULL,
-    aconseguit REAL DEFAULT 0,
-    data DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (nia) REFERENCES Alumne(nia) ON DELETE CASCADE,
-    FOREIGN KEY (id_ra) REFERENCES RA(id_ra) ON DELETE CASCADE
-); */
 
 -- Inserir dades a la taula Cicle
 INSERT INTO Cicle (nom) VALUES ('ASIX');
@@ -120,10 +111,6 @@ INSERT INTO Modul (nom, id_cicle) VALUES ('Fonaments Hardware', 1);
 INSERT INTO Modul (nom, id_cicle) VALUES ('XAL', 2);
 
 
--- Inserir dades a la taula Criteri
--- INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 1', 30, 1);
--- INSERT INTO Criteri (descripcio, ponderacio, id_ra) VALUES ('Criteri 2', 40, 2);
-
 -- Inserir dades a la taula Alumne
 INSERT INTO Alumne (nia, nom, cognoms) VALUES (123456, 'Joan', 'Garcia');
 INSERT INTO Alumne (nia, nom, cognoms) VALUES (654321, 'Maria', 'Martínez');
@@ -131,13 +118,10 @@ INSERT INTO Alumne (nia, nom, cognoms) VALUES (789012, 'Pere', 'López');
 INSERT INTO Alumne (nia, nom, cognoms) VALUES (345678, 'Anna', 'Sánchez');
 INSERT INTO Alumne (nia, nom, cognoms) VALUES (901234, 'Laura', 'Gómez');
 
-/* -- Inserir dades a la taula Modul_Alumne
-INSERT INTO Modul_Alumne (id_modul, nia) VALUES (1, 123456);
-INSERT INTO Modul_Alumne (id_modul, nia) VALUES (2, 123456);
-INSERT INTO Modul_Alumne (id_modul, nia) VALUES (1, 654321); */
 
 -- Inserir dades a la taula Evidencia
-INSERT INTO Evidencia (id, descripcio) VALUES (1, 'Avaluació Zero');
+INSERT INTO Evidencia (id, descripcio, oculta) VALUES (1, 'Oculta',1);
+INSERT INTO Evidencia (descripcio) VALUES ('Avaluació Zero');
 INSERT INTO Evidencia (descripcio) VALUES ('Examen 1');
 INSERT INTO Evidencia (descripcio) VALUES ('Projecte 1');
 INSERT INTO Evidencia (descripcio) VALUES ('Observació 1');

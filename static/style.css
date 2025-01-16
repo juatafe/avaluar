@@ -235,38 +235,58 @@ select option {
     font-size: 1rem;
 }
 
-/* Responsive Taules */
+.table-wrapper {
+    overflow-x: auto; /* Permet desplaçament horitzontal si és necessari */
+    -webkit-overflow-scrolling: touch; /* Millora l'experiència en dispositius tàctils */
+    margin: 0 auto; /* Centra la taula en el seu contenidor */
+}
+
+table {
+    width: 100%; /* La taula ocupa tot l'ample disponible */
+    max-width: 1200px; /* Limita l'amplada màxima per a pantalles grans */
+    margin: 0 auto; /* Centra la taula */
+    border-collapse: collapse; /* Uneix els marges de les cel·les */
+    table-layout: auto; /* Permet ajustar la mida automàtica de les columnes */
+}
+
+th, td {
+    text-align: left; /* Alineació del text a l'esquerra */
+    padding: 8px; /* Espai intern */
+    border: 1px solid #ddd; /* Línies separadores */
+    word-wrap: break-word; /* Permet que el text es divideixi en diverses línies */
+}
+
+th {
+    background-color: #f2f2f2; /* Color de fons per destacar l'encapçalament */
+    position: sticky; /* Fa que l'encapçalament es mantinga visible durant el desplaçament */
+    top: 0;
+    z-index: 2; /* Assegura que els encapçalaments es mostren per damunt */
+}
+
+td {
+    background-color: #ffffff; /* Color de fons de les cel·les */
+}
+
+tfoot td {
+    font-weight: bold; /* Destaquem els totals */
+}
+
+/* Responsiu per pantalles petites */
 @media (max-width: 768px) {
-    table,
-    th,
-    td {
-        display: block;
-        width: 100%;
+    .table-wrapper {
+        overflow-x: auto; /* Manté el desplaçament horitzontal */
     }
 
-    table thead {
-        display: none;
+    th, td {
+        font-size: 0.9rem; /* Redueix lleugerament la mida del text */
     }
 
-    table tr {
-        margin-bottom: 1em;
-        display: block;
-    }
-
-    table td {
-        text-align: right;
-        padding: 0.5em;
-        position: relative;
-    }
-
-    table td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 0;
-        font-weight: bold;
-        color: var(--primary-color);
+    th, td, table {
+        display: block; /* Es mostra com a blocs per a dispositius estrets */
+        width: 100%; /* Ocupa tot l'ample disponible */
     }
 }
+
 
 /* Footer */
 footer {

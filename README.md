@@ -4,7 +4,7 @@ L'objectiu d'aquesta aplicació és facilitar l'avaluació per competències en 
 
 ## Registre Automàtic d'Evidències per a Nous Alumnes
 
-Quan es registra un alumne nou, el sistema ha de crear automàticament una entrada a la taula `Criteri_Alumne_Evidencia` amb una evidència inicial, denominada **"Avaluació Zero"**, associada a tots els criteris. Aquesta funció garanteix que es mostren els mòduls matriculats de l'alumne ja que no existeix cap relació entre les taules Mòdul i Alumne per evitar redundància. A més, les evidències poden pertanyer a altres mòduls permetent així treballs intermodulars. 
+Quan es registra un alumne nou, el sistema crea automàticament una entrada a la taula `Criteri_Alumne_Evidencia` amb una evidència inicial, denominada **"Oculta"**, associada a tots els criteris. Aquesta funció garanteix que es mostren els mòduls matriculats de l'alumne ja que no existeix cap relació entre les taules Mòdul i Alumne per evitar redundància. A més, les evidències poden pertanyer a altres mòduls permetent així treballs intermodulars. 
 
 ## Descriptors Associats a Evidències
 
@@ -132,6 +132,7 @@ La base de dades està dissenyada per gestionar la informació relacionada amb e
 - **Evidencia**: Representa una evidència d'avaluació.
   - `id` (INTEGER): Identificador únic de l'evidència.
   - `descripcio` (TEXT): Descripció de l'evidència.
+  - `oculta` (BOOLEAN): Estat de l'evidència.
 
 - **Descriptor**: Representa un descriptor associat a una evidència.
   - `id` (INTEGER): Identificador únic del descriptor.
@@ -199,6 +200,7 @@ erDiagram
     Evidencia {
         INTEGER id
         TEXT descripcio
+        BOOLEAN oculta
     }
 
     Descriptor {
