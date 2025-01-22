@@ -209,7 +209,7 @@ td input[type="number"] {
 /* Ajust d'amplada de les columnes amb unitats relatives */
 table th:first-child, 
 table td:first-child {
-    width: calc(3rem + 1vw); /* Amplada dinàmica per a la columna "Criteris" */
+    width: calc(1rem + 1vw); /* Amplada dinàmica per a la columna "Criteris" */
     text-align: left; /* Alineació a l'esquerra */
 }
 
@@ -241,6 +241,8 @@ table td:nth-child(n+5) {
     -webkit-overflow-scrolling: touch; /* Millora l'experiència en dispositius tàctils */
     margin: calc(0.5rem + 1vw) auto; /* Centra la taula amb marges dinàmics */
     padding: calc(0.2rem + 0.5vw); /* Afegeix espai dinàmic per a millorar llegibilitat */
+    display: block; /* Assegura que el contingut s'adapta al contenidor */
+    width: 100%; /* Assegura que la taula ocupa tota l'amplada */
 }
 
 table {
@@ -253,6 +255,7 @@ table {
 
 th, td {
     text-align: left; /* Alineació del text a l'esquerra */
+    white-space: nowrap; /* Evita que el text es trenque en línies múltiples */
     padding: calc(0.5rem + 0.2vw); /* Espai intern dinàmic */
     border: 1px solid #ddd; /* Línies separadores */
     word-wrap: break-word; /* Permet que el text es divideixi en diverses línies */
@@ -333,4 +336,78 @@ th.evidence-header {
 th.evidence-header button {
     margin-left: auto;
     margin-right: auto;
+}
+
+
+
+/* Estil del botó "Afegir Evidència" */
+.add-evidence-btn {
+    background-color: #007bff; /* Blau */
+    color: white;
+    border: none;
+    padding: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Ombra suau */
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+}
+
+.add-evidence-btn:hover {
+    background-color: #0056b3; /* Blau més fosc */
+    transform: scale(1.1); /* Augment lleuger */
+}
+
+.add-evidence-header {
+    text-align: center;
+    font-weight: bold;
+    color: var(--text-color);
+    padding: 10px;
+}
+
+
+.add-evidence-btn:active {
+    transform: scale(1);
+}
+
+/* Estil per a la finestra modal */
+.modal {
+    display: none; /* Ocult per defecte */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* Fons amb opacitat */
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 500px;
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
