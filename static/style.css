@@ -105,19 +105,23 @@ button:hover {
 
 /* Taules */
 .table-wrapper {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    overflow-x: auto;
-    background-color: var(--background-color);
-    margin: 1rem 0;
+    overflow-x: auto; /* Permet desplaçament horitzontal */
+    display: block;
+    margin: 0 auto; /* Centra la taula */
+    padding: calc(0.2rem + 0.5vw); /* Ajust dinàmic per a marges */
+    max-width: 100%; /* Evita desbordament */
+    box-sizing: border-box; /* Inclou el padding dins del max-width */
 }
 
+
 table {
-    width: 100%;
+    width: 100%; /* Ocupa tot l'ample disponible */
     border-collapse: collapse;
     text-align: center;
-    table-layout: fixed;
+    table-layout: auto; /* Ajusta la mida automàtica de les columnes */
+    max-width: calc(100rem + 5vw); /* Límit dinàmic de la mida de la taula */
 }
+
 
 table th {
     background-color: var(--table-header-bg);
@@ -367,6 +371,8 @@ th.evidence-header button {
     font-weight: bold;
     color: var(--text-color);
     padding: 10px;
+    background-color: var(--table-header-bg); /* Fons igual al de la capçalera */
+    white-space: nowrap; /* Evita trencar text en línies */
 }
 
 
@@ -410,4 +416,22 @@ th.evidence-header button {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+
+th, td {
+    white-space: nowrap; /* Evita trencar text */
+    padding: calc(0.5rem + 0.2vw); /* Ajust dinàmic */
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: calc(0.9rem + 0.2vw); /* Escala segons la pantalla */
+}
+
+table th:first-child, table td:first-child {
+    width: calc(15rem + 2vw); /* Amplada dinàmica per a criteris */
+    text-align: left; /* Text alineat a l'esquerra */
+}
+
+table th:nth-child(n+5), table td:nth-child(n+5) {
+    width: calc(8rem + 1vw); /* Amplada automàtica per a evidències */
 }

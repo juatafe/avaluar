@@ -880,7 +880,10 @@ function addEvidenceToAllCriteris(evidence, criteris) {
 //         alert('Error carregant dades!');
 //     }
 // });
-document.addEventListener('DOMContentLoaded', async () => {
+
+
+
+/* document.addEventListener('DOMContentLoaded', async () => {
     console.log('Pàgina carregada.');
 
     const raId = window.location.pathname.split('/').pop();
@@ -920,7 +923,62 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error inicialitzant la pàgina:', error);
         alert('Error carregant dades!');
     }
+}); */
+
+let originalData = {};
+
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Pàgina carregada.');
+
+    const raId = window.location.pathname.split('/').pop();
+    console.log("raId obtingut:", raId);
+
+    try {
+        // 1. Carregar totes les evidències disponibles
+        evidences = await fetchEvidences();
+        updateEvidenceDropdown(); // Actualitzar el desplegable
+
+        // 2. Carregar criteris i dades guardades
+        criteris = await fetchCriteris(raId);
+        const savedDataResponse = await fetch(`/api/ra/${raId}`);
+        const savedDataRaw = await savedDataResponse.json();
+
+        // Assegura que `savedData` és un array
+        savedData = savedDataRaw.detalls || [];
+
+        // Crear una còpia inicial per comparar canvis
+        originalData = savedData.reduce((acc, item) => {
+            const key = `${item.id_criteri}-${item.id_evidencia}`;
+            acc[key] = { ...item }; // Copiar les dades inicials
+            return acc;
+        }, {});
+
+        // 3. Filtrar només les evidències assignades segons les dades desades
+        evidencesAfegides = evidences.filter(e =>
+            savedData.some(d => d.id_evidencia === e.id)
+        );
+
+        // 4. Cridar createTable amb només les evidències assignades
+        createTable(evidencesAfegides, savedData, criteris, raId);
+
+        // 5. Afegir esdeveniments als botons d'eliminació
+        const eliminarButtons = document.querySelectorAll('.eliminar-evidencia');
+        eliminarButtons.forEach(button => {
+            button.addEventListener('click', eliminarEvidencia);
+        });
+
+        // 6. Afegir esdeveniments per guardar automàticament
+        addAutoSaveEvents();
+
+        console.log('Pàgina inicialitzada correctament.');
+    } catch (error) {
+        console.error('Error inicialitzant la pàgina:', error);
+        alert('Error carregant dades!');
+    }
 });
+
+
+
 
 function addAutoSaveEvents() {
     const tableWrapper = document.querySelector('.table-wrapper');
@@ -936,6 +994,71 @@ function addAutoSaveEvents() {
     }
 }
 
+// async function guardarDetalls() {
+//     console.log("Desant dades automàticament...");
+//     const rows = document.querySelectorAll('tr[data-id-criteri]');
+//     const detalls = [];
+//     const ponderacions = [];
+
+//     rows.forEach(row => {
+//         const idCriteri = row.dataset.idCriteri;
+//         const nia = row.dataset.nia;
+
+//         // Captura de la ponderació
+//         const ponderacioInput = row.querySelector('.ponderacio');
+//         const ponderacio = ponderacioInput ? parseFloat(ponderacioInput.value) || 0 : null;
+
+//         // Afegir ponderació si és vàlida
+//         if (ponderacio !== null) {
+//             ponderacions.push({ id_criteri: idCriteri, valor: ponderacio });
+//         }
+
+//         // Processar evidències per fila
+//         const evidencies = row.querySelectorAll('td[data-id-evidencia]');
+//         evidencies.forEach(evidenciaCell => {
+//             const idEvidencia = evidenciaCell.dataset.idEvidencia;
+//             const input = evidenciaCell.querySelector('input');
+//             const select = evidenciaCell.querySelector('select');
+
+//             const valor = input ? parseFloat(input.value) || 0 : null;
+//             const descriptor = select ? select.value : null;
+
+//             detalls.push({
+//                 id_criteri: idCriteri,
+//                 id_evidencia: idEvidencia,
+//                 nia: nia,
+//                 valor: valor,
+//                 descriptor: descriptor
+//             });
+//         });
+//     });
+
+//     console.log("Dades a enviar (detalls):", detalls);
+//     console.log("Dades a enviar (ponderacions):", ponderacions);
+
+//     try {
+//         const response = await fetch('/update-detalls-ra', {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json' },
+//             body: JSON.stringify({
+//                 ra_id: raId,
+//                 detalls: detalls,
+//                 ponderacions: ponderacions
+//             }),
+//         });
+
+//         const result = await response.json();
+//         if (!result.success) {
+//             throw new Error(result.error);
+//         }
+
+//         console.log("Dades desades correctament!");
+//     } catch (error) {
+//         console.error("Error desant dades:", error);
+//     }
+// }
+
+
 async function guardarDetalls() {
     console.log("Desant dades automàticament...");
     const rows = document.querySelectorAll('tr[data-id-criteri]');
@@ -950,9 +1073,12 @@ async function guardarDetalls() {
         const ponderacioInput = row.querySelector('.ponderacio');
         const ponderacio = ponderacioInput ? parseFloat(ponderacioInput.value) || 0 : null;
 
-        // Afegir ponderació si és vàlida
+        // Afegir ponderació si és vàlida i ha canviat
         if (ponderacio !== null) {
-            ponderacions.push({ id_criteri: idCriteri, valor: ponderacio });
+            const originalPonderacio = originalData[`${idCriteri}-ponderacio`]?.valor || null;
+            if (originalPonderacio !== ponderacio) {
+                ponderacions.push({ id_criteri: idCriteri, valor: ponderacio });
+            }
         }
 
         // Processar evidències per fila
@@ -962,18 +1088,30 @@ async function guardarDetalls() {
             const input = evidenciaCell.querySelector('input');
             const select = evidenciaCell.querySelector('select');
 
-            const valor = input ? parseFloat(input.value) || 0 : null;
+            const valor = input ? parseFloat(input.value) || null : null;
             const descriptor = select ? select.value : null;
 
-            detalls.push({
-                id_criteri: idCriteri,
-                id_evidencia: idEvidencia,
-                nia: nia,
-                valor: valor,
-                descriptor: descriptor
-            });
+            const key = `${idCriteri}-${idEvidencia}`;
+            const originalEvidencia = originalData[key] || {};
+
+            // Afegir només si ha canviat alguna cosa
+            if (originalEvidencia.valor !== valor || originalEvidencia.descriptor !== descriptor) {
+                detalls.push({
+                    id_criteri: idCriteri,
+                    id_evidencia: idEvidencia,
+                    nia: nia,
+                    valor: valor,
+                    descriptor: descriptor
+                });
+            }
         });
     });
+
+    // Evita enviar si no hi ha canvis
+    if (detalls.length === 0 && ponderacions.length === 0) {
+        console.log("No s'han detectat canvis. No cal desar dades.");
+        return;
+    }
 
     console.log("Dades a enviar (detalls):", detalls);
     console.log("Dades a enviar (ponderacions):", ponderacions);
@@ -995,6 +1133,14 @@ async function guardarDetalls() {
         }
 
         console.log("Dades desades correctament!");
+        // Actualitza `originalData` amb els nous valors
+        detalls.forEach(detail => {
+            const key = `${detail.id_criteri}-${detail.id_evidencia}`;
+            originalData[key] = { ...detail };
+        });
+        ponderacions.forEach(ponderacio => {
+            originalData[`${ponderacio.id_criteri}-ponderacio`] = { valor: ponderacio.valor };
+        });
     } catch (error) {
         console.error("Error desant dades:", error);
     }
