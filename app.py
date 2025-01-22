@@ -145,13 +145,17 @@ def alta_alumnes():
                     )
                 """, (id_modul,), fetchall=True)
 
+                evidencia_oculta = db_query("SELECT id FROM Evidencia WHERE descripcio = 'Oculta' AND oculta = 1", fetchone=True)
+                if not evidencia_oculta:
+                    return render_template('alta_alumnes.html', message="Error: No s'ha trobat l'evidència 'Oculta'.")
+
                 for criteri in criteris:
                     db_query(
                         """
                         INSERT INTO Criteri_Alumne_Evidencia (id_criteri, id_evidencia, nia, valor) 
                         VALUES (?, ?, ?, ?)
                         """,
-                        (criteri['id_criteri'], 1, nia, None),  # `1` és l'ID de l'evidència "Oculta"
+                        (criteri['id_criteri'], evidencia_oculta['id'], nia, None),  
                         commit=True
                     )
 
@@ -581,7 +585,7 @@ def get_criteris(id_ra):
             LEFT JOIN criteri_alumne_evidencia cae ON cae.id_criteri = c.id_criteri
             WHERE c.id_ra = ?
             AND cae.id_evidencia = (
-                SELECT id FROM evidencia WHERE descripcio = 'Avaluació Zero'
+                SELECT id FROM evidencia WHERE descripcio = 'Oculta'
             )
         """, (id_ra,), fetchall=True)
         print("Criteris retornats amb NIA:", criteris)

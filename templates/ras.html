@@ -53,7 +53,9 @@ Funcionalitat JavaScript:
                 <tbody>
                     {% for ra in ras %}
                     <tr>
-                        <td data-fulltext="{{ ra.nom_ra }}" title="{{ ra.nom_ra }}">{{ ra.nom_ra }}</td>
+                        <td data-fulltext="{{ ra.nom_ra }}" title="{{ ra.nom_ra }}">
+                            {{ ra.nom_ra[:47] }}{% if ra.nom_ra|length > 50 %}...{% endif %}
+                        </td>
                         <td><input type="number" value="{{ ra.ponderacio_ra }}" class="ponderacio-input"
                                 data-id="{{ ra.id_ra }}" min="0" max="100"></td>
                         <td>{{ ra.progress }}</td>
@@ -62,7 +64,7 @@ Funcionalitat JavaScript:
                         <td><a href="/ra/{{ ra.id_ra }}" class="action-link">Posar notes</a></td>
                     </tr>
                     {% endfor %}
-                </tbody>
+                </tbody>                
                 <tfoot>
                     <tr>
                         <td><strong>Totals</strong></td>
