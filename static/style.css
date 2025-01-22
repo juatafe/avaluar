@@ -169,46 +169,6 @@ table td[data-fulltext]:hover::after {
     text-align: left;
 }
 
-/* Inputs de Ponderació (%) */
-td input[type="number"] {
-    font-size: 1rem; /* Redueix lleugerament la mida del text */
-    padding: 5px;
-    width: 100%; /* Assegura que el camp ocupi tota l'amplada de la cel·la */
-    max-width: 6rem; /* Defineix un límit màxim per evitar que s'estengui massa */
-    text-align: center; /* Centra el text dins de l'input */
-    box-sizing: border-box; /* Inclou el padding i el borde dins del width */
-}
-
-/* Ajust d'amplada de les columnes amb unitats relatives */
-table th:first-child, 
-table td:first-child {
-    width: 5rem; /* Amplada per a la columna "Criteris" */
-    text-align: left; /* Alineació a l'esquerra */
-}
-
-table th:nth-child(2), 
-table td:nth-child(2) {
-    width: 8rem; /* Amplada per a la columna "Ponderació (%)" */
-    text-align: center;
-}
-
-table th:nth-child(3), 
-table td:nth-child(3) {
-    width: 5rem; /* Amplada per a la columna "Aconseguit" */
-    text-align: center;
-}
-
-table th:nth-child(4), 
-table td:nth-child(4) {
-    width: 5rem; /* Amplada per a la columna "Progrés" */
-    text-align: center;
-}
-
-table th:nth-child(n+5), 
-table td:nth-child(n+5) {
-    width: auto; /* Les altres columnes tindran amplada automàtica */
-}
-
 
 /* Selectors */
 select {
@@ -235,15 +195,57 @@ select option {
     font-size: 1rem;
 }
 
+
+/* Inputs de Ponderació (%) */
+td input[type="number"] {
+    font-size: calc(0.8em + 0.5vw); /* Mida dinàmica segons la pantalla */
+    padding: 5px;
+    width: 100%; /* Assegura que l'input ocupa tota l'amplada de la cel·la */
+    max-width: calc(4rem + 1vw); /* Ajusta el límit màxim dinàmicament */
+    text-align: center; /* Centra el text dins de l'input */
+    box-sizing: border-box; /* Inclou el padding i el borde dins del width */
+}
+
+/* Ajust d'amplada de les columnes amb unitats relatives */
+table th:first-child, 
+table td:first-child {
+    width: calc(3rem + 1vw); /* Amplada dinàmica per a la columna "Criteris" */
+    text-align: left; /* Alineació a l'esquerra */
+}
+
+table th:nth-child(2), 
+table td:nth-child(2) {
+    width: calc(5rem + 1vw); /* Amplada dinàmica per a "Ponderació (%)" */
+    text-align: center;
+}
+
+table th:nth-child(3), 
+table td:nth-child(3) {
+    width: calc(4rem + 1vw); /* Amplada dinàmica per a "Aconseguit" */
+    text-align: center;
+}
+
+table th:nth-child(4), 
+table td:nth-child(4) {
+    width: calc(4rem + 1vw); /* Amplada dinàmica per a "Progrés" */
+    text-align: center;
+}
+
+table th:nth-child(n+5), 
+table td:nth-child(n+5) {
+    width: auto; /* Les altres columnes s'adapten automàticament */
+}
+
 .table-wrapper {
     overflow-x: auto; /* Permet desplaçament horitzontal si és necessari */
     -webkit-overflow-scrolling: touch; /* Millora l'experiència en dispositius tàctils */
-    margin: 0 auto; /* Centra la taula en el seu contenidor */
+    margin: calc(0.5rem + 1vw) auto; /* Centra la taula amb marges dinàmics */
+    padding: calc(0.2rem + 0.5vw); /* Afegeix espai dinàmic per a millorar llegibilitat */
 }
 
 table {
     width: 100%; /* La taula ocupa tot l'ample disponible */
-    max-width: 1200px; /* Limita l'amplada màxima per a pantalles grans */
+    max-width: calc(50rem + 10vw); /* Amplada màxima dinàmica segons la pantalla */
     margin: 0 auto; /* Centra la taula */
     border-collapse: collapse; /* Uneix els marges de les cel·les */
     table-layout: auto; /* Permet ajustar la mida automàtica de les columnes */
@@ -251,9 +253,10 @@ table {
 
 th, td {
     text-align: left; /* Alineació del text a l'esquerra */
-    padding: 8px; /* Espai intern */
+    padding: calc(0.5rem + 0.2vw); /* Espai intern dinàmic */
     border: 1px solid #ddd; /* Línies separadores */
     word-wrap: break-word; /* Permet que el text es divideixi en diverses línies */
+    font-size: calc(0.9rem + 0.2vw); /* Ajust dinàmic de la mida del text */
 }
 
 th {
@@ -261,31 +264,19 @@ th {
     position: sticky; /* Fa que l'encapçalament es mantinga visible durant el desplaçament */
     top: 0;
     z-index: 2; /* Assegura que els encapçalaments es mostren per damunt */
+    font-size: calc(1rem + 0.2vw); /* Mida del text dinàmica per a l'encapçalament */
 }
 
 td {
     background-color: #ffffff; /* Color de fons de les cel·les */
+    font-size: calc(0.9rem + 0.2vw); /* Ajust dinàmic de la mida del text */
 }
+
 
 tfoot td {
     font-weight: bold; /* Destaquem els totals */
 }
 
-/* Responsiu per pantalles petites */
-@media (max-width: 768px) {
-    .table-wrapper {
-        overflow-x: auto; /* Manté el desplaçament horitzontal */
-    }
-
-    th, td {
-        font-size: 0.9rem; /* Redueix lleugerament la mida del text */
-    }
-
-    th, td, table {
-        display: block; /* Es mostra com a blocs per a dispositius estrets */
-        width: 100%; /* Ocupa tot l'ample disponible */
-    }
-}
 
 
 /* Footer */
@@ -302,4 +293,44 @@ footer {
 .no-descriptor {
     color: #888;
     font-style: italic;
+}
+
+
+/* Estil del botó d'eliminar com a subíndex */
+.small-remove-btn {
+    background-color: #e63946; /* Color de fons roig */
+    color: white; /* Color del text */
+    border: none; /* Sense bord */
+    padding: 4px 8px; /* Ajust del padding per fer-lo més rectangular */
+    font-size: 0.9rem; /* Tamany del text */
+    font-weight: bold;
+    position: absolute; /* Posicionament absolut dins del <th> */
+    top: 5px; /* Ajust de la posició superior */
+    right: 5px; /* Ajust de la posició dreta */
+    cursor: pointer; /* Cursor de mà per indicar que es pot clicar */
+    border-radius: 2px; /* Angles lleugerament arrodonits */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Ombra suau */
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out; /* Transicions suaus */
+}
+
+.small-remove-btn:hover {
+    background-color: #d62828; /* Canvia el color al passar el ratolí */
+    transform: scale(1.1); /* Augment lleuger de mida al passar el ratolí */
+}
+
+.small-remove-btn:active {
+    transform: scale(1); /* Torna a la mida original al fer clic */
+}
+
+/* Per als <th> que contenen el botó d'eliminar evidència */
+th.evidence-header {
+    position: relative; /* Només els <th> amb el botó d'eliminar */
+    padding: 12px;
+    text-align: center; /* Centra el contingut */
+}
+
+/* Ajust per als botons dins de les columnes */
+th.evidence-header button {
+    margin-left: auto;
+    margin-right: auto;
 }
