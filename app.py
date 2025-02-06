@@ -268,12 +268,12 @@ def get_ra_details(id_ra):
         """, (id_ra,), fetchall=True)
         
         # Log per depurar
-        print(f"Detalls retornats pel RA {id_ra}: {detalls}")
+        print(f"🟢 Detalls retornats pel RA {id_ra}: {detalls}")
         
         # Retorna els resultats en format JSON
         return jsonify({'detalls': [dict(row) for row in detalls]})
     except Exception as e:
-        print(f"Error recuperant dades per al RA {id_ra}: {e}")
+        print(f"❌ Error recuperant dades per al RA {id_ra}: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/visualitzar', methods=['GET', 'POST'])
@@ -439,20 +439,20 @@ def update_detalls_ra():
             id_evidencia = detall.get('id_evidencia')
             nia = detall.get('nia')
             valor = detall.get('valor')
-
+            eliminar = detall.get('eliminar', False)  # Per defecte, False
             # Afegir condició per diferenciar les relacions a eliminar
-            if valor is None and detall.get('eliminar', True):  # Només eliminar si s'ha marcat explícitament
-                print(f"Eliminant relació: ra_id={ra_id}, evidència={id_evidencia}, nia={nia}")
+            if eliminar:  # Només eliminar si s'ha marcat explícitament
+                print(f"🗑️ Eliminant relació: ra_id={ra_id}, evidència={id_evidencia}, nia={nia}")
                 eliminar_relacio(ra_id, id_evidencia, nia)
-            elif valor is not None:  # Si hi ha un valor, actualitzar o inserir
-                print(f"Actualitzant relació: criteri={id_criteri}, evidència={id_evidencia}, nia={nia}, valor={valor}")
+            else:
+                print(f"💾 Actualitzant relació: criteri={id_criteri}, evidència={id_evidencia}, nia={nia}, valor={valor}")
                 actualitzar_relacio(ra_id, id_criteri, id_evidencia, nia, valor)
 
         # Processar ponderacions
         for ponderacio in ponderacions:
             id_criteri = ponderacio.get('id_criteri')
             valor = ponderacio.get('valor')
-            print(f"Actualitzant ponderació: criteri={id_criteri}, valor={valor}")
+            print(f"💾 Actualitzant ponderació: criteri={id_criteri}, valor={valor}")
             actualitzar_ponderacio(ra_id, id_criteri, valor)
 
         return jsonify(success=True)
@@ -468,14 +468,15 @@ def eliminar_relacio(ra_id, id_evidencia, nia):
         db_query("""
             DELETE FROM Criteri_Alumne_Evidencia
             WHERE id_criteri IN (
-                SELECT id
+                SELECT id_criteri
                 FROM Criteri
                 WHERE id_ra = ?
             ) AND id_evidencia = ? AND nia = ?
         """, (ra_id, id_evidencia, nia), commit=True)
-        print(f"Relació eliminada: RA={ra_id}, evidència={id_evidencia}, nia={nia}")
+
+        print(f"✅ Relació eliminada: RA={ra_id}, evidència={id_evidencia}, nia={nia}")
     except Exception as e:
-        print(f"Error eliminant relació: {e}")
+        print(f"❌ Error eliminant relació: {e}")
 
 
 def actualitzar_relacio(ra_id, id_criteri, id_evidencia, nia, valor):
@@ -498,11 +499,10 @@ def actualitzar_ponderacio(ra_id, id_criteri, valor):
             SET ponderacio = ?
             WHERE id_criteri = ?
         """, (valor, id_criteri), commit=True)
-        print(f"Ponderació actualitzada: RA={ra_id}, criteri={id_criteri}, valor={valor}")
+
+        print(f"✅ Ponderació actualitzada: RA={ra_id}, criteri={id_criteri}, valor={valor}")
     except Exception as e:
-        print(f"Error actualitzant ponderació: {e}")
-
-
+        print(f"❌ Error actualitzant ponderació: {e}")
 
 
 

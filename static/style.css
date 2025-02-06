@@ -195,20 +195,29 @@ select:focus {
 
 /* Opcions dins del selector */
 select option {
-    padding: 0.4rem 0.8rem;
-    font-size: 1rem;
+    padding: 0.4rem 0.8rem; /* Espai dins de cada opció */
+    font-size: 1rem; /* Mida del text */
+    white-space: nowrap; /* Evita que el text es trenque */
+    background-color: white; /* Fons blanc per les opcions */
+    color: var(--text-color); /* Assegura el color de text estàndard */
 }
 
+input[type="number"] {
+    text-align: center;
+    max-width: calc(5rem + 1vw);
+}
 
 /* Inputs de Ponderació (%) */
 td input[type="number"] {
-    font-size: calc(0.8em + 0.5vw); /* Mida dinàmica segons la pantalla */
-    padding: 5px;
-    width: 100%; /* Assegura que l'input ocupa tota l'amplada de la cel·la */
-    max-width: calc(4rem + 1vw); /* Ajusta el límit màxim dinàmicament */
-    text-align: center; /* Centra el text dins de l'input */
-    box-sizing: border-box; /* Inclou el padding i el borde dins del width */
+    font-size: calc(0.8em + 0.5vw); /* Mida dinàmica segons pantalla */
+    padding: 5px; /* Espai intern */
+    width: calc(3rem + 1vw); /* Amplada màxima adaptada a la cel·la */
+    text-align: center; /* Text centrat */
+    box-sizing: border-box; /* Ajusta el padding dins de l'amplada */
+    border: 1px solid var(--primary-color); /* Borde principal */
+    border-radius: 4px; /* Angles arrodonits */
 }
+
 
 /* Ajust d'amplada de les columnes amb unitats relatives */
 table th:first-child, 

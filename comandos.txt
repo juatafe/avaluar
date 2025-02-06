@@ -86,3 +86,9 @@ git checkout main
 git merge proves
 git push origin main
 git checkout proves
+
+
+# Baixar lo del repositori i descartal lo local
+git checkout proves
+git reset --hard
+git pull origin proves
