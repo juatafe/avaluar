@@ -6,26 +6,29 @@
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <h1>Alta Alumnes</h1>
-    <form method="POST">
-        <label for="nia">NIA:</label>
-        <input type="text" name="nia" required>
-        
-        <label for="nom">Nom:</label>
-        <input type="text" name="nom" required>
-        
-        <label for="cognoms">Cognoms:</label>
-        <input type="text" name="cognoms" required>
+    <div class="container alta-alumnes-container">
+        <h1>Alta Alumnes</h1>
+        <form method="POST">
+            <label for="nia">NIA:</label>
+            <input type="text" name="nia" required>
+            
+            <label for="nom">Nom:</label>
+            <input type="text" name="nom" required>
+            
+            <label for="cognoms">Cognoms:</label>
+            <input type="text" name="cognoms" required>
 
-        <label for="id_moduls">Selecciona els mòduls:</label>
-        <select name="id_moduls" multiple required>
-            {% for modul in moduls %}
-            <option value="{{ modul.id_modul }}">{{ modul.nom }}</option>
-            {% endfor %}
-        </select>
+            <label for="id_moduls">Selecciona els mòduls:</label>
+            <select name="id_moduls" multiple required>
+                {% for modul in moduls %}
+                <option value="{{ modul.id_modul }}">{{ modul.nom }}</option>
+                {% endfor %}
+            </select>
 
-        <button type="submit">Guardar</button>
-    </form>
-    <button onclick="location.href='/'">Tornar</button>
+            <button type="submit">Guardar</button>
+        </form>
+        <button onclick="location.href='/'" class="back-button">Tornar</button>
+    </div>
 </body>
+
 </html>

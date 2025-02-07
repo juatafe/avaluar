@@ -6,10 +6,9 @@
     <title>Alta Entitats</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-
 </head>
 <body>
-    <div class="container">
+    <div class="container alta-entitats-container">
         <h1>Alta Entitats</h1>
 
         <!-- Missatge de confirmació -->
@@ -18,21 +17,33 @@
         {% endif %}
 
         <form method="POST" onsubmit="resetForm()">
-            <label for="tipus">Tipus d'entitat:</label>
-            <select name="tipus" id="tipus" onchange="toggleFields()" required>
-                <option value="Cicle">Cicle</option>
-                <option value="Modul">Mòdul</option>
-                <option value="RA">Resultat d'Aprenentatge (RA)</option>
-                <option value="Criteri">Criteri</option>
-                <option value="Evidencia">Evidència</option>
-                <option value="Descriptor">Descriptor</option>
-            </select>
+            <!-- Tipus d'entitat -->
+            <div class="form-group">
+                <label for="tipus">Tipus d'entitat:</label>
+                <select name="tipus" id="tipus" onchange="toggleFields()" required>
+                    <option value="Cicle">Cicle</option>
+                    <option value="Modul">Mòdul</option>
+                    <option value="RA">Resultat d'Aprenentatge (RA)</option>
+                    <option value="Criteri">Criteri</option>
+                    <option value="Evidencia">Evidència</option>
+                    <option value="Descriptor">Descriptor</option>
+                </select>
+            </div>
 
-            <label for="nom">Nom:</label>
-            <input type="text" name="nom" required>
+            <!-- Nom i Valor en la mateixa fila -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nom">Nom:</label>
+                    <input type="text" name="nom" required>
+                </div>
+                <div id="valor-field" class="form-group dynamic-field">
+                    <label for="valor">Valor:</label>
+                    <input type="number" step="0.01" name="valor">
+                </div>
+            </div>
 
             <!-- Camps dinàmics -->
-            <div id="cicle-field" class="dynamic-field">
+            <div id="cicle-field" class="form-group dynamic-field">
                 <label for="id_cicle">Selecciona un Cicle:</label>
                 <select name="id_cicle">
                     {% for cicle in cicles %}
@@ -41,7 +52,7 @@
                 </select>
             </div>
 
-            <div id="modul-field" class="dynamic-field">
+            <div id="modul-field" class="form-group dynamic-field">
                 <label for="id_modul">Selecciona un Mòdul:</label>
                 <select name="id_modul">
                     {% for modul in moduls %}
@@ -50,18 +61,14 @@
                 </select>
             </div>
 
-            <div id="ponderacio-field" class="dynamic-field">
+            <div id="ponderacio-field" class="form-group dynamic-field">
                 <label for="ponderacio">Ponderació:</label>
                 <input type="number" step="0.01" name="ponderacio">
             </div>
 
-            <div id="valor-field" class="dynamic-field">
-                <label for="valor">Valor:</label>
-                <input type="number" step="0.01" name="valor">
-            </div>
-
             <button type="submit">Guardar</button>
         </form>
+        
         <button onclick="location.href='/'" class="back-button">Tornar</button>
     </div>
 
@@ -74,32 +81,35 @@
             const tipus = document.getElementById('tipus').value;
             const fields = document.querySelectorAll('.dynamic-field');
             fields.forEach(field => field.style.display = 'none');
-
+    
             if (tipus === 'Modul') {
                 document.getElementById('cicle-field').style.display = 'block';
-            } else if (tipus === 'RA') {
+            } else if (tipus === 'RA' || tipus === 'Criteri') { 
+                // 🔹 Mostra la ponderació per RA i Criteri
                 document.getElementById('modul-field').style.display = 'block';
                 document.getElementById('ponderacio-field').style.display = 'block';
             } else if (tipus === 'Descriptor') {
                 document.getElementById('valor-field').style.display = 'block';
             }
         }
-
+    
         function hideMessage() {
             const messageDiv = document.querySelector('.message');
             if (messageDiv) {
                 messageDiv.style.display = 'none';
             }
         }
-
+    
         function resetForm() {
             document.querySelector('form').reset();
         }
-
+    
         // Amaga el missatge automàticament després de 5 segons
         setTimeout(hideMessage, 5000);
-
+    
+        // Executa la funció inicialment per carregar l'estat correcte
         toggleFields();
     </script>
+    
 </body>
 </html>
